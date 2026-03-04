@@ -1,0 +1,40 @@
+{
+  "name": "Work Manager STEM",
+  "short_name": "Work Manager",
+  "description": "Gestione ore, trasferte e credenziali STEM",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f6fa",
+  "theme_color": "#3b82f6",
+  "lang": "it",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "business"],
+  "shortcuts": [
+    {
+      "name": "La mia giornata",
+      "short_name": "Ore",
+      "url": "./#ore",
+      "description": "Registra le ore di oggi"
+    },
+    {
+      "name": "Trasferte",
+      "short_name": "Trasferte",
+      "url": "./#trasferte",
+      "description": "Gestisci le trasferte"
+    }
+  ]
+}
