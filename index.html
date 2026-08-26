@@ -853,8 +853,7 @@ function updEF(){
     const o1=document.getElementById('evPOra1'),o2=document.getElementById('evPOra2');
     const upd=()=>{
       const m=Math.max(0,t2m(o2.value)-t2m(o1.value));
-      const h=Math.floor(m/60),mn=m%60;
-      document.getElementById('evPermCalc').textContent=m>0?'Durata: '+(h>0?h+'h ':'')+(mn>0?mn+'m':''):'Inserisci orari validi';
+      document.getElementById('evPermCalc').textContent=m>0?'Durata: '+fh(m):'Inserisci orari validi';
     };
     o1.oninput=upd; o2.oninput=upd; upd();
   }
@@ -2357,7 +2356,7 @@ function dshort(s){const d=new Date(s+'T00:00:00'); return ['Lun','Mar','Mer','G
 function addD(d,n){const r=new Date(d); r.setDate(r.getDate()+n); return r;}
 function f2(n){return String(n).padStart(2,'0');}
 function t2m(t){if(!t)return 0; const[h,m]=t.split(':').map(Number); return Math.round((h*60+m)/30)*30;}
-function fh(m){const neg=m<0; m=Math.round(Math.abs(m)/30)*30; const h=Math.floor(m/60),mm=m%60; return (neg?'-':'')+h+(mm?':'+String(mm).padStart(2,'0'):'');}
+function fh(m){const neg=m<0; m=Math.round(Math.abs(m)/30)*30; const h=Math.floor(m/60), half=(m%60)===30; return (neg?'-':'')+h+(half?',5':'');}
 function cap(s){return s?s.charAt(0).toUpperCase()+s.slice(1):'';}
 function esc(s){return (s||'').replace(/'/g,"\\'");}
 function v(id){const el=document.getElementById(id); return el?el.value:'';}
