@@ -1,10 +1,9 @@
 import { defineConfig } from 'vite';
 
-// base relativa: funziona su https://utente.github.io/<nome-repo>/ senza configurare nulla
-export default defineConfig({   
+// Il sito è pubblicato su https://<utente>.github.io/Work-Management/
+// Se rinomini la repo, cambia anche `base`.
+export default defineConfig({
   base: '/Work-Management/',
-  })
-  base: './',
   build: {
     outDir: 'dist',
     sourcemap: false,
