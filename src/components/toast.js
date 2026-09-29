@@ -1,0 +1,1 @@
+export function toast(m,err=false){const t=document.getElementById('tst'); document.getElementById('tstM').textContent=m; t.style.background=err?'#7f1d1d':'#1a1a2e'; t.classList.add('on'); setTimeout(()=>t.classList.remove('on'),2500);}

@@ -1,97 +1,60 @@
-# Work Manager STEM – Deploy su GitHub Pages
+# Work Manager STEM
 
-## 📁 Struttura file
+PWA per gestire ore di lavoro, straordinari, ferie/permessi, trasferte (voli, checklist, note spese) e credenziali aziendali. JavaScript puro + [Vite](https://vite.dev), senza framework.
+
+## Struttura
+
 ```
-workmanager-pwa/
-├── index.html          ← l'app completa
-├── manifest.json       ← configurazione PWA
-├── icon-192.png        ← icona app
-├── icon-512.png        ← icona app grande
-└── .github/
-    └── workflows/
-        └── deploy.yml  ← deploy automatico
+├── index.html                  markup dell'app (niente JavaScript inline)
+├── public/                     copiati così come sono nella build
+│   ├── manifest.json · sw.js · icon-192.png · icon-512.png
+├── src/
+│   ├── main.js                 avvio dell'app
+│   ├── app/actions.registry.js elenco delle azioni usate dai bottoni (data-action)
+│   ├── config/                 app.config.js (nome, località meteo, orari) · constants.js
+│   ├── core/                   state.js · storage.js · schema.js (validazione dati)
+│   ├── components/             modal · toast · navigation
+│   ├── lib/                    actions (event delegation) · crypto · html (escaping) · dates · holidays · links · format
+│   ├── services/               weather (Open-Meteo) · github-gist
+│   ├── features/
+│   │   ├── home/               orologio, eventi, "dove devo essere"
+│   │   ├── hours/              giornata, calcolo straordinari, note, report email
+│   │   ├── trips/              lista, dettaglio, form, checklist, note spese
+│   │   ├── profile/            calendario, riepiloghi mensili
+│   │   ├── credentials/        cassaforte cifrata
+│   │   ├── settings/           impostazioni, backup, export PDF
+│   │   └── sync/               sincronizzazione Gist, link di ripristino
+│   └── styles/app.css
+└── .github/workflows/deploy.yml  build + deploy automatico su GitHub Pages
 ```
 
----
+**Aggiungere un bottone:** nel markup `<button data-action="miaFunzione" data-args="a|2">`, poi esporta `miaFunzione` dal suo modulo e aggiungila in `src/app/actions.registry.js`.
 
-## 🚀 Istruzioni deploy (una volta sola)
-
-### 1. Crea il repository su GitHub
-1. Vai su [github.com](https://github.com) → **New repository**
-2. Nome: `work-manager` (o quello che vuoi)
-3. Visibilità: **Private** ✓ (i tuoi dati sono nel Gist, non qui)
-4. Clicca **Create repository**
-
-### 2. Carica i file
-Sul tuo computer, apri il terminale nella cartella `workmanager-pwa/` e lancia:
+## Sviluppo in locale
 
 ```bash
-git init
-git add .
-git commit -m "Work Manager PWA"
-git branch -M main
-git remote add origin https://github.com/TUO_USERNAME/work-manager.git
-git push -u origin main
+npm install
+npm run dev       # http://localhost:5173
+npm run build     # crea dist/
+npm run preview   # prova la build
 ```
 
-### 3. Abilita GitHub Pages
-1. Nel repository → **Settings** → **Pages**
-2. Source: **GitHub Actions**
-3. Salva
+## Sicurezza
 
-Dopo 1-2 minuti l'app sarà live su:
-**`https://TUO_USERNAME.github.io/work-manager/`**
+- **Credenziali cifrate** con AES-256-GCM; la chiave è derivata dalla password principale (PBKDF2-SHA256, 310.000 iterazioni). In localStorage, nel Gist e nei backup c'è solo il testo cifrato. Blocco automatico dopo 5 minuti o quando l'app va in background; attesa crescente dopo 5 password sbagliate. **La password principale non è recuperabile.**
+- **Content-Security-Policy** che vieta script inline ed esterni: anche se un dato malevolo finisse nella pagina, non potrebbe eseguire codice. Tutti i dati utente sono comunque sottoposti a escaping.
+- **Dati esterni validati** (backup, Gist, link di ripristino): campi sconosciuti scartati, Gist ID e token controllati prima di usarli.
+- **Link di ripristino cifrato** con una password scelta da te.
+- **Backup ed export senza token GitHub.**
+- **Service worker** che mette in cache solo i file dell'app, mai le risposte di GitHub.
 
----
+Il token GitHub resta salvato in localStorage (senza un server non c'è alternativa): usa un token *fine-grained* con **solo** il permesso *Gists: Read and write*.
 
-## 📱 Installa sul telefono
+## Sincronizzazione Gist
 
-### iPhone (Safari)
-1. Apri l'URL su Safari
-2. Tocca il pulsante **Condividi** (□↑)
-3. Scorri → **Aggiungi a schermata Home**
-4. Nome: `Work Manager` → **Aggiungi**
+1. GitHub → Settings → Developer settings → Personal access tokens → **Fine-grained tokens** → Generate new token
+2. Permessi: **Gists → Read and write** (nient'altro)
+3. Nell'app: Profilo → Impostazioni → incolla il token → Salva → ☁️ Sincronizza
+4. Sugli altri dispositivi incolla lo stesso token e lo stesso Gist ID, oppure apri il link di ripristino cifrato.
 
-### Android (Chrome)
-1. Apri l'URL su Chrome
-2. Tocca i **tre puntini** (⋮)
-3. **Aggiungi a schermata Home** oppure il banner apparirà automaticamente
-4. Conferma
-
----
-
-## ☁️ Configurare la sincronizzazione Gist
-
-### Crea il Personal Access Token
-1. GitHub → **Settings** → **Developer settings** → **Personal access tokens** → **Fine-grained tokens**
-2. Clicca **Generate new token**
-3. Nome: `Work Manager Sync`
-4. Expiration: **No expiration** (o 1 anno)
-5. Repository access: **Public Repositories** (non servono repository)
-6. Permissions → **Gists** → **Read and write** ✓
-7. Clicca **Generate token**
-8. **Copia il token** (inizia con `github_pat_...`)
-
-### Configura nell'app
-1. Apri l'app → **Profilo** → **Impostazioni**
-2. Sezione **Sincronizzazione Cloud**
-3. Incolla il token → **Salva**
-4. Clicca **☁️ Sincronizza**
-
-La prima volta crea il Gist automaticamente. Da quel momento:
-- **☁️ Sincronizza** → carica i dati locali sul cloud
-- **⬇️ Scarica** → scarica i dati dal cloud (es. dopo reinstallazione)
-
-> 💡 Il Gist è **privato** — solo tu puoi vederlo.
-
----
-
-## 🔄 Aggiornare l'app in futuro
-
-Quando ricevi un file `index.html` aggiornato, basta sostituirlo e:
-```bash
-git add index.html
-git commit -m "Aggiornamento app"
-git push
-```
-GitHub Pages si aggiorna automaticamente in ~1 minuto.
+I Gist "secret" non sono elencati pubblicamente ma chi ha l'URL può leggerli: per questo le credenziali vengono caricate solo cifrate.
