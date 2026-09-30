@@ -1,24 +1,3 @@
-import { APP_CONFIG } from '../config/app.config.js';
-
-export function fetchW(){
-  // Open-Meteo: gratuita, nessuna API key
-  // Coordinate Medesano (PR): 44.754, 10.141
-  const {lat,lon,timezone}=APP_CONFIG.homeLocation;
-  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code&wind_speed_unit=kmh&timezone=${encodeURIComponent(timezone)}`)
-    .then(r=>r.json()).then(d=>{
-      const t=Math.round(d.current.temperature_2m);
-      const fl=Math.round(d.current.apparent_temperature);
-      const ic=wmoIcon(d.current.weather_code);
-      const desc=wmoDesc(d.current.weather_code);
-      document.getElementById('wt').textContent=t+'°';
-      document.getElementById('wc').textContent=desc+' · ↑ Percepita '+fl+'°';
-      document.getElementById('wi').textContent=ic;
-    }).catch(()=>{
-      document.getElementById('wt').textContent='—°';
-      document.getElementById('wc').textContent='Errore connessione';
-    });
-}
-
 export async function fetchWCity(lat,lon){
   try{
     const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${Number(lat)}&longitude=${Number(lon)}&hourly=temperature_2m,weather_code&forecast_days=3&timezone=Europe/Rome`);
