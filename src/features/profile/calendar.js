@@ -1,119 +1,64 @@
 import { closeM, openM } from '../../components/modal.js';
 import { MONTHS } from '../../config/constants.js';
 import { S } from '../../core/state.js';
-import { openEvM } from '../home/events.js';
-import { monthSummary } from '../hours/engine.js';
+import { openDayEditor } from '../hours/day-editor.js';
+import { computeDay, dateKey, fmtH, monthSummary } from '../hours/engine.js';
 import { delDayHours, delFerieFromProfile, editDayHours, showMonthDetail } from './month-detail.js';
 import { openTrDet } from '../trips/detail.js';
 import { fds, fh, fn, t2m } from '../../lib/dates.js';
-import { cap } from '../../lib/format.js';
+import { cap, v } from '../../lib/format.js';
 import { getHoliday } from '../../lib/holidays.js';
 import { attr, h } from '../../lib/html.js';
+import { icon } from '../../lib/icons.js';
 
+/** Calendario mensile: ore, straordinari, permessi, ferie e trasferte giorno per giorno. */
 export function renderPOre(){
   if(S.pTab!==0)return;
-  const y=S.calM.getFullYear(),m=S.calM.getMonth(),now=new Date();
-  const fd1=new Date(y,m,1),ldN=new Date(y,m+1,0);
-  let start=fd1.getDay()-1; if(start<0)start=6;
-  // totali calcolati con le stesse regole della pagina Ore
+  const y=S.calM.getFullYear(),m=S.calM.getMonth();
   const ms=monthSummary(y,m,S.dd,S.evs);
-  const totH=ms.worked,totX=ms.extra,totF=ms.ferie*8,totP=ms.permesso/60;
-  const D=['Lu','Ma','Me','Gi','Ve','Sa','Do'];
-
-  // Trasferte attive nel mese
-  const monthStart=new Date(y,m,1);
-  const monthEnd=new Date(y,m+1,0);
-  const activeTrs=S.trs.filter(t=>{
-    if(t.arc)return false;
-    const d1=new Date(t.d1+'T00:00:00'),d2=new Date(t.d2+'T00:00:00');
-    return d1<=monthEnd&&d2>=monthStart;
-  });
-
-  const totalCells=start+ldN.getDate();
-  const rows=Math.ceil(totalCells/7);
-  let calHtml='';
-
-  for(let row=0;row<rows;row++){
-    // Calcola i giorni di questa riga
-    let rowDays=[];
-    for(let col=0;col<7;col++){
-      const cellIdx=row*7+col;
-      const dayNum=cellIdx-start+1;
-      if(dayNum<1||dayNum>ldN.getDate()){
-        rowDays.push(null);
-      }else{
-        const k=`${y}-${String(m+1).padStart(2,'0')}-${String(dayNum).padStart(2,'0')}`;
-        rowDays.push({k,dayNum,col});
-      }
-    }
-
-    // Mappa trasferta per ogni giorno di questa riga
-    const trMap={}; // col -> {tid, isStart, isEnd, isSolo}
-    activeTrs.forEach(t=>{
-      const d1=new Date(t.d1+'T00:00:00'),d2=new Date(t.d2+'T00:00:00');
-      let startCol=-1,endCol=-1;
-      rowDays.forEach((day,col)=>{
-        if(!day)return;
-        const d=new Date(day.k+'T00:00:00');
-        if(d>=d1&&d<=d2){if(startCol===-1)startCol=col;endCol=col;}
-      });
-      if(startCol===-1)return;
-      for(let col=startCol;col<=endCol;col++){
-        trMap[col]={tid:t.id,isStart:col===startCol,isEnd:col===endCol,isSolo:startCol===endCol};
-      }
-    });
-
-    // Celle numeri con trasferta integrata
-    let numHtml='<div class="cg-row">';
-    rowDays.forEach((day,col)=>{
-      if(!day){numHtml+=`<div class="cc empty"></div>`;return;}
-      const {k,dayNum}=day;
-      const isT=dayNum===now.getDate()&&m===now.getMonth()&&y===now.getFullYear();
-      const isSel=S.selDay===k&&!isT;
-      const hd=S.dd[k];
-      const hf=S.evs.some(e=>e.dat===k&&e.tipo==='ferie');
-      const hol=getHoliday(k);
-      const trInfo=trMap[col];
-      let cls='cc';
-      if(isT)cls+=' td';
-      else if(isSel)cls+=' sel';
-      else if(hf||hol)cls+=' fe';
-      else if(trInfo)cls+=` tr${trInfo.isSolo?' tr-solo':trInfo.isStart?' tr-s':trInfo.isEnd?' tr-e':''}`;
-      else if(hd&&hd.e&&hd.u)cls+=' wk';
-      const hasNotes=hd&&hd.notes&&hd.notes.length>0;
-      const hasOre=hd&&hd.e&&hd.u;
-      const dotsHtml=(hasOre||hasNotes)&&!isT&&!isSel?`<div class="caldot">${hasOre?'<div class="caldot-ore"></div>':''}${hasNotes?'<div class="caldot-note"></div>':''}</div>`:'';
-      numHtml+=`<div class="${cls}" data-action="showDD" data-args="${k}" title="${attr(hol||'')}">${dayNum}${dotsHtml}</div>`;
-    });
-    numHtml+='</div>';
-
-    calHtml+=`<div class="cal-week">${numHtml}</div>`;
+  const byKey={}; ms.days.forEach(r=>{byKey[r.key]=r;});
+  const todayK=dateKey(new Date());
+  const last=new Date(y,m+1,0).getDate();
+  let start=new Date(y,m,1).getDay()-1; if(start<0)start=6;
+  const inTrip=(k)=>S.trs.some(tr=>tr.d1<=k&&tr.d2>=k);
+  let cells='';
+  for(let i=0;i<start;i++) cells+='<div class="cal2-c empty"></div>';
+  for(let n=1;n<=last;n++){
+    const k=`${y}-${String(m+1).padStart(2,'0')}-${String(n).padStart(2,'0')}`;
+    const r=byKey[k]||computeDay(k,S.dd[k],S.evs);
+    const hol=getHoliday(k);
+    let cls='cal2-c';
+    let val='';
+    if(r.ferie){cls+=' ferie'; val='F';}
+    else if(r.status==='todo'){cls+=' todo'; val='?';}
+    else if(r.worked){val=fmtH(r.worked).replace('h',''); if(r.extra) cls+=' extra'; else if(r.permesso) cls+=' perm'; else cls+=' std';}
+    if(!r.working) cls+=' we';
+    if(hol) cls+=' hol';
+    if(k===todayK) cls+=' today';
+    if(inTrip(k)) cls+=' trip';
+    const note=S.dd[k]?.notes?.length?'<i class="cal2-note"></i>':'';
+    cells+=`<button type="button" class="${cls}" data-action="openDayEditor" data-args="${k}" title="${attr(hol||'')}"><span class="cal2-n">${n}</span><span class="cal2-v">${val}</span>${note}</button>`;
   }
-
-  document.getElementById('pContent').innerHTML=`
-    <div style="height:12px"></div>
-    <div class="calhdr"><div class="calnav" data-action="chCM" data-args="-1"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><div style="font-family:var(--font-serif);font-size:16px;font-weight:700">${h(MONTHS[m])} ${y}</div><div class="calnav" data-action="chCM" data-args="1"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
-    <div class="cgw">
-      <div class="cal-dh">${D.map(d=>`<span>${d}</span>`).join('')}</div>
-      ${calHtml}
+  const box=(tipo,label,value,cls)=>`<button type="button" class="msum2 ${cls}" data-action="showMonthDetail" data-args="${tipo}"><b>${value}</b><span>${label}</span></button>`;
+  document.getElementById('pContent').innerHTML=`<div class="stack" style="padding-top:8px">
+    <div class="mnav">
+      <button type="button" class="iconbtn" data-action="chCM" data-args="-1" aria-label="Mese precedente">${icon('left')}</button>
+      <span>${MONTHS[m]} ${y}</span>
+      <button type="button" class="iconbtn" data-action="chCM" data-args="1" aria-label="Mese successivo">${icon('right')}</button>
     </div>
-    <div style="margin:0 16px 12px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t2)"><div style="width:10px;height:10px;border-radius:3px;background:var(--blue)"></div>Oggi</div>
-      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t2)"><div style="width:10px;height:10px;border-radius:3px;background:var(--bl);border:1px solid var(--blue)"></div>Ore registrate</div>
-      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t2)"><div style="width:10px;height:10px;border-radius:3px;background:#fef3c7;border:1px solid #f59e0b"></div>Note</div>
-      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t2)"><div style="width:10px;height:10px;border-radius:3px;background:var(--gl);border:1px solid var(--gr)"></div>Ferie/Festivo</div>
-      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t2)"><div style="width:22px;height:10px;border-radius:3px;background:var(--or)"></div>Trasferta</div>
+    <section class="ucard cal2" aria-label="Calendario">
+      <div class="cal2-h">${['Lu','Ma','Me','Gi','Ve','Sa','Do'].map(d=>`<span>${d}</span>`).join('')}</div>
+      <div class="cal2-g">${cells}</div>
+      <div class="cal2-l"><span><i class="std"></i>Ore</span><span><i class="extra"></i>Straordinari</span><span><i class="perm"></i>Permesso</span><span><i class="ferie"></i>Ferie</span><span><i class="trip"></i>Trasferta</span></div>
+    </section>
+    <div class="msum2-g">
+      ${box('ore','Lavorate',fmtH(ms.worked),'')}
+      ${box('straordinari','Straordinari',fmtH(ms.extra,true),'ok')}
+      ${box('permessi','Permessi',fmtH(ms.permesso),'warn')}
+      ${box('ferie','Ferie',ms.ferie+' g','blue')}
     </div>
-    <div id="ddz"></div>
-    <div class="msum"><div style="font-family:var(--font-serif);font-size:14px;font-weight:700;margin-bottom:14px">Riepilogo mensile</div><div class="mgrid">
-      <div class="mi"><div class="mv">${Math.round(totH/60)}</div><div class="ml">Ore ordinarie</div></div>
-      <div class="mi" style="cursor:pointer" data-action="showMonthDetail" data-args="straordinari"><div class="mv x">${fh(totX)}</div><div class="ml">Straordinari</div></div>
-      <div class="mi" style="cursor:pointer" data-action="showMonthDetail" data-args="ferie"><div class="mv g">${totF}h</div><div class="ml">Ferie</div></div>
-      <div class="mi" style="cursor:pointer" data-action="showMonthDetail" data-args="permessi"><div class="mv">${String(totP).replace('.',',')}h</div><div class="ml">Permessi</div></div>
-    </div></div>
-    <div style="padding:0 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center"><span style="font-family:var(--font-serif);font-size:14px;font-weight:700">Aggiungi</span><button class="btn-p" data-action="openEvM"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Evento</button></div>
-    <div style="height:80px"></div>
-  `;
+    <div style="height:24px"></div>
+  </div>`;
 }
 
 export function showDD(k){

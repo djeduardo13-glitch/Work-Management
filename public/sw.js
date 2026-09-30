@@ -1,6 +1,6 @@
 // Service worker: cache SOLO dei file dell'app (stessa origine).
 // Non mette mai in cache le chiamate a GitHub (dati privati + token) né il meteo.
-const CACHE = 'work-manager-v3';
+const CACHE = 'work-manager-v4';
 const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (e) => {

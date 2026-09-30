@@ -5,68 +5,32 @@ import { save } from '../../core/storage.js';
 import { renderEvs } from '../home/events.js';
 import { chkWhere } from '../home/where.js';
 import { openDayEditor } from '../hours/day-editor.js';
-import { monthSummary } from '../hours/engine.js';
+import { fmtH, isTime, monthSummary, roundDown, roundUp, toMin, toTime } from '../hours/engine.js';
 import { renderPOre } from './calendar.js';
 import { refreshHours } from '../today/today.js';
-import { fdl, fh } from '../../lib/dates.js';
 import { h } from '../../lib/html.js';
 
+/** Elenco dei giorni del mese per la casella toccata (stessi calcoli della pagina Ore). */
 export function showMonthDetail(tipo){
   const y=S.calM.getFullYear(),m=S.calM.getMonth();
   const M=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
-  
-  let title='',content='',items=[];
-  
-  if(tipo==='straordinari'){
-    title='Straordinari '+M[m];
-    monthSummary(y,m,S.dd,S.evs).days.slice().reverse().forEach(r=>{
-      if(r.extra>0) items.push({date:r.key,hours:r.extra,label:fdl(r.key)});
-    });
-    if(!items.length){
-      content='<div style="text-align:center;padding:32px;color:var(--t3)">Nessun straordinario registrato</div>';
-    }else{
-      items.forEach(item=>{
-        content+=`<div class="drow"><span class="dk">${h(item.label)}</span><span class="dv" style="color:var(--blue);font-family:'JetBrains Mono',monospace">${fh(item.hours)}</span></div>`;
-      });
-    }
-  }else if(tipo==='ferie'){
-    title='Ferie '+M[m];
-    S.evs.filter(e=>e.tipo==='ferie').forEach(e=>{
-      const d=new Date(e.dat+'T00:00:00');
-      if(d.getFullYear()===y&&d.getMonth()===m){
-        items.push({date:e.dat,label:fdl(e.dat)});
-      }
-    });
-    
-    if(!items.length){
-      content='<div style="text-align:center;padding:32px;color:var(--t3)">Nessuna ferie registrata</div>';
-    }else{
-      items.sort((a,b)=>a.date.localeCompare(b.date));
-      items.forEach(item=>{
-        content+=`<div class="drow"><span class="dk">${h(item.label)}</span><span class="dv" style="color:var(--gr);font-family:'JetBrains Mono',monospace">8h</span></div>`;
-      });
-    }
-  }else if(tipo==='permessi'){
-    title='Permessi '+M[m];
-    S.evs.filter(e=>e.tipo==='permesso').forEach(e=>{
-      const d=new Date(e.dat+'T00:00:00');
-      if(d.getFullYear()===y&&d.getMonth()===m){
-        items.push({date:e.dat,label:fdl(e.dat),hours:parseFloat(e.dur)||0});
-      }
-    });
-    
-    if(!items.length){
-      content='<div style="text-align:center;padding:32px;color:var(--t3)">Nessun permesso registrato</div>';
-    }else{
-      items.sort((a,b)=>a.date.localeCompare(b.date));
-      items.forEach(item=>{
-        content+=`<div class="drow"><span class="dk">${h(item.label)}</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(item.hours)}h</span></div>`;
-      });
-    }
-  }
-  
-  document.getElementById('mdTitle').textContent=title;
-  document.getElementById('mdContent').innerHTML=content;
+  const DOW=['DOM','LUN','MAR','MER','GIO','VEN','SAB'];
+  const conf={
+    ore:['Ore lavorate',r=>r.worked>0,r=>fmtH(r.worked),''],
+    straordinari:['Straordinari',r=>r.extra>0,r=>fmtH(r.extra,true),''],
+    permessi:['Permessi',r=>r.permesso>0,r=>fmtH(r.permesso),'perm'],
+    ferie:['Ferie',r=>r.ferie,()=>'ferie','ferie'],
+  }[tipo];
+  if(!conf) return;
+  const [title,match,val,cls]=conf;
+  const days=monthSummary(y,m,S.dd,S.evs).days.filter(match).reverse();
+  const total=tipo==='ferie'?days.length+' g':fmtH(days.reduce((s,r)=>s+(tipo==='ore'?r.worked:tipo==='permessi'?r.permesso:r.extra),0),tipo==='straordinari');
+  document.getElementById('mdTitle').textContent=`${title} · ${M[m]}`;
+  document.getElementById('mdContent').innerHTML=days.length?`<div class="res" style="margin-bottom:10px"><span>Totale</span><b>${h(total)}</b></div><div class="ucard dlist">${days.map(r=>{
+    const d=new Date(r.key+'T00:00:00'); const day=S.dd[r.key]||{};
+    const det=r.ferie?'Ferie':isTime(day.e)&&isTime(day.u)?`${toTime(roundUp(toMin(day.e)))}–${toTime(roundDown(toMin(day.u)))}`:'—';
+    return `<button type="button" class="drow2" data-action="editDayHours" data-args="${r.key}"><div class="dn"><small>${DOW[d.getDay()]}</small><b>${d.getDate()}</b></div><div class="det">${det}</div><span class="badge ${cls}">${h(val(r))}</span></button>`;
+  }).join('')}</div>`:`<div class="empty-note">Nessun giorno in ${M[m].toLowerCase()}</div>`;
   openM('mdm');
 }
 

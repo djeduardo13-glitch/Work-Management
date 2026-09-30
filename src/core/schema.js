@@ -49,7 +49,7 @@ export function sanitizeData(d) {
     for (const [k, val] of Object.entries(cleanStrings(d.dd))) if (DATE.test(k) && isObj(val)) out.dd[k] = val;
   }
   if (d.phone !== undefined) out.phone = str(d.phone, 40);
-  if (isObj(d.notif)) out.notif = { en: !!d.notif.en, usc: !!d.notif.usc, chk: !!d.notif.chk };
+  if (isObj(d.notif)) out.notif = { en: !!d.notif.en, usc: !!d.notif.usc, chk: !!d.notif.chk, ent: !!d.notif.ent };
   if (d.vault !== undefined) out.vault = cleanVault(d.vault);
   if (Array.isArray(d.creds)) out.creds = cleanStrings(d.creds).filter((c) => isObj(c) && typeof c.id === 'string');
   if (typeof d.lastSync === 'string') out.lastSync = str(d.lastSync, 40);

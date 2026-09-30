@@ -19,6 +19,8 @@ import { icon } from '../../lib/icons.js';
 const DOW = ['DOM', 'LUN', 'MAR', 'MER', 'GIO', 'VEN', 'SAB'];
 const WEEK_LETTERS = ['L', 'M', 'M', 'G', 'V', 'S', 'D'];
 const REMINDER_KEY = 'wm3-reminder';
+const REMINDER_ENT_KEY = 'wm3-reminder-ent';
+let expanded = false; // card "Oggi": comandi nascosti finché non la tocchi
 
 const todayKey = () => dateKey(new Date());
 const nowMin = () => {
@@ -109,17 +111,18 @@ function runningCard(r, day) {
   const pz = r.working
     ? `<div class="pz">${icon('coffee', 'width="16" height="16"')}Pausa <button type="button" class="${pausa === 30 ? 'sel' : ''}" data-action="setPause" data-args="30">30 min</button><button type="button" class="${pausa === 60 ? 'sel' : ''}" data-action="setPause" data-args="60">1 ora</button></div>`
     : '';
-  return `<section class="today" aria-label="Oggi">
+  return `<section class="today tap${expanded ? ' open' : ''}" aria-label="Oggi" data-action="toggleToday" aria-expanded="${expanded}">
     <div class="today-top"><span class="chip"><i style="background:#6fd6a3"></i>${r.working ? 'IN CORSO' : 'STRAORDINARIO'}</span><button type="button" class="editlink" data-action="editEntry">Entrato ${toTime(e)} ${icon('edit')}</button></div>
     <div class="big"><b>${fmtHM(r.worked)}</b><span>lavorate</span></div>
     ${plan}
     ${r.working ? `<div class="bar"><div style="width:${pct}%"></div></div>` : ''}
     ${msHtml}
-    ${pz}
+    ${expanded ? `${pz}
     <div class="row">
       ${r.working ? '<button type="button" class="outline" data-action="goOut">Esco e rientro</button>' : ''}
       <button type="button" class="cta" style="flex-grow:1.4" data-action="registerExit">${icon('out')}Registra uscita</button>
-    </div>
+    </div>` : ''}
+    <div class="today-chev" aria-hidden="true">${icon(expanded ? 'up' : 'down')}</div>
   </section>`;
 }
 
@@ -197,6 +200,11 @@ export function renderWeek() {
 }
 
 // ── Azioni ────────────────────────────────────────────
+
+export function toggleToday() {
+  expanded = !expanded;
+  renderToday();
+}
 
 export function setEntry(t) {
   if (!isTime(t)) return;
@@ -340,7 +348,33 @@ export function editFromRecap(k) {
 
 let lastKey = todayKey();
 
+function notify(text, tag) {
+  if ('Notification' in window && Notification.permission === 'granted' && navigator.serviceWorker) {
+    navigator.serviceWorker.ready
+      .then((reg) => reg.showNotification('Work Manager', { body: text, icon: './icon-192.png', tag }))
+      .catch(() => toast(text));
+  } else {
+    toast(text);
+  }
+}
+
+/** Promemoria entrata: giorno feriale, nessuna entrata registrata, nessun permesso "entro dopo". */
+function maybeRemindEntry() {
+  if (!S.notif?.ent) return;
+  const k = todayKey();
+  const r = computeDay(k, S.dd[k], S.evs);
+  const at = toMin(APP_CONFIG.reminderEntryAt) ?? 8 * 60 + 30;
+  if (r.status !== 'waiting' || !r.working || nowMin() < at) return;
+  if (r.permit && r.permit.kind === 'entro') return;
+  try {
+    if (localStorage.getItem(REMINDER_ENT_KEY) === k) return;
+    localStorage.setItem(REMINDER_ENT_KEY, k);
+  } catch {}
+  notify('Non hai ancora registrato l’entrata', 'entrata');
+}
+
 function maybeRemind() {
+  maybeRemindEntry();
   if (!S.notif?.usc) return;
   const k = todayKey();
   const day = S.dd[k];
@@ -351,13 +385,25 @@ function maybeRemind() {
     if (localStorage.getItem(REMINDER_KEY) === k) return;
     localStorage.setItem(REMINDER_KEY, k);
   } catch {}
-  const text = 'Non hai ancora registrato l’uscita';
-  if ('Notification' in window && Notification.permission === 'granted' && navigator.serviceWorker) {
-    navigator.serviceWorker.ready
-      .then((reg) => reg.showNotification('Work Manager', { body: text, icon: './icon-192.png', tag: 'uscita' }))
-      .catch(() => toast(text));
-  } else {
-    toast(text);
+  notify('Non hai ancora registrato l’uscita', 'uscita');
+}
+
+/** Scorciatoie dall'icona dell'app: ?azione=entrata | uscita */
+export function handleShortcut() {
+  const params = new URLSearchParams(location.search);
+  const act = params.get('azione');
+  if (!act) return;
+  history.replaceState(null, '', location.pathname + location.hash);
+  const k = todayKey();
+  const day = S.dd[k];
+  const st = computeDay(k, day, S.evs).status;
+  if (act === 'entrata') {
+    if (isTime(day?.e)) toast(`Entrata già registrata alle ${toTime(roundUp(toMin(day.e)))}`);
+    else openTimePicker({ title: 'A che ora sei entrato?', value: nowTime(), ok: 'Registra entrata', onOk: setEntry });
+  } else if (act === 'uscita') {
+    if (st === 'running' || st === 'out') registerExit();
+    else if (st === 'done') showExitRecap();
+    else toast('Registra prima l’entrata');
   }
 }
 

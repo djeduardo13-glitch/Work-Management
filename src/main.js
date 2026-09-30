@@ -14,7 +14,7 @@ import { initDayEditor } from './features/hours/day-editor.js';
 import { initPermitPlanner } from './features/hours/permit-planner.js';
 import { applyRestoreLink } from './features/sync/restore-link.js';
 import { autoSyncPull, initSyncIndicator } from './features/sync/sync.js';
-import { startTodayTicker } from './features/today/today.js';
+import { handleShortcut, startTodayTicker } from './features/today/today.js';
 import { initActions, registerActions } from './lib/actions.js';
 import { fd } from './lib/dates.js';
 
@@ -41,6 +41,7 @@ async function boot() {
 
   startClock();
   startTodayTicker();
+  handleShortcut();
   renderWeather();
   setInterval(renderWeather, APP_CONFIG.weatherRefreshMs);
 

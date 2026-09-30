@@ -5,7 +5,7 @@ export const S = {
   evs: [],         // eventi / ferie / permessi
   trs: [],         // trasferte
   phone: '',
-  notif: { en: false, usc: false, chk: false },
+  notif: { en: false, usc: false, chk: false, ent: false },
   vault: null,     // credenziali CIFRATE { v, salt, iter, iv, ct }
   legacyCreds: [], // credenziali in chiaro della vecchia versione, in attesa di migrazione
   gistToken: '',

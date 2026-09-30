@@ -21,6 +21,7 @@ export function renderPNotif(){if(S.pTab!==2)return; document.getElementById('pC
     <span style="font-size:14px;font-weight:600;flex:1">Notifiche ${S.notif.en?'attive':'bloccate'}</span>
     ${!S.notif.en?'<button class="bc2" data-action="enNotif">Attiva</button>':''}
   </div>
+  <div class="togrow"><div class="toginfo"><div class="togtit">Promemoria entrata</div><div class="togdesc">Notifica alle 08:30 se non hai registrato l’entrata</div></div><label class="sw"><input type="checkbox" ${S.notif.ent?'checked':''} data-change="togN" data-args="ent" data-with="checked"><span class="sl"></span></label></div>
   <div class="togrow"><div class="toginfo"><div class="togtit">Promemoria uscita</div><div class="togdesc">Notifica alle 17:00</div></div><label class="sw"><input type="checkbox" ${S.notif.usc?'checked':''} data-change="togN" data-args="usc" data-with="checked"><span class="sl"></span></label></div>
   <div class="togrow"><div class="toginfo"><div class="togtit">Promemoria check-in volo</div><div class="togdesc">Notifica 24h prima della partenza</div></div><label class="sw"><input type="checkbox" ${S.notif.chk?'checked':''} data-change="togN" data-args="chk" data-with="checked"><span class="sl"></span></label></div>
 </div>

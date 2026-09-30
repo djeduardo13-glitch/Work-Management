@@ -113,3 +113,10 @@ export function initPermitPlanner() {
     if (e.target.matches('input')) updatePermitResult();
   });
 }
+
+/** Dalla scheda "Nuovo evento": passa a permesso/ferie sullo stesso giorno. */
+export function evToPermit() {
+  const k = $('evDat').value;
+  closeM('evm');
+  openPermitPlanner(k);
+}

@@ -1,10 +1,9 @@
 import { S } from '../../core/state.js';
 import { openDayEditor } from './day-editor.js';
-import { fmtH, isTime, keyToDate, monthSummary, pendingDays, roundDown, roundUp, toMin, toTime } from './engine.js';
+import { fmtH, keyToDate, monthSummary, pendingDays } from './engine.js';
 import { openPermitPlanner } from './permit-planner.js';
 import { confirmStandard } from '../today/today.js';
 import { v } from '../../lib/format.js';
-import { h } from '../../lib/html.js';
 import { icon } from '../../lib/icons.js';
 
 // Pagina Ore: straordinari del mese, settimane e giorni fuori standard.
@@ -13,10 +12,11 @@ const MONTHS = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'L
 const MSHORT = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic'];
 const DOW = ['DOM', 'LUN', 'MAR', 'MER', 'GIO', 'VEN', 'SAB'];
 
-let showAll = false;
 
 function pendingHtml() {
-  const list = pendingDays(S.dd, S.evs);
+  const now = new Date();
+  const prefix = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-`;
+  const list = pendingDays(S.dd, S.evs).filter((k) => k.startsWith(prefix)).slice(0, 3);
   if (!list.length) return '';
   const rows = list.map((k) => {
     const d = keyToDate(k);
@@ -42,21 +42,6 @@ function weekLabel(fromKey) {
     : `${a.getDate()} ${MSHORT[a.getMonth()]}–${b.getDate()} ${MSHORT[b.getMonth()]}`;
 }
 
-function dayRow(r) {
-  const d = keyToDate(r.key);
-  const day = S.dd[r.key] || {};
-  let det = '—';
-  if (r.ferie) det = 'Ferie';
-  else if (isTime(day.e) && isTime(day.u)) det = `${toTime(roundUp(toMin(day.e)))}–${toTime(roundDown(toMin(day.u)))}`;
-  else if (isTime(day.e)) det = 'in corso';
-  let badge = `<span class="badge std">${fmtH(r.worked)}</span>`;
-  if (r.status === 'todo') badge = '<span class="badge todo">da confermare</span>';
-  else if (r.ferie) badge = '<span class="badge ferie">ferie</span>';
-  else if (r.extra) badge = `<span class="badge">${fmtH(r.extra, true)}</span>`;
-  else if (r.permesso) badge = `<span class="badge perm">perm. ${fmtH(r.permesso)}</span>`;
-  else if (r.status === 'empty') badge = '<span class="badge std">—</span>';
-  return `<button type="button" class="drow2" data-action="openDayEditor" data-args="${r.key}"><div class="dn"><small>${DOW[d.getDay()]}</small><b>${d.getDate()}</b></div><div class="det">${det}</div>${badge}</button>`;
-}
 
 export function renderMonth() {
   const el = document.getElementById('oreBody');
@@ -69,9 +54,6 @@ export function renderMonth() {
   const weeks = s.weeks
     .map((w) => `<div class="wrow"><span>${weekLabel(w.from)}</span><div class="pbar"><div style="width:${Math.round((w.extra / maxW) * 100)}%"></div></div><b>${w.extra ? fmtH(w.extra, true) : '0h'}</b></div>`)
     .join('');
-  const list = s.days
-    .filter((r) => (showAll ? !(r.status === 'empty' && !r.working) || r.worked : !r.standard && r.status !== 'empty' && r.status !== 'waiting'))
-    .filter((r) => !(isCurrent && r.status === 'todo')); // quelli recenti sono già in alto
   el.innerHTML = `<div class="stack">
     <div class="mnav">
       <button type="button" class="iconbtn" data-action="oreMonth" data-args="-1" aria-label="Mese precedente">${icon('left')}</button>
@@ -89,10 +71,6 @@ export function renderMonth() {
     </section>
     ${weeks ? `<section class="ucard wrows" aria-label="Per settimana">${weeks}</section>` : ''}
     <button type="button" class="add-perm" data-action="openPermitPlanner">${icon('plus')}Permesso o ferie</button>
-    <section class="ucard dlist" aria-label="Giorni">
-      <div class="dlist-h"><span class="lbl">${showAll ? 'Tutti i giorni' : 'Giorni fuori standard'}</span><button type="button" data-action="oreToggleAll">${showAll ? 'Solo fuori standard' : `Mostra tutti (${s.standard} standard)`}</button></div>
-      ${list.length ? list.map(dayRow).join('') : '<div class="empty-note">Nessun giorno fuori standard</div>'}
-    </section>
   </div>`;
 }
 
@@ -105,8 +83,4 @@ export function oreMonth(delta) {
   renderMonth();
 }
 
-export function oreToggleAll() {
-  showAll = !showAll;
-  renderMonth();
-}
 

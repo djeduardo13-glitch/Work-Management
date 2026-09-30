@@ -214,7 +214,7 @@ export function monthSummary(year, month, dd, evs, now = new Date()) {
     if (k > todayKey) break;
     const r = computeDay(k, dd[k], evs, now);
     days.push(r);
-    worked += r.worked;
+    if (!r.live) worked += r.worked; // la giornata in corso entra nel totale quando la chiudi
     extra += r.extra;
     permesso += r.permesso;
     if (r.ferie) ferie++;

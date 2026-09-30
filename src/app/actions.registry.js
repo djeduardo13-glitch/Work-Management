@@ -1,24 +1,20 @@
-// Registro di tutte le azioni richiamabili da data-action / data-change nel markup.
-// Se aggiungi un bottone nuovo, esporta la funzione e aggiungila qui.
-
 import { closeM } from '../components/modal.js';
 import { goTab, openSyncSettings } from '../components/navigation.js';
 import { tpConfirm } from '../components/time-picker.js';
 import { changeVaultPassword, chkPIN, closePasM, copyCred, delCred, editCred, lockCreds, newCred, openCredUrl, saveCr, togSP } from '../features/credentials/credentials.js';
-import { delEv, openEvM, saveEv, updEF } from '../features/home/events.js';
+import { delEv, openEvM, saveEv } from '../features/home/events.js';
 import { delFerieOggi, openActiveTr } from '../features/home/where.js';
-import { addOut, clearDay, dePause, fillStandard, openDayEditor, rmOut, saveDay } from '../features/hours/day-editor.js';
-import { oreMonth, oreToggleAll } from '../features/hours/month.js';
+import { addOut, clearDay, dePause, fillStandard, openDayEditor, openTripFromDay, removeFerieDay, rmOut, saveDay } from '../features/hours/day-editor.js';
 import { delNote, openNoteEditor, saveNote } from '../features/hours/notes.js';
-import { openPermitPlanner, ppKind, savePermit } from '../features/hours/permit-planner.js';
-import { chCM, openTrFromPreview, showDD, showTrPreview } from '../features/profile/calendar.js';
+import { evToPermit, ppKind, savePermit } from '../features/hours/permit-planner.js';
+import { chCM, openTrFromPreview, showTrPreview } from '../features/profile/calendar.js';
 import { delDayHours, delFerieFromProfile, editDayHours, showMonthDetail } from '../features/profile/month-detail.js';
 import { swPTab } from '../features/profile/profile.js';
 import { exportBackup, importBackup } from '../features/settings/backup.js';
 import { editPhone, enNotif, savePh, togN } from '../features/settings/settings.js';
 import { copyRestoreLink } from '../features/sync/restore-link.js';
 import { gistPull, gistSync, saveGistId, saveGistToken } from '../features/sync/sync.js';
-import { comeBackAt, comeBackNow, confirmExit, confirmStandard, editEntry, editFromRecap, editOut, goOut, pickEntry, registerExit, setEntry, setPause, showExitRecap } from '../features/today/today.js';
+import { comeBackAt, comeBackNow, confirmExit, confirmStandard, editEntry, editFromRecap, editOut, goOut, pickEntry, registerExit, setEntry, setPause, showExitRecap, toggleToday } from '../features/today/today.js';
 import { addCLItem, togCL } from '../features/trips/checklist.js';
 import { addSpesaCur, archiviaT, closeTD, eliminaT, emailTr, openTrDet, ripristinaT, shareWA } from '../features/trips/detail.js';
 import { delSpesa, openAddSpesaFromPopup, openSpesePopup, quickAddSpesa, saveSpesa, spPhotoPicked, spPhotoRemove, spPhotoView } from '../features/trips/expenses.js';
@@ -26,25 +22,28 @@ import { addScaleLeg, closeNT, editTr, removeScaleLeg, saveNT, showNT, togAF, to
 import { swTTab } from '../features/trips/list.js';
 import { callTel, openMapsQuery } from '../lib/links.js';
 
+// Registro di tutte le azioni richiamabili da data-action / data-change nel markup.
+// Se aggiungi un bottone nuovo, esporta la funzione e aggiungila qui.
+
+
 export const actions = {
   closeM,
   goTab, openSyncSettings,
   tpConfirm,
   changeVaultPassword, chkPIN, closePasM, copyCred, delCred, editCred, lockCreds, newCred, openCredUrl, saveCr, togSP,
-  delEv, openEvM, saveEv, updEF,
+  delEv, openEvM, saveEv,
   delFerieOggi, openActiveTr,
-  addOut, clearDay, dePause, fillStandard, openDayEditor, rmOut, saveDay,
-  oreMonth, oreToggleAll,
+  addOut, clearDay, dePause, fillStandard, openDayEditor, openTripFromDay, removeFerieDay, rmOut, saveDay,
   delNote, openNoteEditor, saveNote,
-  openPermitPlanner, ppKind, savePermit,
-  chCM, openTrFromPreview, showDD, showTrPreview,
+  evToPermit, ppKind, savePermit,
+  chCM, openTrFromPreview, showTrPreview,
   delDayHours, delFerieFromProfile, editDayHours, showMonthDetail,
   swPTab,
   exportBackup, importBackup,
   editPhone, enNotif, savePh, togN,
   copyRestoreLink,
   gistPull, gistSync, saveGistId, saveGistToken,
-  comeBackAt, comeBackNow, confirmExit, confirmStandard, editEntry, editFromRecap, editOut, goOut, pickEntry, registerExit, setEntry, setPause, showExitRecap,
+  comeBackAt, comeBackNow, confirmExit, confirmStandard, editEntry, editFromRecap, editOut, goOut, pickEntry, registerExit, setEntry, setPause, showExitRecap, toggleToday,
   addCLItem, togCL,
   addSpesaCur, archiviaT, closeTD, eliminaT, emailTr, openTrDet, ripristinaT, shareWA,
   delSpesa, openAddSpesaFromPopup, openSpesePopup, quickAddSpesa, saveSpesa, spPhotoPicked, spPhotoRemove, spPhotoView,

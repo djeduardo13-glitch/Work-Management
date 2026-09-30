@@ -190,6 +190,7 @@
   <div class="modal sheet"><div class="mh"></div>
     <h2 id="deTitle">Giornata</h2>
     <div id="deKind" style="font-size:13px;color:var(--muted);margin:-8px 0 12px"></div>
+    <div id="deInfo" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px"></div>
     <button type="button" class="addlink" id="deStd" data-action="fillStandard" style="margin-bottom:14px">Standard 07:30–16:30</button>
     <div class="sgrid">
       <div><label class="fl" for="deE">Entrata</label><input id="deE" type="time" class="tin"></div>
@@ -290,19 +291,18 @@
   </div>
 </div>
 <div class="overlay" id="evm" data-backdrop="evm">
-  <div class="modal" style="position:relative"><div class="mh"></div><button class="mcl" data-action="closeM" data-args="evm"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button><div class="mt">Nuovo evento</div>
-  <div class="fg"><label class="fl">Tipo</label><select class="fs" id="evTipo" data-change="updEF"><option value="evento">Evento</option><option value="ferie">Ferie</option><option value="permesso">Permesso</option></select></div>
-  <div class="fg" id="evTG"><label class="fl">Titolo</label><input type="text" class="fi" id="evTit" placeholder="es. Riunione clienti"></div>
-  <div class="fg"><label class="fl">Data</label><input type="date" class="fi" id="evDat"></div>
-  <div class="fg" id="evOG"><label class="fl">Orario (opzionale)</label><input type="time" step="1800" class="fi" id="evOra"></div>
-  <div id="evPermG" style="display:none">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="fg"><label class="fl">Dalle</label><input type="time" step="1800" class="fi" id="evPOra1" value="07:30"></div>
-      <div class="fg"><label class="fl">Alle</label><input type="time" step="1800" class="fi" id="evPOra2" value="16:30"></div>
+  <div class="modal sheet"><div class="mh"></div>
+    <h2>Nuovo evento</h2>
+    <input type="hidden" id="evTipo" value="evento">
+    <div id="evTG"><label class="fl" for="evTit">Titolo</label><input type="text" class="fi" id="evTit" placeholder="es. Riunione clienti" maxlength="80"></div>
+    <div class="sgrid" style="margin-top:14px">
+      <div><label class="fl" for="evDat">Giorno</label><input type="date" class="fi" id="evDat"></div>
+      <div id="evOG"><label class="fl" for="evOra">Orario (facoltativo)</label><input type="time" class="fi" id="evOra"></div>
     </div>
-    <div style="font-size:12px;color:var(--t2);margin-bottom:8px;padding:0 2px" id="evPermCalc"></div>
+    <div id="evPermG" style="display:none"><input type="hidden" id="evPOra1" value="07:30"><input type="hidden" id="evPOra2" value="16:30"><div id="evPermCalc"></div></div>
+    <button type="button" class="addlink" style="margin-top:14px" data-action="evToPermit">Permesso o ferie →</button>
+    <div class="btnrow"><button type="button" class="b-ghost" data-action="closeM" data-args="evm">Annulla</button><button type="button" class="b-main" data-action="saveEv">Salva</button></div>
   </div>
-  <div class="mbr"><button class="bc" data-action="closeM" data-args="evm">Annulla</button><button class="bk" data-action="saveEv">Crea</button></div></div>
 </div>
 
 
@@ -346,12 +346,10 @@
 </div>
 
 <div class="overlay" id="mdm" data-backdrop="mdm">
-  <div class="modal" style="position:relative;max-height:70vh;display:flex;flex-direction:column">
-    <div class="mh"></div>
-    <button class="mcl" data-action="closeM" data-args="mdm"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    <div class="mt" id="mdTitle">Dettaglio</div>
-    <div style="flex:1;overflow-y:auto;margin:16px 0" id="mdContent"></div>
-    <button class="bc" style="width:100%" data-action="closeM" data-args="mdm">Chiudi</button>
+  <div class="modal sheet" style="max-height:80vh;display:flex;flex-direction:column"><div class="mh"></div>
+    <h2 id="mdTitle">Dettaglio</h2>
+    <div style="flex:1;overflow-y:auto" id="mdContent"></div>
+    <div class="btnrow"><button type="button" class="b-ghost" data-action="closeM" data-args="mdm">Chiudi</button></div>
   </div>
 </div>
 

@@ -7,6 +7,8 @@ const P = {
   edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/>',
   check: '<path d="M5 12l5 5 9-10"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
+  down: '<path d="M6 9l6 6 6-6"/>',
+  up: '<path d="M6 15l6-6 6 6"/>',
   left: '<path d="M15 6l-6 6 6 6"/>',
   right: '<path d="M9 6l6 6-6 6"/>',
   coffee: '<path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H17"/>',

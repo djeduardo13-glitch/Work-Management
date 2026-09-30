@@ -2,9 +2,12 @@ import { closeM, openM } from '../../components/modal.js';
 import { toast } from '../../components/toast.js';
 import { S } from '../../core/state.js';
 import { save } from '../../core/storage.js';
-import { computeDay, fmtH, isTime, isWorkingDay, keyToDate, makeDay, pauseOf, toMin } from './engine.js';
+import { renderEvs } from '../home/events.js';
+import { computeDay, fmtH, isTime, isWorkingDay, keyToDate, makeDay, pauseOf, planFor, toMin, toTime } from './engine.js';
 import { renderNotes } from './notes.js';
 import { refreshHours } from '../today/today.js';
+import { openTrDet } from '../trips/detail.js';
+import { cap } from '../../lib/format.js';
 import { h } from '../../lib/html.js';
 
 // Modifica di una giornata qualsiasi: entrata, uscita, pausa, uscite temporanee e note.
@@ -77,6 +80,13 @@ export function openDayEditor(k) {
   $('deTitle').textContent = `${DAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}`;
   const working = isWorkingDay(k);
   $('deKind').textContent = working ? '' : 'Tutte le ore contano come straordinario';
+  const plan = planFor(k, S.evs);
+  const trips = S.trs.filter((tr) => tr.d1 <= k && tr.d2 >= k);
+  $('deInfo').innerHTML = [
+    ...trips.map((tr) => `<button type="button" class="where-btn" style="justify-content:flex-start;padding:0 14px" data-action="openTripFromDay" data-args="${h(tr.id)}">✈ Trasferta ${h(cap(tr.ci))}, ${h(cap(tr.pa))}</button>`),
+    plan.ferie ? `<div class="res"><span>Giorno di ferie</span><button type="button" class="pill" data-action="removeFerieDay" data-args="${k}">Rimuovi</button></div>` : '',
+    plan.permit ? `<div class="res"><span>Permesso previsto ${toTime(plan.permit.a)}–${toTime(plan.permit.b)}</span></div>` : '',
+  ].join('');
   $('dePauseWrap').style.display = working ? '' : 'none';
   $('deStd').style.display = working ? '' : 'none';
   $('deE').value = isTime(day.e) ? day.e : '';
@@ -149,4 +159,19 @@ export function initDayEditor() {
   $('dem').addEventListener('input', (e) => {
     if (e.target.matches('input[type="time"]')) updateDayResult();
   });
+}
+
+export function openTripFromDay(id) {
+  closeM('dem');
+  openTrDet(id);
+}
+
+export function removeFerieDay(k) {
+  if (!confirm('Rimuovere le ferie di questo giorno?')) return;
+  S.evs = S.evs.filter((e) => !(e.dat === k && e.tipo === 'ferie'));
+  save();
+  renderEvs();
+  refreshHours();
+  openDayEditor(k);
+  toast('Ferie rimosse');
 }
