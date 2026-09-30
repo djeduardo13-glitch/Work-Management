@@ -75,8 +75,8 @@ export function showDD(k){
     return d>=d1&&d<=d2;
   });
   const trBanner=trDay?`<div style="background:#fed7aa;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer" data-action="showTrPreview" data-args="${attr(trDay.id)}">
-    <span style="font-size:12px;font-weight:700;color:#92400e">✈️ Trasferta ${h(cap(trDay.pa))} · ${fn(trDay.d1)}–${fn(trDay.d2)}</span>
-    <span style="font-size:11px;color:#92400e;opacity:.7">dettagli →</span>
+    <span style="font-size:11px;font-weight:700;color:#92400e">✈️ Trasferta ${h(cap(trDay.pa))} · ${fn(trDay.d1)}–${fn(trDay.d2)}</span>
+    <span style="font-size:10px;color:#92400e;opacity:.7">dettagli →</span>
   </div>`:'';
 
   S.selDay=k;
@@ -85,13 +85,13 @@ export function showDD(k){
   
   if(ferieDay){
     // Se è un giorno di ferie, mostra info ferie con pulsante cancella
-    html=`<div style="padding:12px 16px;font-weight:600;font-size:14px;border-bottom:1px solid var(--bor);background:var(--gl)">${h(D[d.getDay()])} ${d.getDate()} ${h(M[d.getMonth()])}${holName?` · <span style="color:var(--gr);font-size:12px">${holName}</span>`:''}</div>
+    html=`<div style="padding:12px 16px;font-weight:600;font-size:12px;border-bottom:1px solid var(--bor);background:var(--gl)">${h(D[d.getDay()])} ${d.getDate()} ${h(M[d.getMonth()])}${holName?` · <span style="color:var(--gr);font-size:11px">${holName}</span>`:''}</div>
     <div style="padding:12px 16px">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-        <div style="font-size:32px">🌴</div>
+        <div style="font-size:28px">🌴</div>
         <div>
-          <div style="font-weight:700;font-size:16px;color:var(--gr)">FERIE</div>
-          <div style="font-size:13px;color:var(--t2)">Conteggiato come 8h nei report</div>
+          <div style="font-weight:700;font-size:14px;color:var(--gr)">FERIE</div>
+          <div style="font-size:11px;color:var(--t2)">Conteggiato come 8h nei report</div>
         </div>
       </div>
       <button class="sbtn" style="background:var(--re);margin-top:8px" data-action="delFerieFromProfile" data-args="${attr(k)}">
@@ -101,13 +101,13 @@ export function showDD(k){
     </div>`;
   }else if(holName){
     // Festivo nazionale italiano
-    html=`<div style="padding:12px 16px;font-weight:600;font-size:14px;border-bottom:1px solid var(--bor);background:var(--gl)">${h(D[d.getDay()])} ${d.getDate()} ${h(M[d.getMonth()])}</div>
+    html=`<div style="padding:12px 16px;font-weight:600;font-size:12px;border-bottom:1px solid var(--bor);background:var(--gl)">${h(D[d.getDay()])} ${d.getDate()} ${h(M[d.getMonth()])}</div>
     <div style="padding:12px 16px">
       <div style="display:flex;align-items:center;gap:10px">
-        <div style="font-size:32px">🇮🇹</div>
+        <div style="font-size:28px">🇮🇹</div>
         <div>
-          <div style="font-weight:700;font-size:16px;color:var(--gr)">${holName.toUpperCase()}</div>
-          <div style="font-size:13px;color:var(--t2)">Festività nazionale</div>
+          <div style="font-weight:700;font-size:14px;color:var(--gr)">${holName.toUpperCase()}</div>
+          <div style="font-size:11px;color:var(--t2)">Festività nazionale</div>
         </div>
       </div>
     </div>`;
@@ -115,13 +115,13 @@ export function showDD(k){
     const tot=Math.max(0,t2m(dd.u)-t2m(dd.e)-Math.max(0,t2m(dd.pe||'13:00')-t2m(dd.ps||'12:00')));
     const notes=dd.notes||[];
     const notesHtml=notes.length?`<div style="margin-top:12px;border-top:1px solid var(--bor);padding-top:12px">
-      <div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:8px">📝 NOTE</div>
+      <div style="font-size:11px;font-weight:600;color:var(--t2);margin-bottom:8px">📝 NOTE</div>
       ${notes.map(n=>`<div style="background:var(--s2);border-radius:8px;padding:10px;margin-bottom:6px;border-left:3px solid #f59e0b">
-        <div style="font-size:13px;color:var(--t);white-space:pre-wrap">${h(n.txt)}</div>
-        ${n.ts?`<div style="font-size:11px;color:var(--t3);margin-top:4px">${h(n.ts)}</div>`:''}
+        <div style="font-size:11px;color:var(--t);white-space:pre-wrap">${h(n.txt)}</div>
+        ${n.ts?`<div style="font-size:10px;color:var(--t3);margin-top:4px">${h(n.ts)}</div>`:''}
       </div>`).join('')}
     </div>`:'';
-    html=`<div style="padding:12px 16px;font-weight:600;font-size:14px;border-bottom:1px solid var(--bor)">${h(D[d.getDay()])} ${d.getDate()} ${h(M[d.getMonth()])}${holName?` <span style="color:var(--gr);font-size:11px;font-weight:500">· ${holName}</span>`:''}</div>
+    html=`<div style="padding:12px 16px;font-weight:600;font-size:12px;border-bottom:1px solid var(--bor)">${h(D[d.getDay()])} ${d.getDate()} ${h(M[d.getMonth()])}${holName?` <span style="color:var(--gr);font-size:10px;font-weight:500">· ${holName}</span>`:''}</div>
     <div style="padding:12px 16px">
       <div class="drow"><span class="dk">Entrata</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(dd.e)}</span></div>
       <div class="drow"><span class="dk">Uscita</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(dd.u)}</span></div>
@@ -141,14 +141,14 @@ export function showDD(k){
   }else{
     const notes=(dd&&dd.notes)||[];
     const notesHtml=notes.length?`<div style="margin-top:8px">
-      <div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:8px">📝 NOTE</div>
+      <div style="font-size:11px;font-weight:600;color:var(--t2);margin-bottom:8px">📝 NOTE</div>
       ${notes.map(n=>`<div style="background:var(--s2);border-radius:8px;padding:10px;margin-bottom:6px;border-left:3px solid #f59e0b">
-        <div style="font-size:13px;color:var(--t);white-space:pre-wrap">${h(n.txt)}</div>
-        ${n.ts?`<div style="font-size:11px;color:var(--t3);margin-top:4px">${h(n.ts)}</div>`:''}
+        <div style="font-size:11px;color:var(--t);white-space:pre-wrap">${h(n.txt)}</div>
+        ${n.ts?`<div style="font-size:10px;color:var(--t3);margin-top:4px">${h(n.ts)}</div>`:''}
       </div>`).join('')}
     </div>`:'';
-    html=`<div style="padding:12px 16px;font-weight:600;border-bottom:1px solid var(--bor)">${h(D[d.getDay()])} ${d.getDate()} ${h(M[d.getMonth()])}${holName?` <span style="color:var(--gr);font-size:11px;font-weight:500">· ${holName}</span>`:''}</div>
-    <div style="padding:12px 16px">${notes.length?notesHtml:`<div style="text-align:center;color:var(--t3);font-size:13px">Nessun dato registrato per questo giorno</div>`}</div>`;
+    html=`<div style="padding:12px 16px;font-weight:600;border-bottom:1px solid var(--bor)">${h(D[d.getDay()])} ${d.getDate()} ${h(M[d.getMonth()])}${holName?` <span style="color:var(--gr);font-size:10px;font-weight:500">· ${holName}</span>`:''}</div>
+    <div style="padding:12px 16px">${notes.length?notesHtml:`<div style="text-align:center;color:var(--t3);font-size:11px">Nessun dato registrato per questo giorno</div>`}</div>`;
   }
   
   renderPOre(); // Re-render calendario per aggiornare selezione (DOPO aver costruito html)
@@ -168,8 +168,8 @@ export function showTrPreview(tid){
   document.getElementById('mdContent').innerHTML=`
     <div style="display:flex;flex-direction:column;gap:10px">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-size:13px;color:var(--t2)">🗓 ${fds(t.d1)} → ${fds(t.d2)}</span>
-        <span style="font-size:12px;color:var(--t2);font-weight:600">${stato}</span>
+        <span style="font-size:11px;color:var(--t2)">🗓 ${fds(t.d1)} → ${fds(t.d2)}</span>
+        <span style="font-size:11px;color:var(--t2);font-weight:600">${stato}</span>
       </div>
       ${t.cl?`<div class="drow"><span class="dk">🏢 Cliente</span><span class="dv">${h(t.cl)}</span></div>`:''}
       ${t.ho?`<div class="drow"><span class="dk">🏨 Hotel</span><span class="dv">${h(t.ho)}</span></div>`:''}

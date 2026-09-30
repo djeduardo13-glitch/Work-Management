@@ -147,7 +147,7 @@
       <div class="fg" style="margin-bottom:8px"><label class="fl">N° Volo</label><input type="text" class="fi" id="nt-an" placeholder="FR1234"></div>
       <div style="display:flex;align-items:center;gap:8px;padding:4px 0 8px">
         <input type="checkbox" id="nt-ascale" data-change="togScale" data-args="a" style="width:18px;height:18px;cursor:pointer">
-        <label for="nt-ascale" style="font-size:13px;color:var(--t2);cursor:pointer">Volo con scalo (andata)</label>
+        <label for="nt-ascale" style="font-size:11px;color:var(--t2);cursor:pointer">Volo con scalo (andata)</label>
       </div>
       <div id="nt-ascaleBox" style="display:none"></div>
     </div>
@@ -162,7 +162,7 @@
       <div class="fg" style="margin-bottom:8px"><label class="fl">N° Volo</label><input type="text" class="fi" id="nt-rn" placeholder="FR5678"></div>
       <div style="display:flex;align-items:center;gap:8px;padding:4px 0 8px">
         <input type="checkbox" id="nt-rscale" data-change="togScale" data-args="r" style="width:18px;height:18px;cursor:pointer">
-        <label for="nt-rscale" style="font-size:13px;color:var(--t2);cursor:pointer">Volo con scalo (ritorno)</label>
+        <label for="nt-rscale" style="font-size:11px;color:var(--t2);cursor:pointer">Volo con scalo (ritorno)</label>
       </div>
       <div id="nt-rscaleBox" style="display:none"></div>
     </div>
@@ -189,7 +189,7 @@
 <div class="overlay" id="dem" data-backdrop="dem">
   <div class="modal sheet"><div class="mh"></div>
     <h2 id="deTitle">Giornata</h2>
-    <div id="deKind" style="font-size:13px;color:var(--muted);margin:-8px 0 12px"></div>
+    <div id="deKind" style="font-size:11px;color:var(--muted);margin:-8px 0 12px"></div>
     <div id="deInfo" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px"></div>
     <button type="button" class="addlink" id="deStd" data-action="fillStandard" style="margin-bottom:14px">Standard 07:30–16:30</button>
     <div class="sgrid">
@@ -229,7 +229,7 @@
 <div class="overlay" id="tpm" data-backdrop="tpm">
   <div class="modal sheet"><div class="mh"></div>
     <h2 id="tpTitle">Orario</h2>
-    <input id="tpIn" type="time" class="tin" style="height:72px;font-size:34px">
+    <input id="tpIn" type="time" class="tin" style="height:72px;font-size:30px">
     <div class="btnrow"><button type="button" class="b-ghost" data-action="closeM" data-args="tpm">Annulla</button><button type="button" class="b-main" id="tpOk" data-action="tpConfirm">Conferma</button></div>
   </div>
 </div>
@@ -250,7 +250,7 @@
   <div class="modal" style="position:relative;max-height:80vh;display:flex;flex-direction:column"><div class="mh"></div>
     <button class="mcl" data-action="closeM" data-args="spesepop"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <div class="mt">Note spese</div>
-    <div style="font-size:13px;font-weight:600;color:var(--blue);margin-bottom:12px" id="spesepopTot"></div>
+    <div style="font-size:11px;font-weight:600;color:var(--blue);margin-bottom:12px" id="spesepopTot"></div>
     <div id="spesepopList" style="overflow-y:auto;flex:1;margin:0 -4px"></div>
     <div class="mbr" style="margin-top:12px">
       <button class="bk" data-action="openAddSpesaFromPopup"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Aggiungi spesa</button>
@@ -268,7 +268,7 @@
     <div class="fg"><label class="fl">Dettagli</label><input type="text" class="fi" id="sp-det" placeholder="es. Pranzo"></div>
     <div style="display:flex;align-items:center;gap:8px;padding:4px 0 10px" id="sp-x2row" style="display:none">
       <input type="checkbox" id="sp-x2" style="width:18px;height:18px;cursor:pointer">
-      <label for="sp-x2" style="font-size:13px;color:var(--t2);cursor:pointer">x2 (pagato per due persone)</label>
+      <label for="sp-x2" style="font-size:11px;color:var(--t2);cursor:pointer">x2 (pagato per due persone)</label>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <div class="fg"><label class="fl">Valuta</label><select class="fs" id="sp-val"><option value="EURO">Euro</option><option value="Sterline">Sterline</option><option value="Dollari">Dollari</option><option value="Altro">Altro</option></select></div>
@@ -309,7 +309,7 @@
 
 <div class="overlay" id="edm" data-backdrop="edm">
   <div class="modal" style="position:relative"><div class="mh"></div>
-  <div style="display:flex;align-items:flex-start;margin-bottom:16px"><div style="flex:1"><div class="mt" style="margin-bottom:4px" id="edTitle">Evento</div><div style="color:var(--t2);font-size:13px" id="edSub"></div></div><div style="display:flex;gap:8px;margin-top:2px"><div class="ibtn d" data-action="delEv"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></div></div></div>
+  <div style="display:flex;align-items:flex-start;margin-bottom:16px"><div style="flex:1"><div class="mt" style="margin-bottom:4px" id="edTitle">Evento</div><div style="color:var(--t2);font-size:11px" id="edSub"></div></div><div style="display:flex;gap:8px;margin-top:2px"><div class="ibtn d" data-action="delEv"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></div></div></div>
   <button class="bc" style="width:100%" data-action="closeM" data-args="edm">Chiudi</button></div>
 </div>
 
@@ -317,14 +317,14 @@
   <div class="modal"><div class="mh"></div><button class="mcl" data-action="closePasM"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   <div class="passlock">
     <div class="lic"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
-    <div id="pasTitle" style="font-size:18px;font-weight:700;font-family:var(--font-serif);margin-bottom:6px;text-align:center">Sezione protetta</div>
-    <div id="pasDesc" style="font-size:13px;color:var(--t2);margin-bottom:20px;text-align:center;max-width:320px;margin-left:auto;margin-right:auto">Inserisci la password principale</div>
+    <div id="pasTitle" style="font-size:16px;font-weight:700;font-family:var(--font-serif);margin-bottom:6px;text-align:center">Sezione protetta</div>
+    <div id="pasDesc" style="font-size:11px;color:var(--t2);margin-bottom:20px;text-align:center;max-width:320px;margin-left:auto;margin-right:auto">Inserisci la password principale</div>
     <div class="fg" style="max-width:280px;width:100%;margin:0 auto 16px">
-      <input type="password" class="fi" id="pinInput" placeholder="Password" style="font-size:18px;text-align:center;padding:14px" autocomplete="current-password" autocapitalize="off" spellcheck="false">
-      <input type="password" class="fi" id="pinInput2" placeholder="Ripeti password" style="font-size:18px;text-align:center;padding:14px;margin-top:10px;display:none" autocomplete="new-password" autocapitalize="off" spellcheck="false">
+      <input type="password" class="fi" id="pinInput" placeholder="Password" style="font-size:16px;text-align:center;padding:14px" autocomplete="current-password" autocapitalize="off" spellcheck="false">
+      <input type="password" class="fi" id="pinInput2" placeholder="Ripeti password" style="font-size:16px;text-align:center;padding:14px;margin-top:10px;display:none" autocomplete="new-password" autocapitalize="off" spellcheck="false">
     </div>
     <button class="sbtn" id="pasBtn" data-action="chkPIN" style="max-width:280px;margin:0 auto">Sblocca</button>
-    <div id="pErr" style="color:var(--re);font-size:13px;font-weight:600;height:20px;text-align:center;margin-top:12px"></div>
+    <div id="pErr" style="color:var(--re);font-size:11px;font-weight:600;height:20px;text-align:center;margin-top:12px"></div>
   </div></div>
 </div>
 

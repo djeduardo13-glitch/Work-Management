@@ -11,15 +11,15 @@ export function renderNotes(){
   const el=document.getElementById('notesList');
   if(!el)return;
   if(!notes.length){
-    el.innerHTML='<div style="color:var(--t3);font-size:13px;text-align:center;padding:12px 0">Nessuna nota per questo giorno</div>';
+    el.innerHTML='<div style="color:var(--t3);font-size:11px;text-align:center;padding:12px 0">Nessuna nota per questo giorno</div>';
     return;
   }
   el.innerHTML=notes.map((n,i)=>`
     <div style="background:var(--s2);border-radius:10px;padding:12px;margin-bottom:8px;border:1px solid var(--bor)">
-      <div style="font-size:13px;color:var(--t);white-space:pre-wrap;margin-bottom:8px">${h(n.txt)}</div>
+      <div style="font-size:11px;color:var(--t);white-space:pre-wrap;margin-bottom:8px">${h(n.txt)}</div>
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-size:11px;color:var(--t3)">${h(n.ts||'')}</span>
-        <button data-action="openNoteEditor" data-args="${attr(i)}" style="background:none;border:none;color:var(--blue);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-sans)">Modifica</button>
+        <span style="font-size:10px;color:var(--t3)">${h(n.ts||'')}</span>
+        <button data-action="openNoteEditor" data-args="${attr(i)}" style="background:none;border:none;color:var(--blue);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-sans)">Modifica</button>
       </div>
     </div>
   `).join('');

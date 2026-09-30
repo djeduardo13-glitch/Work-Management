@@ -138,7 +138,7 @@ function outCard(r, day) {
   return `<section class="today permit" aria-label="Fuori per permesso">
     <div class="today-top"><span class="chip"><i style="background:var(--acc)"></i>FUORI · PERMESSO</span><button type="button" class="editlink" data-action="editOut">Uscito alle ${h(toTime(roundDown(toMin(last.a))))} ${icon('edit')}</button></div>
     <div class="big"><b>${fmtHM(r.worked)}</b><span>lavorate oggi</span></div>
-    <div class="today-q" style="font-size:20px">A che ora rientri?</div>
+    <div class="today-q" style="font-size:18px">A che ora rientri?</div>
     <div class="row">
       <button type="button" class="cta warn" data-action="comeBackNow">Rientro adesso</button>
       <button type="button" class="ghost" style="height:56px" data-action="comeBackAt">Scegli orario</button>

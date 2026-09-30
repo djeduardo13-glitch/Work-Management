@@ -49,7 +49,7 @@ export function renderEvs(){
       const d=new Date(it.k+'T00:00:00');
       const diff=Math.round((d-now)/864e5);
       const when=diff===0?'<span class="badge">oggi</span>':diff===1?'<span class="badge std">domani</span>':'';
-      return `<button type="button" class="drow2" data-action="${it.action}" data-args="${attr(it.id)}"><div class="dn"><small>${EV_DOW[d.getDay()]}</small><b>${d.getDate()}</b></div><div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:600">${h(it.tit)}</div><div style="font-size:12px;color:var(--muted)">${h(it.sub)}</div></div>${when}</button>`;
+      return `<button type="button" class="drow2" data-action="${it.action}" data-args="${attr(it.id)}"><div class="dn"><small>${EV_DOW[d.getDay()]}</small><b>${d.getDate()}</b></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">${h(it.tit)}</div><div style="font-size:11px;color:var(--muted)">${h(it.sub)}</div></div>${when}</button>`;
     }).join('');
   }
   const cnt=document.getElementById('evCnt'); if(cnt) cnt.textContent=items.length;

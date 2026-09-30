@@ -100,7 +100,7 @@ function credCard(c) {
   const id = attr(c.id);
   const link = c.url && safeUrl(c.url) !== '#' ? `<button type="button" class="cr-link" data-action="openCredUrl" data-args="${id}">↗ Apri sito</button>` : '';
   const note = c.note ? `<div class="cr-note">${h(c.note)}</div>` : '';
-  return `<div class="credcard"><div class="credhdr"><span style="font-weight:700;font-size:15px">${h(c.n)}</span><div style="display:flex;gap:6px"><span class="catbadge ${cm[c.cat] || 'co'}">${h(c.cat)}</span><button class="ca2" data-action="editCred" data-args="${id}" style="padding:4px 8px" aria-label="Modifica">✏️</button><button class="ca2" data-action="delCred" data-args="${id}" style="padding:4px 8px;border-color:var(--re);color:var(--re)" aria-label="Elimina">🗑️</button></div></div><div class="cff"><div class="cfl">USERNAME</div><div class="cfr"><span class="cfv">${h(c.u)}</span><button class="ca2" data-action="copyCred" data-args="${id}|u">Copia</button></div></div><div class="cff"><div class="cfl">PASSWORD</div><div class="cfr"><span class="cfv">${c.sp ? h(c.p) : '••••••••'}</span><button class="ca2" data-action="togSP" data-args="${id}">${c.sp ? 'Nascondi' : 'Mostra'}</button><button class="ca2" data-action="copyCred" data-args="${id}|p">Copia</button></div></div>${link}${note}</div>`;
+  return `<div class="credcard"><div class="credhdr"><span style="font-weight:700;font-size:13px">${h(c.n)}</span><div style="display:flex;gap:6px"><span class="catbadge ${cm[c.cat] || 'co'}">${h(c.cat)}</span><button class="ca2" data-action="editCred" data-args="${id}" style="padding:4px 8px" aria-label="Modifica">✏️</button><button class="ca2" data-action="delCred" data-args="${id}" style="padding:4px 8px;border-color:var(--re);color:var(--re)" aria-label="Elimina">🗑️</button></div></div><div class="cff"><div class="cfl">USERNAME</div><div class="cfr"><span class="cfv">${h(c.u)}</span><button class="ca2" data-action="copyCred" data-args="${id}|u">Copia</button></div></div><div class="cff"><div class="cfl">PASSWORD</div><div class="cfr"><span class="cfv">${c.sp ? h(c.p) : '••••••••'}</span><button class="ca2" data-action="togSP" data-args="${id}">${c.sp ? 'Nascondi' : 'Mostra'}</button><button class="ca2" data-action="copyCred" data-args="${id}|p">Copia</button></div></div>${link}${note}</div>`;
 }
 
 function credList() {
@@ -118,7 +118,7 @@ export function renderCreds() {
   <div id="crList">${credList()}</div>
   <div class="exprow"><button class="xbtn btn-pdf" data-action="newCred"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nuova</button><button class="xbtn btn-em" data-action="lockCreds"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Blocca</button></div>
   <div style="text-align:center;margin:4px 16px 0"><button class="bc2" data-action="changeVaultPassword">🔑 Cambia password principale</button></div>
-  <div style="font-size:11px;color:var(--t3);text-align:center;margin:10px 24px 0">Cifrate con AES-256 · si bloccano da sole dopo 5 minuti o quando esci dall'app</div>
+  <div style="font-size:10px;color:var(--t3);text-align:center;margin:10px 24px 0">Cifrate con AES-256 · si bloccano da sole dopo 5 minuti o quando esci dall'app</div>
   <div style="height:80px"></div>`;
   document.getElementById('crQ').addEventListener('input', (e) => {
     query = e.target.value;

@@ -37,7 +37,7 @@ export function chkWhere(){
       ${a.ho?btn('openMap','h','Hotel','nav'):''}
       ${a.ct?btn('callContact','','Chiama','phone'):''}
     </div>
-    <button type="button" class="cta" style="height:48px;font-size:15px" data-action="quickAddSpesa">${icon('plus')}Aggiungi spesa</button>`;
+    <button type="button" class="cta" style="height:48px;font-size:13px" data-action="quickAddSpesa">${icon('plus')}Aggiungi spesa</button>`;
   w.style.display='';
 }
 

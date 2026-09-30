@@ -140,9 +140,9 @@ export function addScaleLeg(dir){
   const div=document.createElement('div');
   div.style.cssText='border-top:1px solid var(--bor);margin-top:8px;padding-top:8px;position:relative';
   div.innerHTML=`
-    <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+    <div style="font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
       Scalo ${idx+1}
-      <button data-action="removeScaleLeg" data-with="el" style="background:var(--re);color:#fff;border:none;border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer">✕ Rimuovi</button>
+      <button data-action="removeScaleLeg" data-with="el" style="background:var(--re);color:#fff;border:none;border-radius:6px;padding:2px 8px;font-size:10px;cursor:pointer">✕ Rimuovi</button>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <div class="fg"><label class="fl">Da</label><input type="text" class="fi sc-a1" placeholder="FCO"></div>
@@ -151,7 +151,7 @@ export function addScaleLeg(dir){
       <div class="fg"><label class="fl">Arrivo</label><input type="time" step="1800" class="fi sc-a4"></div>
     </div>
     <div class="fg" style="margin-bottom:4px"><label class="fl">N° Volo</label><input type="text" class="fi sc-an" placeholder="AZ123"></div>
-    <button data-action="addScaleLeg" data-args="${attr(dir)}" style="background:none;border:none;color:var(--blue);font-size:13px;cursor:pointer;padding:4px 0;font-family:var(--font-sans)">+ Aggiungi altro scalo</button>
+    <button data-action="addScaleLeg" data-args="${attr(dir)}" style="background:none;border:none;color:var(--blue);font-size:11px;cursor:pointer;padding:4px 0;font-family:var(--font-sans)">+ Aggiungi altro scalo</button>
   `;
   div.setAttribute('data-leg',idx);
   box.appendChild(div);

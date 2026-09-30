@@ -17,7 +17,7 @@ export function speseTotal(t){
 
 export function buildSpeseRows(t){
   var sp=t.spese||[];
-  if(!sp.length) return '<div style="font-size:13px;color:var(--t3);padding:12px 0;text-align:center">Nessuna spesa registrata</div>';
+  if(!sp.length) return '<div style="font-size:11px;color:var(--t3);padding:12px 0;text-align:center">Nessuna spesa registrata</div>';
   var html='';
   for(var i=0;i<sp.length;i++){
     var s=sp[i];
@@ -29,7 +29,7 @@ export function buildSpeseRows(t){
     html+='<div class="drow spesa-row" data-tid="'+h(t.id)+'" data-idx="'+i+'" style="cursor:pointer">'
       +'<span class="dk"><span style="font-weight:500">'+h(s.cat)+'</span>'+badge+(s.foto?' <span aria-label="con foto">📷</span>':'')+'</span>'
       +'<span class="dv" style="text-align:right"><span style="font-weight:500">'+h(imp)+'</span><br>'
-      +'<span style="font-size:11px;color:var(--t3)">'+h(det)+' · '+h(d)+(s.ora?' '+h(s.ora):'')+'</span></span></div>';
+      +'<span style="font-size:10px;color:var(--t3)">'+h(det)+' · '+h(d)+(s.ora?' '+h(s.ora):'')+'</span></span></div>';
   }
   return html;
 }
