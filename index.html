@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://gist.githubusercontent.com https://api.open-meteo.com https://geocoding-api.open-meteo.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://gist.githubusercontent.com https://api.open-meteo.com https://geocoding-api.open-meteo.com https://api.bigdatacloud.net; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'">
 <meta name="referrer" content="no-referrer">
 <title>Work Manager – STEM</title>
 <meta name="theme-color" content="#1e3a5f" id="themeColor">
@@ -15,7 +15,7 @@
 <link rel="icon" type="image/png" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -24,21 +24,21 @@
 
 <!-- HOME -->
 <div id="hscr" class="scr on">
-  <div class="hdr">
+  <div class="hdr home-hdr">
     <div>
-      <div style="font-size:13px;color:var(--t2);font-weight:500;margin-bottom:2px" id="hdrD">Lunedì 17 Febbraio</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:700;line-height:1" id="hdrT">00:00</div>
+      <div class="eyebrow" id="hdrD"></div>
+      <h1 class="greet" id="hdrG">Buongiorno</h1>
     </div>
-    <div class="av" data-user-initials>ER</div>
+    <div class="hdr-actions">
+      <button type="button" class="iconbtn syncbtn" data-sync-indicator data-action="openSyncSettings" aria-label="Sincronizzazione"></button>
+      <div class="av" data-user-initials>ER</div>
+    </div>
   </div>
   <div class="sc">
-    <div class="wcard">
-      <div>
-        <div style="font-size:12px;opacity:.85;margin-bottom:4px;font-weight:500">📍 Medesano (PR)</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:700;line-height:1" id="wt">8°</div>
-        <div style="font-size:13px;opacity:.9;margin-top:4px" id="wc">Sereno · ↑ Percepita 5°</div>
-      </div>
-      <div style="font-size:52px" id="wi">☀️</div>
+    <div class="stack">
+      <section class="card wx" id="wxCard" aria-label="Meteo"><div class="wx-d" style="padding:6px 2px">Caricamento meteo…</div></section>
+      <div id="todayCard"></div>
+      <div id="pendingBox"></div>
     </div>
     <div id="wwid" style="display:none">
       <div class="wherecard" style="cursor:pointer" data-action="openActiveTr">
@@ -59,19 +59,6 @@
         <div style="font-size:11px;opacity:.6;margin-top:8px;text-align:right">Tocca per i dettagli →</div>
       </div>
     </div>
-    <div id="fwid" style="display:none">
-      <div class="wherecard" style="background:var(--gr)">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <div>
-            <div style="font-size:11px;opacity:.85;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">OGGI</div>
-            <div style="font-size:24px;font-weight:800;font-family:var(--font-serif)">SEI IN FERIE</div>
-          </div>
-          <div style="font-size:48px">🌴</div>
-        </div>
-        <div style="font-size:13px;opacity:.95;margin-bottom:12px">Questo giorno è conteggiato come ferie nei tuoi report</div>
-        <span class="mapbtn" style="background:rgba(255,255,255,.25);border-color:rgba(255,255,255,.4)" data-action="delFerieOggi">✕ Rimuovi ferie</span>
-      </div>
-    </div>
     <div class="shdr">
       <div style="display:flex;align-items:center;gap:8px">
         <span style="font-family:var(--font-serif);font-size:15px;font-weight:700">Prossimi 7 giorni</span>
@@ -80,83 +67,18 @@
       <button class="btn-p" data-action="openEvM"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Evento</button>
     </div>
     <div id="evBox"></div>
-    <div class="div" style="margin-top:4px"></div>
-    <div style="padding:8px 16px 10px;font-family:var(--font-serif);font-size:15px;font-weight:700">AZIONI RAPIDE</div>
-    <div class="qbtn" data-action="goTab" data-args="ore"><div class="qic b"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="qt"><strong>La mia giornata</strong><span>Registra ore e visualizza riepilogo</span></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg></div>
-    <div class="qbtn" data-action="goTab" data-args="trasferte"><div class="qic o"><svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg></div><div class="qt"><strong>Trasferte</strong><span>Gestisci viaggi di lavoro</span></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg></div>
-    <div class="qbtn" data-action="goTab" data-args="profilo"><div class="qic p"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="qt"><strong>Profilo</strong><span>Calendario ore e credenziali</span></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg></div>
-    <div style="height:80px"></div>
+    <div class="stack"><div id="weekBox"></div></div>
+    <div style="height:24px"></div>
   </div>
 </div>
 
 <!-- ORE -->
 <div id="oscr" class="scr">
-  <div class="hdr" style="padding-bottom:6px"><div><div style="font-size:18px;font-weight:800;font-family:var(--font-serif)">La mia giornata</div><div style="font-size:13px;color:var(--t2)">Registra e visualizza le tue ore</div></div><div class="av" data-user-initials>ER</div></div>
-  <div class="sc">
-    <div class="daynav">
-      <div class="dnbtn" data-action="chDay" data-args="-1"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
-      <div style="flex:1;text-align:center">
-        <div style="font-size:15px;font-weight:700;font-family:var(--font-serif)" id="cdl">Lunedì 17 Febbraio</div>
-        <button id="todayBadge" style="font-size:11px;font-weight:600;background:var(--bl);color:var(--blue);border:none;border-radius:12px;padding:4px 10px;cursor:pointer;margin-top:4px" data-action="goToday">Oggi</button>
-      </div>
-      <div class="dnbtn" data-action="chDay" data-args="1"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
-    </div>
-    <div class="tblock">
-      <div class="tbl">Orari di lavoro</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-        <div>
-          <label style="font-size:11px;color:var(--t2);font-weight:600;display:block;margin-bottom:6px">ENTRATA</label>
-          <input type="time" step="1800" class="fi" id="entInput" value="07:30" style="font-size:18px;font-family:'JetBrains Mono',monospace;text-align:center;padding:10px">
-        </div>
-        <div>
-          <label style="font-size:11px;color:var(--t2);font-weight:600;display:block;margin-bottom:6px">USCITA</label>
-          <input type="time" step="1800" class="fi" id="uscInput" value="16:30" style="font-size:18px;font-family:'JetBrains Mono',monospace;text-align:center;padding:10px">
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div>
-          <label style="font-size:11px;color:var(--t2);font-weight:600;display:block;margin-bottom:6px">INIZIO PAUSA</label>
-          <input type="time" step="1800" class="fi" id="psInput" value="12:30" style="font-size:16px;font-family:'JetBrains Mono',monospace;text-align:center;padding:10px">
-        </div>
-        <div>
-          <label style="font-size:11px;color:var(--t2);font-weight:600;display:block;margin-bottom:6px">FINE PAUSA</label>
-          <input type="time" step="1800" class="fi" id="peInput" value="13:30" style="font-size:16px;font-family:'JetBrains Mono',monospace;text-align:center;padding:10px">
-        </div>
-      </div>
-      <div id="oreBtnContainer" style="margin-top:16px">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-          <button class="sbtn" id="editOreBtn" data-action="enableEditMode" style="background:var(--s2);color:var(--t);border:1px solid var(--bor);display:none;margin:0">
-            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            Modifica
-          </button>
-          <button class="sbtn" id="copyPrevBtn" data-action="copyPrevDay" style="background:var(--s2);color:var(--t);border:1px solid var(--bor);display:none;margin:0">
-            <svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
-            Copia ieri
-          </button>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <button class="sbtn" id="delOreBtn" data-action="delCurrentDayHours" style="background:var(--re);display:none;margin:0">
-            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-            Elimina
-          </button>
-          <button class="sbtn" id="saveOreBtn" data-action="saveAllOre" style="display:none;margin:0">
-            <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
-            Salva orari
-          </button>
-        </div>
-      </div>
-    </div>
-    <div class="hsum"><div class="hrow"><div class="hi"><div class="hv" id="hNorm">—</div><div class="hl">Normali</div></div><div class="hi"><div class="hv x" id="hStra">—</div><div class="hl">Straordinari</div></div><div class="hi"><div class="hv" id="hTot">—</div><div class="hl">Totale</div></div></div></div>
-    <div class="scard"><div class="stit"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Riepilogo Straordinari</div><div class="srow"><div class="si" data-action="showStraDetail" data-args="settimana" style="cursor:pointer;transition:.15s"><div class="sil">SETTIMANA ›</div><div class="siv" id="sSett">+0h</div></div><div class="si" data-action="showStraDetail" data-args="mese" style="cursor:pointer;transition:.15s"><div class="sil">MESE ›</div><div class="siv" id="sMese">+0h</div></div></div><button class="emabtn" data-action="emailReport"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 8.5 6L19 7"/></svg>Invia riepilogo via email</button></div>
-    <div class="ncard">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <div style="font-size:13px;font-weight:600">📝 Note del giorno</div>
-        <button data-action="openNoteEditor" style="background:var(--blue);color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-sans)">+ Aggiungi</button>
-      </div>
-      <div id="notesList"></div>
-    </div>
-    <div style="height:40px"></div>
+  <div class="hdr home-hdr">
+    <h1 class="ptitle">Ore</h1>
+    <button type="button" class="iconbtn syncbtn" data-sync-indicator data-action="openSyncSettings" aria-label="Sincronizzazione"></button>
   </div>
+  <div class="sc" id="oreBody"></div>
 </div>
 
 <!-- TRASFERTE -->
@@ -276,6 +198,63 @@
 </div>
 
 <!-- MODALS -->
+<!-- RIEPILOGO USCITA -->
+<div class="overlay" id="urm" data-backdrop="urm">
+  <div class="modal sheet"><div class="mh"></div>
+    <h2>Uscita registrata</h2>
+    <div id="urBody"></div>
+    <div class="btnrow"><button type="button" class="b-ghost" id="urEdit" data-action="editFromRecap">Modifica</button><button type="button" class="b-main" data-action="closeM" data-args="urm">Fatto</button></div>
+  </div>
+</div>
+
+<!-- MODIFICA GIORNATA -->
+<div class="overlay" id="dem" data-backdrop="dem">
+  <div class="modal sheet"><div class="mh"></div>
+    <h2 id="deTitle">Giornata</h2>
+    <div id="deKind" style="font-size:13px;color:var(--muted);margin:-8px 0 12px"></div>
+    <button type="button" class="addlink" id="deStd" data-action="fillStandard" style="margin-bottom:14px">Standard 07:30–16:30</button>
+    <div class="sgrid">
+      <div><label class="fl" for="deE">Entrata</label><input id="deE" type="time" class="tin"></div>
+      <div><label class="fl" for="deU">Uscita</label><input id="deU" type="time" class="tin"></div>
+    </div>
+    <div id="dePauseWrap" style="margin-top:14px"><span class="fl">Pausa</span>
+      <div class="seg" id="dePause"><button type="button" data-action="dePause" data-args="30">30 min</button><button type="button" data-action="dePause" data-args="60">1 ora</button></div>
+    </div>
+    <div style="margin-top:14px"><span class="fl">Uscite e rientri (permesso)</span>
+      <div id="deOut" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px"></div>
+      <button type="button" class="addlink" data-action="addOut">+ Esco e rientro</button>
+    </div>
+    <div class="res" id="deRes" style="margin-top:14px"></div>
+    <div style="margin-top:16px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><span class="fl" style="margin:0">Note</span><button type="button" class="bc2" data-action="openNoteEditor">+ Nota</button></div><div id="notesList"></div></div>
+    <div class="btnrow"><button type="button" class="b-danger" data-action="clearDay">Cancella</button><button type="button" class="b-main" data-action="saveDay">Salva</button></div>
+  </div>
+</div>
+
+<!-- PIANIFICA PERMESSO -->
+<div class="overlay" id="ppm" data-backdrop="ppm">
+  <div class="modal sheet"><div class="mh"></div>
+    <h2>Permesso o ferie</h2>
+    <label class="fl" for="ppD">Giorno</label><input id="ppD" type="date" class="tin sm" style="font-family:var(--font-sans);margin-bottom:14px">
+    <div class="seg" id="ppKind"><button type="button" data-action="ppKind" data-args="entro">Entro dopo</button><button type="button" data-action="ppKind" data-args="meta">A metà</button><button type="button" data-action="ppKind" data-args="esco">Esco prima</button><button type="button" data-action="ppKind" data-args="tutto">Tutto</button></div>
+    <div class="sgrid" style="margin-top:14px">
+      <div id="ppAWrap"><label class="fl" for="ppA" id="ppALbl">Entro alle</label><input id="ppA" type="time" class="tin"></div>
+      <div id="ppBWrap"><label class="fl" for="ppB" id="ppBLbl">Rientro alle</label><input id="ppB" type="time" class="tin"></div>
+    </div>
+    <label class="fl" for="ppM" style="margin-top:14px">Motivo (facoltativo)</label><input id="ppM" type="text" class="fi" maxlength="80" placeholder="Visita medica">
+    <div class="res" id="ppRes" style="margin-top:14px"></div>
+    <div class="btnrow"><button type="button" class="b-ghost" data-action="closeM" data-args="ppm">Annulla</button><button type="button" class="b-main" data-action="savePermit">Salva</button></div>
+  </div>
+</div>
+
+<!-- SCELTA ORARIO -->
+<div class="overlay" id="tpm" data-backdrop="tpm">
+  <div class="modal sheet"><div class="mh"></div>
+    <h2 id="tpTitle">Orario</h2>
+    <input id="tpIn" type="time" class="tin" style="height:72px;font-size:34px">
+    <div class="btnrow"><button type="button" class="b-ghost" data-action="closeM" data-args="tpm">Annulla</button><button type="button" class="b-main" id="tpOk" data-action="tpConfirm">Conferma</button></div>
+  </div>
+</div>
+
 <div class="overlay" id="notem" data-backdrop="notem">
   <div class="modal" style="position:relative"><div class="mh"></div>
     <button class="mcl" data-action="closeM" data-args="notem"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
@@ -343,17 +322,7 @@
   <div class="mbr"><button class="bc" data-action="closeM" data-args="evm">Annulla</button><button class="bk" data-action="saveEv">Crea</button></div></div>
 </div>
 
-<div class="overlay" id="tem" data-backdrop="tem">
-  <div class="modal" style="position:relative"><div class="mh"></div><button class="mcl" data-action="closeM" data-args="tem"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button><div class="mt" id="temTit">Orario</div>
-  <div class="fg"><label class="fl">Orario</label><input type="time" step="1800" class="fi" id="tei" style="font-size:24px;text-align:center;font-family:'JetBrains Mono',monospace"></div>
-  <div class="mbr"><button class="bc" data-action="closeM" data-args="tem">Annulla</button><button class="bk" data-action="saveTE2">Salva</button></div></div>
-</div>
 
-<div class="overlay" id="pm" data-backdrop="pm">
-  <div class="modal" style="position:relative"><div class="mh"></div><button class="mcl" data-action="closeM" data-args="pm"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button><div class="mt">Pausa pranzo</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div class="fg"><label class="fl">Inizio</label><input type="time" step="1800" class="fi" id="pmS" value="12:00"></div><div class="fg"><label class="fl">Fine</label><input type="time" step="1800" class="fi" id="pmE" value="13:00"></div></div>
-  <div class="mbr"><button class="bc" data-action="closeM" data-args="pm">Annulla</button><button class="bk" data-action="savePausa">Salva</button></div></div>
-</div>
 
 <div class="overlay" id="edm" data-backdrop="edm">
   <div class="modal" style="position:relative"><div class="mh"></div>

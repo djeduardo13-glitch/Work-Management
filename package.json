@@ -3,11 +3,12 @@
   "private": true,
   "version": "2.0.0",
   "type": "module",
-  "description": "Work Manager STEM – gestione ore, trasferte e credenziali (PWA)",
+  "description": "Work Manager STEM \u2013 gestione ore, trasferte e credenziali (PWA)",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --test"
   },
   "devDependencies": {
     "vite": "^6.3.5"

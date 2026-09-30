@@ -18,11 +18,12 @@ PWA per gestire ore di lavoro, straordinari, ferie/permessi, trasferte (voli, ch
 │   ├── services/               weather (Open-Meteo) · github-gist
 │   ├── features/
 │   │   ├── home/               orologio, eventi, "dove devo essere"
-│   │   ├── hours/              giornata, calcolo straordinari, note, report email
+│   │   ├── today/              card "Oggi" in Home: entrata, timer, pausa, esco e rientro, uscita
+│   │   ├── hours/              engine.js (regole di calcolo), pagina Ore, modifica giornata, permessi, note
 │   │   ├── trips/              lista, dettaglio, form, checklist, note spese
 │   │   ├── profile/            calendario, riepiloghi mensili
 │   │   ├── credentials/        cassaforte cifrata
-│   │   ├── settings/           impostazioni, backup, export PDF
+│   │   ├── settings/           impostazioni, backup
 │   │   └── sync/               sincronizzazione Gist, link di ripristino
 │   └── styles/app.css
 └── .github/workflows/deploy.yml  build + deploy automatico su GitHub Pages
@@ -37,7 +38,19 @@ npm install
 npm run dev       # http://localhost:5173
 npm run build     # crea dist/
 npm run preview   # prova la build
+npm test          # test delle regole di calcolo ore
 ```
+
+## Regole di calcolo ore
+
+Sono tutte in `src/features/hours/engine.js` e verificate da `tests/engine.test.js`:
+
+- Giornata standard 07:30–16:30 con 1 ora di pausa = 8 ore.
+- Entrata e rientri arrotondati alla mezz'ora successiva (07:01–07:30 → 07:30), uscite alla precedente (16:47 → 16:30).
+- Feriali: oltre 8 ore = straordinario; sotto le 8 ore la differenza è permesso (max 7,5h, 8h = ferie).
+- Pausa 30 min o 1 ora; se un permesso copre 12:00–13:00 la pausa non si conta.
+- Sabato, domenica e festivi: tutte le ore sono straordinario, senza pausa.
+- Un giorno feriale passato senza orari resta "da confermare".
 
 ## Sicurezza
 
