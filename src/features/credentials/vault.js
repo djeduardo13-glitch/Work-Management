@@ -21,7 +21,7 @@ export function onAutoLock(cb) {
   onLockCb = cb;
 }
 
-const clean = (list) => list.map(({ id, n, cat, u, p }) => ({ id, n, cat, u, p }));
+const clean = (list) => list.map(({ id, n, cat, u, p, url, note }) => ({ id, n, cat, u, p, url: url || '', note: note || '' }));
 
 async function persist() {
   if (!key) throw new Error('Cassaforte bloccata');

@@ -5,7 +5,7 @@ import { save } from '../../core/storage.js';
 import { MIN_PASSWORD_LENGTH, changePassword, createVault, hasLegacyCreds, hasVault, isUnlocked, lock, onAutoLock, saveVault, unlock } from './vault.js';
 import { swPTab } from '../profile/profile.js';
 import { v } from '../../lib/format.js';
-import { attr, h } from '../../lib/html.js';
+import { attr, h, safeUrl } from '../../lib/html.js';
 
 let mode = 'unlock'; // 'unlock' | 'setup' | 'change'
 let clipTimer = null;
@@ -93,20 +93,43 @@ export async function chkPIN() {
   }
 }
 
+let query = '';
+
+function credCard(c) {
+  const cm = { Telefonia: 'ct', Voli: 'cv', Aziendale: 'ca', Altro: 'co' };
+  const id = attr(c.id);
+  const link = c.url && safeUrl(c.url) !== '#' ? `<button type="button" class="cr-link" data-action="openCredUrl" data-args="${id}">↗ Apri sito</button>` : '';
+  const note = c.note ? `<div class="cr-note">${h(c.note)}</div>` : '';
+  return `<div class="credcard"><div class="credhdr"><span style="font-weight:700;font-size:15px">${h(c.n)}</span><div style="display:flex;gap:6px"><span class="catbadge ${cm[c.cat] || 'co'}">${h(c.cat)}</span><button class="ca2" data-action="editCred" data-args="${id}" style="padding:4px 8px" aria-label="Modifica">✏️</button><button class="ca2" data-action="delCred" data-args="${id}" style="padding:4px 8px;border-color:var(--re);color:var(--re)" aria-label="Elimina">🗑️</button></div></div><div class="cff"><div class="cfl">USERNAME</div><div class="cfr"><span class="cfv">${h(c.u)}</span><button class="ca2" data-action="copyCred" data-args="${id}|u">Copia</button></div></div><div class="cff"><div class="cfl">PASSWORD</div><div class="cfr"><span class="cfv">${c.sp ? h(c.p) : '••••••••'}</span><button class="ca2" data-action="togSP" data-args="${id}">${c.sp ? 'Nascondi' : 'Mostra'}</button><button class="ca2" data-action="copyCred" data-args="${id}|p">Copia</button></div></div>${link}${note}</div>`;
+}
+
+function credList() {
+  const q = query.trim().toLowerCase();
+  const list = q ? S.creds.filter((c) => [c.n, c.u, c.cat, c.note, c.url].some((x) => String(x || '').toLowerCase().includes(q))) : S.creds;
+  if (!S.creds.length) return '<div class="empty-note">Nessuna credenziale</div>';
+  if (!list.length) return '<div class="empty-note">Nessun risultato</div>';
+  return list.map(credCard).join('');
+}
+
 export function renderCreds() {
   if (S.pTab !== 1 || !isUnlocked()) return;
-  const cm = { Telefonia: 'ct', Voli: 'cv', Aziendale: 'ca', Altro: 'co' };
-  let html = '<div style="height:12px"></div>';
-  if (!S.creds.length) html += '<div style="text-align:center;padding:32px;color:var(--t3)">Nessuna credenziale</div>';
-  S.creds.forEach((c) => {
-    const id = attr(c.id);
-    html += `<div class="credcard"><div class="credhdr"><span style="font-weight:700;font-size:14px">${h(c.n)}</span><div style="display:flex;gap:6px"><span class="catbadge ${cm[c.cat] || 'co'}">${h(c.cat)}</span><button class="ca2" data-action="editCred" data-args="${id}" style="padding:4px 8px">✏️</button><button class="ca2" data-action="delCred" data-args="${id}" style="padding:4px 8px;border-color:var(--re);color:var(--re)">🗑️</button></div></div><div class="cff"><div class="cfl">USERNAME</div><div class="cfr"><span class="cfv">${h(c.u)}</span><button class="ca2" data-action="copyCred" data-args="${id}|u">Copia</button></div></div><div class="cff"><div class="cfl">PASSWORD</div><div class="cfr"><span class="cfv">${c.sp ? h(c.p) : '••••••••'}</span><button class="ca2" data-action="togSP" data-args="${id}">${c.sp ? 'Nascondi' : 'Mostra'}</button><button class="ca2" data-action="copyCred" data-args="${id}|p">Copia</button></div></div></div>`;
-  });
-  html += `<div class="exprow"><button class="xbtn btn-pdf" data-action="newCred"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nuova</button><button class="xbtn btn-em" data-action="lockCreds"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Blocca</button></div>
+  document.getElementById('pContent').innerHTML = `
+  <div class="cr-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input type="search" id="crQ" placeholder="Cerca credenziale" aria-label="Cerca credenziale" value="${attr(query)}" autocomplete="off"></div>
+  <div id="crList">${credList()}</div>
+  <div class="exprow"><button class="xbtn btn-pdf" data-action="newCred"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nuova</button><button class="xbtn btn-em" data-action="lockCreds"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Blocca</button></div>
   <div style="text-align:center;margin:4px 16px 0"><button class="bc2" data-action="changeVaultPassword">🔑 Cambia password principale</button></div>
   <div style="font-size:11px;color:var(--t3);text-align:center;margin:10px 24px 0">Cifrate con AES-256 · si bloccano da sole dopo 5 minuti o quando esci dall'app</div>
   <div style="height:80px"></div>`;
-  document.getElementById('pContent').innerHTML = html;
+  document.getElementById('crQ').addEventListener('input', (e) => {
+    query = e.target.value;
+    document.getElementById('crList').innerHTML = credList();
+  });
+}
+
+export function openCredUrl(id) {
+  const c = S.creds.find((x) => x.id === id);
+  const url = c && safeUrl(c.url);
+  if (url && url !== '#') window.open(url, '_blank', 'noopener');
 }
 
 export function togSP(id) {
@@ -153,6 +176,8 @@ export function editCred(id) {
   document.getElementById('cr-c').value = c.cat;
   document.getElementById('cr-u').value = c.u;
   document.getElementById('cr-p').value = c.p;
+  document.getElementById('cr-url').value = c.url || '';
+  document.getElementById('cr-note').value = c.note || '';
   openM('crm');
 }
 
@@ -162,6 +187,8 @@ export function newCred() {
   document.getElementById('cr-c').value = 'Aziendale';
   document.getElementById('cr-u').value = '';
   document.getElementById('cr-p').value = '';
+  document.getElementById('cr-url').value = '';
+  document.getElementById('cr-note').value = '';
   openM('crm');
 }
 
@@ -173,13 +200,18 @@ export async function delCred(id) {
 
 export async function saveCr() {
   const n = v('cr-n'), cat = v('cr-c'), u = v('cr-u'), p = v('cr-p');
+  const url = v('cr-url').trim().slice(0, 500), note = v('cr-note').trim().slice(0, 2000);
+  if (url && safeUrl(url) === '#') {
+    toast('Il link deve iniziare con https://', true);
+    return;
+  }
   if (!n || !u || !p) {
     toast('Compila tutti i campi');
     return;
   }
   const existing = S.editCredId && S.creds.find((x) => x.id === S.editCredId);
-  if (existing) Object.assign(existing, { n, cat, u, p });
-  else S.creds.push({ id: 'c' + Date.now(), n, cat, u, p });
+  if (existing) Object.assign(existing, { n, cat, u, p, url, note });
+  else S.creds.push({ id: 'c' + Date.now(), n, cat, u, p, url, note });
   S.editCredId = null;
   closeM('crm');
   document.getElementById('cr-p').value = '';

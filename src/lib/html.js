@@ -19,6 +19,7 @@ export const h = escapeHtml;
 
 /** Accetta solo URL http(s) — evita javascript: e simili nei link. */
 export function safeUrl(url) {
+  if (!/^https?:\/\//i.test(String(url || '').trim())) return '#';
   try {
     const u = new URL(url, location.href);
     return u.protocol === 'https:' || u.protocol === 'http:' ? u.href : '#';

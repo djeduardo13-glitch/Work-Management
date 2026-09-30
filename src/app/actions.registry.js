@@ -4,7 +4,7 @@
 import { closeM } from '../components/modal.js';
 import { goTab, openSyncSettings } from '../components/navigation.js';
 import { tpConfirm } from '../components/time-picker.js';
-import { changeVaultPassword, chkPIN, closePasM, copyCred, delCred, editCred, lockCreds, newCred, saveCr, togSP } from '../features/credentials/credentials.js';
+import { changeVaultPassword, chkPIN, closePasM, copyCred, delCred, editCred, lockCreds, newCred, openCredUrl, saveCr, togSP } from '../features/credentials/credentials.js';
 import { delEv, openEvM, saveEv, updEF } from '../features/home/events.js';
 import { delFerieOggi, openActiveTr } from '../features/home/where.js';
 import { addOut, clearDay, dePause, fillStandard, openDayEditor, rmOut, saveDay } from '../features/hours/day-editor.js';
@@ -30,7 +30,7 @@ export const actions = {
   closeM,
   goTab, openSyncSettings,
   tpConfirm,
-  changeVaultPassword, chkPIN, closePasM, copyCred, delCred, editCred, lockCreds, newCred, saveCr, togSP,
+  changeVaultPassword, chkPIN, closePasM, copyCred, delCred, editCred, lockCreds, newCred, openCredUrl, saveCr, togSP,
   delEv, openEvM, saveEv, updEF,
   delFerieOggi, openActiveTr,
   addOut, clearDay, dePause, fillStandard, openDayEditor, rmOut, saveDay,
