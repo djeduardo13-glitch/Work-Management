@@ -19,9 +19,9 @@ import { editPhone, enNotif, savePh, togN } from '../features/settings/settings.
 import { copyRestoreLink } from '../features/sync/restore-link.js';
 import { gistPull, gistSync, saveGistId, saveGistToken } from '../features/sync/sync.js';
 import { comeBackAt, comeBackNow, confirmExit, confirmStandard, editEntry, editFromRecap, editOut, goOut, pickEntry, registerExit, setEntry, setPause, showExitRecap } from '../features/today/today.js';
-import { addCLItem, togCL, togCLSec } from '../features/trips/checklist.js';
-import { archiviaT, closeTD, eliminaT, emailTr, openTrDet, ripristinaT, shareWA } from '../features/trips/detail.js';
-import { delSpesa, openAddSpesaFromPopup, openSpesePopup, quickAddSpesa, saveSpesa } from '../features/trips/expenses.js';
+import { addCLItem, togCL } from '../features/trips/checklist.js';
+import { addSpesaCur, archiviaT, closeTD, eliminaT, emailTr, openTrDet, ripristinaT, shareWA } from '../features/trips/detail.js';
+import { delSpesa, openAddSpesaFromPopup, openSpesePopup, quickAddSpesa, saveSpesa, spPhotoPicked, spPhotoRemove, spPhotoView } from '../features/trips/expenses.js';
 import { addScaleLeg, closeNT, editTr, removeScaleLeg, saveNT, showNT, togAF, togScale, toggleAltroInput } from '../features/trips/form.js';
 import { swTTab } from '../features/trips/list.js';
 import { callTel, openMapsQuery } from '../lib/links.js';
@@ -45,9 +45,9 @@ export const actions = {
   copyRestoreLink,
   gistPull, gistSync, saveGistId, saveGistToken,
   comeBackAt, comeBackNow, confirmExit, confirmStandard, editEntry, editFromRecap, editOut, goOut, pickEntry, registerExit, setEntry, setPause, showExitRecap,
-  addCLItem, togCL, togCLSec,
-  archiviaT, closeTD, eliminaT, emailTr, openTrDet, ripristinaT, shareWA,
-  delSpesa, openAddSpesaFromPopup, openSpesePopup, quickAddSpesa, saveSpesa,
+  addCLItem, togCL,
+  addSpesaCur, archiviaT, closeTD, eliminaT, emailTr, openTrDet, ripristinaT, shareWA,
+  delSpesa, openAddSpesaFromPopup, openSpesePopup, quickAddSpesa, saveSpesa, spPhotoPicked, spPhotoRemove, spPhotoView,
   addScaleLeg, closeNT, editTr, removeScaleLeg, saveNT, showNT, togAF, togScale, toggleAltroInput,
   swTTab,
   callTel, openMapsQuery,

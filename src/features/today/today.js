@@ -189,7 +189,7 @@ export function renderWeek() {
   const days = w.days
     .map((d, i) => `<div class="${d.key === k ? 'now' : ''}">${WEEK_LETTERS[i]}<b>${d.ferie ? 'F' : d.worked ? fmtH(d.worked).replace('h', '') : '—'}</b></div>`)
     .join('');
-  el.innerHTML = `<section class="card week" aria-label="Settimana">
+  el.innerHTML = `<section class="ucard week" aria-label="Settimana">
     <div class="week-top"><span>Settimana · ${fmtH(w.worked)} su 40h</span><span class="chip">${fmtH(w.extra, true)} straordinari</span></div>
     <div class="pbar"><div style="width:${pct}%"></div></div>
     <div class="wkdays">${days}</div>

@@ -26,6 +26,7 @@ export function editTr(){
   document.getElementById('nt-ci').value=t.ci;
   document.getElementById('nt-cn').value=t.cn||''; document.getElementById('nt-ct').value=t.ct||''; document.getElementById('nt-cl').value=t.cl; document.getElementById('nt-vcon').value=t.vcon||'';
   document.getElementById('nt-ho').value=t.ho;
+  document.getElementById('nt-hci').value=t.hci||''; document.getElementById('nt-aur').value=t.aur||''; document.getElementById('nt-app').value=t.app||'';
   document.getElementById('nt-a1').value=t.va1;
   document.getElementById('nt-a2').value=t.va2;
   document.getElementById('nt-a3').value=t.va3;
@@ -78,6 +79,7 @@ export function showNT(){
   document.getElementById('nt-ci').value='';
   document.getElementById('nt-cn').value=''; document.getElementById('nt-ct').value=''; document.getElementById('nt-cl').value=''; document.getElementById('nt-vcon').value='';
   document.getElementById('nt-ho').value='';
+  ['nt-hci','nt-aur','nt-app'].forEach(id=>{document.getElementById(id).value='';});
   document.getElementById('nt-a1').value='';
   document.getElementById('nt-a2').value='';
   document.getElementById('nt-a3').value='';
@@ -201,11 +203,12 @@ export function saveNT(){
       t.vr1=v('nt-r1');t.vr2=v('nt-r2');t.vr3=v('nt-r3');t.vr4=v('nt-r4');t.vrn=v('nt-rn');
       t.au=v('nt-au');t.ac=v('nt-ac');t.ap=v('nt-ap');
       t.scaleA=scaleA; t.scaleR=scaleR;
+      t.hci=v('nt-hci'); t.aur=v('nt-aur'); t.app=v('nt-app');
       save(); closeNT(); renderTr(); renderEvs(); chkWhere();
       toast('Trasferta aggiornata!'); S.curTid=null; return;
     }
   }
-  S.trs.push({id:'t'+Date.now(),d1,d2,pa,ci,cn:v('nt-cn'),ct:v('nt-ct'),cl:v('nt-cl'),ho:v('nt-ho'),vcon:v('nt-vcon'),va1:v('nt-a1'),va2:v('nt-a2'),va3:v('nt-a3'),va4:v('nt-a4'),van:v('nt-an'),vr1:v('nt-r1'),vr2:v('nt-r2'),vr3:v('nt-r3'),vr4:v('nt-r4'),vrn:v('nt-rn'),au:v('nt-au'),ac:v('nt-ac'),ap:v('nt-ap'),arc:0,spese:[],cl2:defCL(),scaleA,scaleR});
+  S.trs.push({id:'t'+Date.now(),hci:v('nt-hci'),aur:v('nt-aur'),app:v('nt-app'),d1,d2,pa,ci,cn:v('nt-cn'),ct:v('nt-ct'),cl:v('nt-cl'),ho:v('nt-ho'),vcon:v('nt-vcon'),va1:v('nt-a1'),va2:v('nt-a2'),va3:v('nt-a3'),va4:v('nt-a4'),van:v('nt-an'),vr1:v('nt-r1'),vr2:v('nt-r2'),vr3:v('nt-r3'),vr4:v('nt-r4'),vrn:v('nt-rn'),au:v('nt-au'),ac:v('nt-ac'),ap:v('nt-ap'),arc:0,spese:[],cl2:defCL(),scaleA,scaleR});
   save(); closeNT(); renderTr(); renderEvs(); chkWhere(); toast('Trasferta creata!');
 }
 

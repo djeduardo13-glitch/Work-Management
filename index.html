@@ -36,10 +36,10 @@
   </div>
   <div class="sc">
     <div class="stack">
-      <section class="card wx" id="wxCard" aria-label="Meteo"><div class="wx-d" style="padding:6px 2px">Caricamento meteo…</div></section>
+      <section class="ucard wx" id="wxCard" aria-label="Meteo"><div class="wx-d" style="padding:6px 2px">Caricamento meteo…</div></section>
       <div id="todayCard"></div>
-      <section class="card where" id="wwid" style="display:none" aria-label="Dove devo essere"></section>
-      <section class="card evs" aria-label="Prossimi 7 giorni">
+      <section class="ucard where" id="wwid" style="display:none" aria-label="Dove devo essere"></section>
+      <section class="ucard evs" aria-label="Prossimi 7 giorni">
         <div class="evs-h"><span class="lbl">Prossimi 7 giorni</span><button type="button" class="pill" data-action="openEvM">+ Aggiungi</button></div>
         <div id="evBox"></div>
       </section>
@@ -133,7 +133,7 @@
       </div>
     </div>
     <div class="fss">Cliente</div>
-    <div class="fcard"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="fg"><label class="fl">Nome contatto</label><input type="text" class="fi" id="nt-cn" placeholder="Mario Rossi"></div><div class="fg"><label class="fl">Telefono contatto</label><input type="tel" class="fi" id="nt-ct" placeholder="+34 600 000 000"></div></div><div class="fg"><label class="fl">Indirizzo Cliente</label><input type="text" class="fi" id="nt-cl" placeholder="Via e numero civico"></div><div class="fg" style="margin-bottom:0"><label class="fl">Indirizzo Hotel</label><input type="text" class="fi" id="nt-ho" placeholder="Nome e indirizzo hotel"></div></div>
+    <div class="fcard"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="fg"><label class="fl">Nome contatto</label><input type="text" class="fi" id="nt-cn" placeholder="Mario Rossi"></div><div class="fg"><label class="fl">Telefono contatto</label><input type="tel" class="fi" id="nt-ct" placeholder="+34 600 000 000"></div></div><div class="fg"><label class="fl">Indirizzo Cliente</label><input type="text" class="fi" id="nt-cl" placeholder="Via e numero civico"></div><div class="fg"><label class="fl" for="nt-app">Appuntamento cliente (opzionale)</label><input type="datetime-local" class="fi" id="nt-app"></div><div class="fg"><label class="fl">Indirizzo Hotel</label><input type="text" class="fi" id="nt-ho" placeholder="Nome e indirizzo hotel"></div><div class="fg" style="margin-bottom:0"><label class="fl" for="nt-hci">Check-in hotel (opzionale)</label><input type="datetime-local" class="fi" id="nt-hci"></div></div>
     <datalist id="dl-aero"></datalist>
     <datalist id="dl-rent"></datalist>
     <div class="fss">Volo Andata</div>
@@ -167,7 +167,7 @@
       <div id="nt-rscaleBox" style="display:none"></div>
     </div>
     <div class="fss">Auto Noleggio</div>
-    <div class="fcard"><div class="fg"><label class="fl">Auto a noleggio?</label><select class="fs" id="nt-au" data-change="togAF"><option value="no">No</option><option value="si">Sì</option></select></div><div id="aFields" style="display:none"><div class="fg"><label class="fl">Compagnia</label><input type="text" class="fi" id="nt-ac" placeholder="Hertz, Avis..." list="dl-rent" autocomplete="off"></div><div class="fg" style="margin-bottom:0"><label class="fl">N° Prenotazione</label><input type="text" class="fi" id="nt-ap" placeholder="ABC123456"></div></div></div>
+    <div class="fcard"><div class="fg"><label class="fl">Auto a noleggio?</label><select class="fs" id="nt-au" data-change="togAF"><option value="no">No</option><option value="si">Sì</option></select></div><div id="aFields" style="display:none"><div class="fg"><label class="fl">Compagnia</label><input type="text" class="fi" id="nt-ac" placeholder="Hertz, Avis..." list="dl-rent" autocomplete="off"></div><div class="fg"><label class="fl">N° Prenotazione</label><input type="text" class="fi" id="nt-ap" placeholder="ABC123456"></div><div class="fg" style="margin-bottom:0"><label class="fl" for="nt-aur">Ritiro auto (opzionale)</label><input type="datetime-local" class="fi" id="nt-aur"></div></div></div>
         <div class="fss">Altro</div>
     <div class="fcard"><div class="fg" style="margin-bottom:0"><label class="fl">Viaggiato con (opzionale)</label><input type="text" class="fi" id="nt-vcon" placeholder="es. Mario Rossi"></div></div>
     <div style="padding:0 16px 8px"><button class="sbtn" data-action="saveNT"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>Salva Trasferta</button></div>
@@ -277,6 +277,11 @@
       <div class="fg"><label class="fl">Tipo documento</label><select class="fs" id="sp-doc"><option value="Fattura">Fattura</option><option value="Scontrino">Scontrino</option><option value="">Nessuno</option></select></div>
       <div class="fg" style="margin-bottom:0"><label class="fl">Pagato con</label><select class="fs" id="sp-pag"><option value="c/c aziendale" selected>c/c aziendale</option><option value="Contanti pers.">Contanti pers.</option><option value="Già pagato">Già pagato</option></select></div>
     </div>
+    <div class="fg"><span class="fl">Foto scontrino</span>
+      <div id="sp-photo" class="sp-photo"></div>
+      <label class="addlink sp-photo-btn" for="sp-file">📷 Scatta o scegli una foto</label>
+      <input type="file" id="sp-file" accept="image/*" capture="environment" hidden data-change="spPhotoPicked" data-with="el">
+    </div>
     <div class="mbr">
       <button class="bc" data-action="closeM" data-args="spesam">Annulla</button>
       <button class="bk" id="speseDelBtn" style="background:var(--re);display:none" data-action="delSpesa">Elimina</button>
@@ -349,6 +354,10 @@
 </div>
 
 <div class="toast" id="tst"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span id="tstM">Salvato!</span></div>
+
+<div class="overlay" id="phv" data-backdrop="phv" style="align-items:center;padding:16px;z-index:300">
+  <img id="phvImg" alt="Foto scontrino" style="max-width:100%;max-height:85vh;border-radius:12px;background:#fff">
+</div>
 
 <script type="module" src="/src/main.js"></script>
 </body>

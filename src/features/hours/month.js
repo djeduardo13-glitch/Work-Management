@@ -87,9 +87,9 @@ export function renderMonth() {
         <div><small>FERIE</small><b>${s.ferie} g</b></div>
       </div>
     </section>
-    ${weeks ? `<section class="card wrows" aria-label="Per settimana">${weeks}</section>` : ''}
+    ${weeks ? `<section class="ucard wrows" aria-label="Per settimana">${weeks}</section>` : ''}
     <button type="button" class="add-perm" data-action="openPermitPlanner">${icon('plus')}Permesso o ferie</button>
-    <section class="card dlist" aria-label="Giorni">
+    <section class="ucard dlist" aria-label="Giorni">
       <div class="dlist-h"><span class="lbl">${showAll ? 'Tutti i giorni' : 'Giorni fuori standard'}</span><button type="button" data-action="oreToggleAll">${showAll ? 'Solo fuori standard' : `Mostra tutti (${s.standard} standard)`}</button></div>
       ${list.length ? list.map(dayRow).join('') : '<div class="empty-note">Nessun giorno fuori standard</div>'}
     </section>
