@@ -2,7 +2,7 @@ import { toast } from '../../components/toast.js';
 import { S } from '../../core/state.js';
 import { save } from '../../core/storage.js';
 import { renderEvs } from './events.js';
-import { renderPOre } from '../profile/calendar.js';
+import { refreshHours } from '../today/today.js';
 import { openTrDet } from '../trips/detail.js';
 import { fd, fn } from '../../lib/dates.js';
 import { cap } from '../../lib/format.js';
@@ -18,15 +18,10 @@ export function chkWhere(){
   const w=document.getElementById('wwid');
   const fw=document.getElementById('fwid');
   
-  if(ferieOggi){
-    // Mostra card ferie
-    fw.style.display='block';
-    w.style.display='none';
-    fw._eid=ferieOggi.id;
-  }else{
+  if(fw) fw.style.display='none';
+  {
     // Controlla trasferta
     const a=S.trs.find(t=>!t.arc&&new Date(t.d1+'T00:00:00')<=now&&new Date(t.d2+'T23:59:59')>=now);
-    fw.style.display='none';
     if(a){
       w.style.display='block'; 
       document.getElementById('wCity').textContent=cap(a.ci)+', '+cap(a.pa); 
@@ -62,13 +57,14 @@ export function openActiveTr(){const w=document.getElementById('wwid'); if(w._ti
 export function callContact(){const w=document.getElementById('wwid'); if(w._ct) callTel(w._ct);}
 
 export function delFerieOggi(){
-  const fw=document.getElementById('fwid');
-  if(!fw._eid)return;
+  const k=fd(new Date());
+  const f=S.evs.find(e=>e.dat===k&&e.tipo==='ferie');
+  if(!f)return;
   if(!confirm('Vuoi rimuovere le ferie per oggi?'))return;
-  S.evs=S.evs.filter(e=>e.id!==fw._eid);
+  S.evs=S.evs.filter(e=>e.id!==f.id);
   save();
   renderEvs();
   chkWhere();
-  renderPOre();
+  refreshHours();
   toast('Ferie rimosse');
 }

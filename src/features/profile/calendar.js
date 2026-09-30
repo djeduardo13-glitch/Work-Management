@@ -2,9 +2,8 @@ import { closeM, openM } from '../../components/modal.js';
 import { MONTHS } from '../../config/constants.js';
 import { S } from '../../core/state.js';
 import { openEvM } from '../home/events.js';
-import { emailReport } from '../hours/report.js';
+import { monthSummary } from '../hours/engine.js';
 import { delDayHours, delFerieFromProfile, editDayHours, showMonthDetail } from './month-detail.js';
-import { exportPDF } from '../settings/pdf-export.js';
 import { openTrDet } from '../trips/detail.js';
 import { fds, fh, fn, t2m } from '../../lib/dates.js';
 import { cap } from '../../lib/format.js';
@@ -16,9 +15,9 @@ export function renderPOre(){
   const y=S.calM.getFullYear(),m=S.calM.getMonth(),now=new Date();
   const fd1=new Date(y,m,1),ldN=new Date(y,m+1,0);
   let start=fd1.getDay()-1; if(start<0)start=6;
-  let totH=0,totX=0,totF=0,totP=0;
-  S.evs.forEach(e=>{const d=new Date(e.dat+'T00:00:00'); if(d.getFullYear()===y&&d.getMonth()===m){if(e.tipo==='ferie')totF+=8; if(e.tipo==='permesso'&&e.ora&&e.ora2)totP+=Math.max(0,t2m(e.ora2)-t2m(e.ora))/60;}});
-  Object.keys(S.dd).forEach(k=>{const d=new Date(k+'T00:00:00'); if(d.getFullYear()===y&&d.getMonth()===m){const dd=S.dd[k]; if(!dd.e||!dd.u)return; const tot=Math.max(0,t2m(dd.u)-t2m(dd.e)-Math.max(0,t2m(dd.pe||'13:00')-t2m(dd.ps||'12:00'))); const perm=S.evs.find(e=>e.dat===k&&e.tipo==='permesso'); const permMin=perm?Math.max(0,t2m(perm.ora2)-t2m(perm.ora)):0; const dw=d.getDay(); const isWE=dw===0||dw===6; totH+=isWE?0:Math.min(tot,480); totX+=isWE?tot:Math.max(0,(tot+permMin)-480);}});
+  // totali calcolati con le stesse regole della pagina Ore
+  const ms=monthSummary(y,m,S.dd,S.evs);
+  const totH=ms.worked,totX=ms.extra,totF=ms.ferie*8,totP=ms.permesso/60;
   const D=['Lu','Ma','Me','Gi','Ve','Sa','Do'];
 
   // Trasferte attive nel mese
@@ -110,9 +109,8 @@ export function renderPOre(){
       <div class="mi"><div class="mv">${Math.round(totH/60)}</div><div class="ml">Ore ordinarie</div></div>
       <div class="mi" style="cursor:pointer" data-action="showMonthDetail" data-args="straordinari"><div class="mv x">${fh(totX)}</div><div class="ml">Straordinari</div></div>
       <div class="mi" style="cursor:pointer" data-action="showMonthDetail" data-args="ferie"><div class="mv g">${totF}h</div><div class="ml">Ferie</div></div>
-      <div class="mi" style="cursor:pointer" data-action="showMonthDetail" data-args="permessi"><div class="mv">${totP}h</div><div class="ml">Permessi</div></div>
+      <div class="mi" style="cursor:pointer" data-action="showMonthDetail" data-args="permessi"><div class="mv">${String(totP).replace('.',',')}h</div><div class="ml">Permessi</div></div>
     </div></div>
-    <div class="exprow"><button class="xbtn btn-pdf" data-action="exportPDF"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Scarica PDF</button><button class="xbtn btn-em" data-action="emailReport"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 8.5 6L19 7"/></svg>Email</button></div>
     <div style="padding:0 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center"><span style="font-family:var(--font-serif);font-size:14px;font-weight:700">Aggiungi</span><button class="btn-p" data-action="openEvM"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Evento</button></div>
     <div style="height:80px"></div>
   `;

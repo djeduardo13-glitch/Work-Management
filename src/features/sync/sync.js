@@ -1,3 +1,4 @@
+import { setSyncState } from '../../components/sync-indicator.js';
 import { toast } from '../../components/toast.js';
 import { GH_TOKEN_RE, GIST_ID_RE, sanitizeData } from '../../core/schema.js';
 import { S } from '../../core/state.js';
@@ -7,6 +8,7 @@ import { renderEvs } from '../home/events.js';
 import { chkWhere } from '../home/where.js';
 import { renderPOre } from '../profile/calendar.js';
 import { renderPNotif } from '../settings/settings.js';
+import { refreshHours } from '../today/today.js';
 import { v } from '../../lib/format.js';
 import { createGist, readGist, updateGist } from '../../services/github-gist.js';
 
@@ -16,6 +18,11 @@ let syncing = false;
 let dirty = false; // modifiche locali non ancora caricate: blocca l'auto-pull
 
 const configured = () => !!(S.gistToken && S.gistId);
+
+/** Stato iniziale dell'icona nuvola. */
+export function initSyncIndicator() {
+  setSyncState(configured() ? 'ok' : 'off');
+}
 
 function payload() {
   return { ...exportableData(), lastSync: new Date().toISOString() };
@@ -29,6 +36,7 @@ function updateSyncLabel() {
 function refreshUI() {
   renderEvs();
   chkWhere();
+  refreshHours();
   if (S.pTab === 0) renderPOre();
   if (S.phone) document.getElementById('phTxt').textContent = S.phone;
   updateSyncLabel();
@@ -48,6 +56,7 @@ function applyRemote(raw) {
 export function scheduleAutoSync() {
   if (!configured()) return;
   dirty = true;
+  setSyncState('pending');
   clearTimeout(pushTimer);
   pushTimer = setTimeout(autoSyncPush, PUSH_DELAY);
 }
@@ -64,7 +73,9 @@ export async function autoSyncPush() {
     dirty = false;
     save({ sync: false }); // <- prima qui c'era save() che rischedulava il push all'infinito
     updateSyncLabel();
+    setSyncState('ok');
   } catch (e) {
+    setSyncState('error');
     console.warn('Auto-sync push fallito:', e.message);
   } finally {
     syncing = false;
@@ -113,7 +124,9 @@ export async function gistSync() {
     S.lastSync = data.lastSync;
     dirty = false;
     save({ sync: false });
+    setSyncState('ok');
   } catch (e) {
+    setSyncState('error');
     toast('Errore: ' + e.message, true);
   } finally {
     syncing = false;
@@ -152,6 +165,7 @@ export function saveGistToken() {
   }
   S.gistToken = t;
   save();
+  initSyncIndicator();
   renderPNotif();
   toast(S.gistToken ? 'Token salvato!' : 'Token rimosso');
 }
@@ -164,6 +178,7 @@ export function saveGistId() {
   }
   S.gistId = id;
   save();
+  initSyncIndicator();
   renderPNotif();
   toast(S.gistId ? 'Gist ID salvato!' : 'Gist ID rimosso');
 }
