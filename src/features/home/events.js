@@ -5,37 +5,54 @@ import { save } from '../../core/storage.js';
 import { chkWhere } from './where.js';
 import { renderPOre } from '../profile/calendar.js';
 import { openTrDet } from '../trips/detail.js';
-import { addD, fd, fdl, fds, fh, t2m } from '../../lib/dates.js';
+import { addD, fd, fdl, fh, t2m } from '../../lib/dates.js';
 import { cap } from '../../lib/format.js';
 import { attr, h } from '../../lib/html.js';
 
+const EV_DOW=['DOM','LUN','MAR','MER','GIO','VEN','SAB'];
+const EV_MSH=['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
+
+function evSub(e){
+  if(e.tipo==='ferie') return 'Ferie';
+  if(e.tipo==='permesso'&&e.ora&&e.ora2){
+    const k=e.kind||(e.ora<='07:30'?'entro':e.ora2>='16:30'?'esco':'meta');
+    if(k==='entro') return 'Permesso · entri alle '+e.ora2;
+    if(k==='esco') return 'Permesso · esci alle '+e.ora;
+    return 'Permesso · '+e.ora+'–'+e.ora2;
+  }
+  return 'Evento'+(e.ora?' · '+e.ora:'');
+}
+
+/** Card "Prossimi 7 giorni": eventi, permessi, ferie e trasferte in arrivo. */
 export function renderEvs(){
   const now=new Date(); now.setHours(0,0,0,0); const in7=addD(now,7);
   const tk=fd(now);
-  const ferieOggi=S.evs.find(e=>e.dat===tk&&e.tipo==='ferie');
   const trInCorso=S.trs.find(t=>!t.arc&&new Date(t.d1+'T00:00:00')<=now&&new Date(t.d2+'T23:59:59')>=now);
-  let html='',cnt=0;
-  S.evs.filter(e=>{const d=new Date(e.dat+'T00:00:00'); return d>=now&&d<=in7;}).sort((a,b)=>new Date(a.dat)-new Date(b.dat)).forEach(e=>{
-    // Nascondi ferie di oggi se già mostrate nel banner
-    if(ferieOggi&&e.id===ferieOggi.id) return;
-    cnt++; const d=new Date(e.dat+'T00:00:00'); const diff=Math.round((d-now)/864e5);
-    const bg=diff===0?'<span class="evbadge b-og">Oggi</span>':'<span class="evbadge b-dy">tra '+diff+'gg</span>';
-    const evSub=e.tipo==='ferie'?'Ferie':e.tipo==='permesso'&&e.ora&&e.ora2?'Permesso '+h(e.ora)+' – '+h(e.ora2)+' ('+fh(Math.max(0,t2m(e.ora2)-t2m(e.ora)))+')':'Evento'+(e.ora?' · '+e.ora:'');
-    html+=`<div class="evcard gr" data-action="openED" data-args="${attr(e.id)}"><div class="evi gr"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="evbody"><div class="evtit">${h(e.tit)}</div><div class="evsub">${evSub} · ${fds(e.dat)}${e.ora&&e.tipo!=='permesso'?' · '+e.ora:''}</div></div>${bg}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg></div>`;
+  const items=[];
+  S.evs.filter(e=>{const d=new Date(e.dat+'T00:00:00'); return d>=now&&d<=in7;}).forEach(e=>{
+    if(e.tipo==='ferie'&&e.dat===tk) return; // già nella card "Oggi"
+    items.push({k:e.dat,action:'openED',id:e.id,tit:e.tit||cap(e.tipo),sub:evSub(e),kind:e.tipo});
   });
   S.trs.filter(t=>!t.arc).forEach(t=>{
     const dp=new Date(t.d1+'T00:00:00'),dr=new Date(t.d2+'T00:00:00');
-    if(dp<=in7&&dr>=now){
-      // Nascondi trasferta in corso se già mostrata nel banner
-      if(trInCorso&&t.id===trInCorso.id) return;
-      cnt++; const diff=Math.round((dp-now)/864e5);
-      const bg=dp<=now&&dr>=now?'<span class="evbadge b-co">In corso</span>':diff===0?'<span class="evbadge b-og">Oggi</span>':'<span class="evbadge b-dy">tra '+diff+'gg</span>';
-      html+=`<div class="evcard bl" data-action="openTrDet" data-args="${attr(t.id)}"><div class="evi bl"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg></div><div class="evbody"><div class="evtit">${h(cap(t.pa))} · ${h(cap(t.ci))}</div><div class="evsub">${fds(t.d1)} – ${fds(t.d2)}</div></div>${bg}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg></div>`;
+    if(dp<=in7&&dr>=now&&!(trInCorso&&t.id===trInCorso.id)){
+      const d2=new Date(t.d2+'T00:00:00');
+      items.push({k:t.d1<tk?tk:t.d1,action:'openTrDet',id:t.id,tit:cap(t.pa||'')+(t.ci?' · '+cap(t.ci):''),sub:'Trasferta fino al '+d2.getDate()+' '+EV_MSH[d2.getMonth()],kind:'trip'});
     }
   });
-  if(!html) html='<div style="text-align:center;padding:24px;color:var(--t3);font-size:14px">Nessun evento nei prossimi 7 giorni</div>';
-  document.getElementById('evBox').innerHTML=html;
-  document.getElementById('evCnt').textContent=cnt;
+  items.sort((a,b)=>a.k.localeCompare(b.k));
+  const box=document.getElementById('evBox');
+  if(!items.length){
+    box.innerHTML='<div class="empty-note" style="padding:8px 14px 16px;text-align:left">Nessun evento in programma</div>';
+  }else{
+    box.innerHTML=items.map(it=>{
+      const d=new Date(it.k+'T00:00:00');
+      const diff=Math.round((d-now)/864e5);
+      const when=diff===0?'<span class="badge">oggi</span>':diff===1?'<span class="badge std">domani</span>':'';
+      return `<button type="button" class="drow2" data-action="${it.action}" data-args="${attr(it.id)}"><div class="dn"><small>${EV_DOW[d.getDay()]}</small><b>${d.getDate()}</b></div><div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:600">${h(it.tit)}</div><div style="font-size:12px;color:var(--muted)">${h(it.sub)}</div></div>${when}</button>`;
+    }).join('');
+  }
+  const cnt=document.getElementById('evCnt'); if(cnt) cnt.textContent=items.length;
 }
 
 export function openEvM(){document.getElementById('evTipo').value='evento'; document.getElementById('evTit').value=''; document.getElementById('evDat').value=fd(new Date()); document.getElementById('evOra').value=''; updEF(); openM('evm');}

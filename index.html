@@ -38,36 +38,13 @@
     <div class="stack">
       <section class="card wx" id="wxCard" aria-label="Meteo"><div class="wx-d" style="padding:6px 2px">Caricamento meteo…</div></section>
       <div id="todayCard"></div>
-      <div id="pendingBox"></div>
+      <section class="card where" id="wwid" style="display:none" aria-label="Dove devo essere"></section>
+      <section class="card evs" aria-label="Prossimi 7 giorni">
+        <div class="evs-h"><span class="lbl">Prossimi 7 giorni</span><button type="button" class="pill" data-action="openEvM">+ Aggiungi</button></div>
+        <div id="evBox"></div>
+      </section>
+      <div id="weekBox"></div>
     </div>
-    <div id="wwid" style="display:none">
-      <div class="wherecard" style="cursor:pointer" data-action="openActiveTr">
-        <div style="font-size:11px;opacity:.8;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📍 Dove devo essere</div>
-        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px">
-          <div style="font-size:20px;font-weight:800;font-family:var(--font-serif)" id="wCity">—</div>
-          <div style="font-size:13px;opacity:.85;font-family:'JetBrains Mono',monospace;font-weight:600" id="wDates"></div>
-        </div>
-        <div style="font-size:13px;opacity:.9;margin-bottom:6px" id="wCli">🏢 —</div>
-        <span class="mapbtn" data-action="openMap" data-args="c">🗺 Naviga → Cliente</span>
-        <div style="font-size:13px;opacity:.9;margin-bottom:6px" id="wHot">🏨 —</div>
-        <span class="mapbtn" data-action="openMap" data-args="h">🗺 Naviga → Hotel</span>
-        <div id="wCont" style="display:none;margin-top:8px;font-size:13px;opacity:.9;margin-bottom:4px"></div>
-        <span id="wContBtn" class="mapbtn" style="display:none" data-action="callContact">📞 Chiama contatto</span>
-        <div id="wSpeseBtn" style="display:none;margin-top:10px">
-          <button class="sbtn" style="margin:0;padding:10px;font-size:14px" data-action="quickAddSpesa"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Aggiungi spesa</button>
-        </div>
-        <div style="font-size:11px;opacity:.6;margin-top:8px;text-align:right">Tocca per i dettagli →</div>
-      </div>
-    </div>
-    <div class="shdr">
-      <div style="display:flex;align-items:center;gap:8px">
-        <span style="font-family:var(--font-serif);font-size:15px;font-weight:700">Prossimi 7 giorni</span>
-        <span style="background:var(--blue);color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:20px" id="evCnt">0</span>
-      </div>
-      <button class="btn-p" data-action="openEvM"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Evento</button>
-    </div>
-    <div id="evBox"></div>
-    <div class="stack"><div id="weekBox"></div></div>
     <div style="height:24px"></div>
   </div>
 </div>
@@ -201,9 +178,10 @@
 <!-- RIEPILOGO USCITA -->
 <div class="overlay" id="urm" data-backdrop="urm">
   <div class="modal sheet"><div class="mh"></div>
-    <h2>Uscita registrata</h2>
+    <h2 id="urTitle">Registra uscita</h2>
+    <div id="urTimeWrap" style="margin-bottom:14px"><label class="fl" for="urTime">Uscita alle</label><input id="urTime" type="time" class="tin"></div>
     <div id="urBody"></div>
-    <div class="btnrow"><button type="button" class="b-ghost" id="urEdit" data-action="editFromRecap">Modifica</button><button type="button" class="b-main" data-action="closeM" data-args="urm">Fatto</button></div>
+    <div class="btnrow" id="urBtns"></div>
   </div>
 </div>
 

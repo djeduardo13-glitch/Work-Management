@@ -4,50 +4,41 @@ import { save } from '../../core/storage.js';
 import { renderEvs } from './events.js';
 import { refreshHours } from '../today/today.js';
 import { openTrDet } from '../trips/detail.js';
-import { fd, fn } from '../../lib/dates.js';
+import { quickAddSpesa } from '../trips/expenses.js';
+import { fd } from '../../lib/dates.js';
 import { cap } from '../../lib/format.js';
+import { h } from '../../lib/html.js';
+import { icon } from '../../lib/icons.js';
 import { callTel, openMapsQuery } from '../../lib/links.js';
 
+const MSH=['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
+const DSH=['dom','lun','mar','mer','gio','ven','sab'];
+const dshort=(k)=>{const d=new Date(k+'T00:00:00'); return `${DSH[d.getDay()]} ${d.getDate()} ${MSH[d.getMonth()]}`;};
+
+/** Card "Dove devo essere": trasferta in corso, con navigazione, contatto e spese. */
 export function chkWhere(){
-  const now=new Date(); 
-  now.setHours(0,0,0,0); 
-  const tk=fd(now);
-  
-  // Controlla se oggi è un giorno di ferie
-  const ferieOggi=S.evs.find(e=>e.dat===tk&&e.tipo==='ferie');
+  const now=new Date(); now.setHours(0,0,0,0);
   const w=document.getElementById('wwid');
-  const fw=document.getElementById('fwid');
-  
-  if(fw) fw.style.display='none';
-  {
-    // Controlla trasferta
-    const a=S.trs.find(t=>!t.arc&&new Date(t.d1+'T00:00:00')<=now&&new Date(t.d2+'T23:59:59')>=now);
-    if(a){
-      w.style.display='block'; 
-      document.getElementById('wCity').textContent=cap(a.ci)+', '+cap(a.pa); 
-      document.getElementById('wDates').textContent=fn(a.d1)+' – '+fn(a.d2);
-      document.getElementById('wCli').textContent='🏢 '+a.cl;
-      document.getElementById('wHot').textContent='🏨 '+a.ho;
-      w._c=a.cl; w._h=a.ho; w._tid=a.id;
-      var wSB=document.getElementById('wSpeseBtn');
-      if(wSB) wSB.style.display='block';
-      const wCont=document.getElementById('wCont');
-      const wContBtn=document.getElementById('wContBtn');
-      if(a.cn||a.ct){
-        wCont.style.display='block';
-        wCont.textContent='👤 '+(a.cn||'')+(a.cn&&a.ct?' · ':'' )+(a.ct||'');
-        wContBtn.style.display=a.ct?'inline-flex':'none';
-        w._ct=a.ct;
-      }else{
-        wCont.style.display='none';
-        wContBtn.style.display='none';
-      }
-    }else{
-      w.style.display='none';
-      var wSB2=document.getElementById('wSpeseBtn');
-      if(wSB2) wSB2.style.display='none';
-    }
-  }
+  if(!w) return;
+  const a=S.trs.find(t=>!t.arc&&new Date(t.d1+'T00:00:00')<=now&&new Date(t.d2+'T23:59:59')>=now);
+  if(!a){ w.style.display='none'; w.innerHTML=''; return; }
+  w._c=a.cl; w._h=a.ho; w._tid=a.id; w._ct=a.ct;
+  const d1=new Date(a.d1+'T00:00:00'),d2=new Date(a.d2+'T00:00:00');
+  const dates=d1.getMonth()===d2.getMonth()?`${d1.getDate()}–${d2.getDate()} ${MSH[d2.getMonth()]}`:`${d1.getDate()} ${MSH[d1.getMonth()]} – ${d2.getDate()} ${MSH[d2.getMonth()]}`;
+  const ret=a.vr1&&a.vr2?`<div class="where-line">${icon('plane')}<span>Ritorno ${h(a.vr1.toUpperCase())} → ${h(a.vr2.toUpperCase())} · ${dshort(a.d2)}${a.vr3?', '+h(a.vr3):''}</span></div>`:'';
+  const contact=a.cn||a.ct?`<div class="where-line">${icon('user')}<span>${h(a.cn||'')}${a.cn&&a.ct?' · ':''}${h(a.ct||'')}</span></div>`:'';
+  const btn=(action,args,label,ic)=>`<button type="button" class="where-btn" data-action="${action}"${args?` data-args="${args}"`:''}>${icon(ic)}${label}</button>`;
+  w.innerHTML=`
+    <div class="where-h"><span class="lbl">Dove devo essere</span><span class="chip" style="background:var(--tint);color:var(--blue)">${dates}</span></div>
+    <button type="button" class="where-city" data-action="openActiveTr">${h(cap(a.ci))}, ${h(cap(a.pa))}${icon('right')}</button>
+    ${ret}${contact}
+    <div class="where-btns">
+      ${a.cl?btn('openMap','c','Cliente','nav'):''}
+      ${a.ho?btn('openMap','h','Hotel','nav'):''}
+      ${a.ct?btn('callContact','','Chiama','phone'):''}
+    </div>
+    <button type="button" class="cta" style="height:48px;font-size:15px" data-action="quickAddSpesa">${icon('plus')}Aggiungi spesa</button>`;
+  w.style.display='';
 }
 
 export function openMap(t){const w=document.getElementById('wwid'); openMapsQuery(t==='c'?w._c:w._h);}

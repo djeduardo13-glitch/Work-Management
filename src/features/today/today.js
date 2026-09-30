@@ -1,5 +1,4 @@
 import { closeM, openM } from '../../components/modal.js';
-import { goTab } from '../../components/navigation.js';
 import { openTimePicker } from '../../components/time-picker.js';
 import { toast } from '../../components/toast.js';
 import { APP_CONFIG } from '../../config/app.config.js';
@@ -7,7 +6,7 @@ import { S } from '../../core/state.js';
 import { save } from '../../core/storage.js';
 import { delFerieOggi } from '../home/where.js';
 import { openDayEditor } from '../hours/day-editor.js';
-import { STD, computeDay, dateKey, fmtH, fmtHM, isTime, keyToDate, makeDay, milestones, pendingDays, roundDown, roundUp, toMin, toTime, weekSummary } from '../hours/engine.js';
+import { STD, computeDay, dateKey, fmtH, fmtHM, isTime, makeDay, milestones, roundDown, roundUp, toMin, toTime, weekSummary } from '../hours/engine.js';
 import { renderMonth } from '../hours/month.js';
 import { renderPOre } from '../profile/calendar.js';
 import { h } from '../../lib/html.js';
@@ -31,7 +30,6 @@ const nowTime = () => toTime(nowMin());
 /** Aggiorna tutto ciò che mostra ore (Home, pagina Ore, calendario profilo). */
 export function refreshHours() {
   renderToday();
-  renderPending();
   renderWeek();
   if (document.getElementById('oscr')?.classList.contains('on')) renderMonth();
   if (document.getElementById('pscr')?.classList.contains('on')) renderPOre();
@@ -182,22 +180,6 @@ export function renderToday() {
   el.innerHTML = html;
 }
 
-export function renderPending() {
-  const el = document.getElementById('pendingBox');
-  if (!el) return;
-  const list = pendingDays(S.dd, S.evs);
-  if (!list.length) {
-    el.innerHTML = '';
-    return;
-  }
-  const rows = list.slice(0, 3).map((k) => {
-    const d = keyToDate(k);
-    return `<div class="pend"><div class="dn"><small>${DOW[d.getDay()]}</small><b>${d.getDate()}</b></div><div class="t">Da confermare</div><button type="button" class="b1" data-action="openDayEditor" data-args="${k}">Modifica</button><button type="button" class="b2" data-action="confirmStandard" data-args="${k}">✓ Standard</button></div>`;
-  });
-  if (list.length > 3) rows.push(`<button type="button" class="addlink" data-action="goTab" data-args="ore">Altri ${list.length - 3} giorni da confermare</button>`);
-  el.innerHTML = `<div style="display:flex;flex-direction:column;gap:8px">${rows.join('')}</div>`;
-}
-
 export function renderWeek() {
   const el = document.getElementById('weekBox');
   if (!el) return;
@@ -280,34 +262,64 @@ export function editOut() {
   });
 }
 
-export function registerExit() {
-  const k = todayKey();
-  const day = S.dd[k];
-  if (!day || !isTime(day.e)) return;
-  const t = nowTime();
-  if (toMin(t) <= toMin(day.e)) {
-    toast('L’uscita deve essere dopo l’entrata', true);
-    return;
-  }
-  putDay(k, { u: t });
-  showExitRecap();
-}
-
-export function showExitRecap() {
-  const k = todayKey();
-  const day = S.dd[k];
-  if (!day || !isTime(day.u)) return;
-  const r = computeDay(k, day, S.evs);
-  const w = weekSummary(k, S.dd, S.evs);
+function recapHtml(k, day) {
+  const r = computeDay(k, day, S.evs, new Date(2100, 0, 1));
+  const dd = { ...S.dd, [k]: day };
+  const w = weekSummary(k, dd, S.evs, new Date(2100, 0, 1));
   const e = roundUp(toMin(day.e)), u = roundDown(toMin(day.u));
   const second = r.permesso ? `${fmtH(r.permesso)} permesso` : `${fmtH(r.extra, true)} extra`;
-  document.getElementById('urBody').innerHTML = `
+  return `
     <div class="sum2">
       <div><small>OGGI</small><b>${fmtH(r.worked)}</b><span>${second}</span></div>
       <div class="ok"><small>SETTIMANA</small><b>${fmtH(w.extra, true)}</b><span>${fmtH(w.worked)} su 40h</span></div>
     </div>
     <div class="times"><span>${toTime(e)} → ${toTime(u)}</span><span>${r.working ? 'pausa ' + (day.pausa === 30 ? '30 min' : '1h') : 'senza pausa'}</span></div>`;
-  document.getElementById('urEdit').dataset.args = k;
+}
+
+function paintExitPreview() {
+  const k = todayKey();
+  const day = S.dd[k];
+  const t = document.getElementById('urTime').value;
+  const body = document.getElementById('urBody');
+  const ok = isTime(t) && toMin(t) > toMin(day.e);
+  body.innerHTML = ok ? recapHtml(k, { ...day, u: t }) : '<div class="res bad"><span>L’uscita deve essere dopo l’entrata</span></div>';
+  document.getElementById('urOk').disabled = !ok;
+}
+
+/** "Registra uscita": prima chiede conferma, con l'orario modificabile. */
+export function registerExit() {
+  const k = todayKey();
+  const day = S.dd[k];
+  if (!day || !isTime(day.e)) return;
+  document.getElementById('urTitle').textContent = 'Registra uscita';
+  document.getElementById('urTimeWrap').style.display = '';
+  document.getElementById('urTime').value = nowTime();
+  document.getElementById('urBtns').innerHTML =
+    '<button type="button" class="b-ghost" data-action="closeM" data-args="urm">Annulla</button><button type="button" class="b-main" id="urOk" data-action="confirmExit">Conferma uscita</button>';
+  paintExitPreview();
+  openM('urm');
+}
+
+export function confirmExit() {
+  const k = todayKey();
+  const day = S.dd[k];
+  const t = document.getElementById('urTime').value;
+  if (!day || !isTime(t) || toMin(t) <= toMin(day.e)) return;
+  closeM('urm');
+  putDay(k, { u: t });
+  toast('Uscita registrata');
+}
+
+/** Riepilogo di una giornata già chiusa (dal pulsante "Riepilogo"). */
+export function showExitRecap() {
+  const k = todayKey();
+  const day = S.dd[k];
+  if (!day || !isTime(day.u)) return;
+  document.getElementById('urTitle').textContent = 'Riepilogo di oggi';
+  document.getElementById('urTimeWrap').style.display = 'none';
+  document.getElementById('urBody').innerHTML = recapHtml(k, day);
+  document.getElementById('urBtns').innerHTML =
+    `<button type="button" class="b-ghost" data-action="editFromRecap" data-args="${k}">Modifica</button><button type="button" class="b-main" data-action="closeM" data-args="urm">Fatto</button>`;
   openM('urm');
 }
 
@@ -319,8 +331,7 @@ export function confirmStandard(k) {
   toast('Giornata confermata');
 }
 
-export function editFromRecap() {
-  const k = document.getElementById('urEdit').dataset.args;
+export function editFromRecap(k) {
   closeM('urm');
   openDayEditor(k);
 }
@@ -351,6 +362,7 @@ function maybeRemind() {
 }
 
 export function startTodayTicker() {
+  document.getElementById('urTime').addEventListener('input', paintExitPreview);
   refreshHours();
   setInterval(() => {
     const k = todayKey();

@@ -1,7 +1,8 @@
 import { S } from '../../core/state.js';
 import { openDayEditor } from './day-editor.js';
-import { fmtH, isTime, keyToDate, monthSummary, roundDown, roundUp, toMin, toTime } from './engine.js';
+import { fmtH, isTime, keyToDate, monthSummary, pendingDays, roundDown, roundUp, toMin, toTime } from './engine.js';
 import { openPermitPlanner } from './permit-planner.js';
+import { confirmStandard } from '../today/today.js';
 import { v } from '../../lib/format.js';
 import { h } from '../../lib/html.js';
 import { icon } from '../../lib/icons.js';
@@ -13,6 +14,16 @@ const MSHORT = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', '
 const DOW = ['DOM', 'LUN', 'MAR', 'MER', 'GIO', 'VEN', 'SAB'];
 
 let showAll = false;
+
+function pendingHtml() {
+  const list = pendingDays(S.dd, S.evs);
+  if (!list.length) return '';
+  const rows = list.map((k) => {
+    const d = keyToDate(k);
+    return `<div class="pend"><div class="dn"><small>${DOW[d.getDay()]}</small><b>${d.getDate()}</b></div><div class="t">Da confermare</div><button type="button" class="b1 ic" data-action="openDayEditor" data-args="${k}" aria-label="Modifica">${icon('edit')}</button><button type="button" class="b2" data-action="confirmStandard" data-args="${k}">✓ Standard</button></div>`;
+  });
+  return `<div style="display:flex;flex-direction:column;gap:8px">${rows.join('')}</div>`;
+}
 
 function month() {
   if (!S.oreMonth) {
@@ -58,13 +69,16 @@ export function renderMonth() {
   const weeks = s.weeks
     .map((w) => `<div class="wrow"><span>${weekLabel(w.from)}</span><div class="pbar"><div style="width:${Math.round((w.extra / maxW) * 100)}%"></div></div><b>${w.extra ? fmtH(w.extra, true) : '0h'}</b></div>`)
     .join('');
-  const list = s.days.filter((r) => (showAll ? !(r.status === 'empty' && !r.working) || r.worked : !r.standard && r.status !== 'empty' && r.status !== 'waiting'));
+  const list = s.days
+    .filter((r) => (showAll ? !(r.status === 'empty' && !r.working) || r.worked : !r.standard && r.status !== 'empty' && r.status !== 'waiting'))
+    .filter((r) => !(isCurrent && r.status === 'todo')); // quelli recenti sono già in alto
   el.innerHTML = `<div class="stack">
     <div class="mnav">
       <button type="button" class="iconbtn" data-action="oreMonth" data-args="-1" aria-label="Mese precedente">${icon('left')}</button>
       <span>${MONTHS[m.getMonth()]} ${m.getFullYear()}</span>
       <button type="button" class="iconbtn" data-action="oreMonth" data-args="1" aria-label="Mese successivo" ${isCurrent ? 'disabled style="opacity:.35"' : ''}>${icon('right')}</button>
     </div>
+    ${isCurrent ? pendingHtml() : ''}
     <section class="mtot" aria-label="Totale del mese">
       <div><div class="lb">STRAORDINARI DEL MESE</div><div class="v">${fmtH(s.extra, true) || '0h'}</div></div>
       <div class="ms">

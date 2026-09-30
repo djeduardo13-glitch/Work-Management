@@ -132,6 +132,8 @@
 .pend button { height: 40px; padding: 0 11px; white-space: nowrap; flex-shrink: 0; border-radius: 20px; border: none; font: 700 13px var(--font-sans); cursor: pointer; }
 .pend .b1 { background: #fff; color: var(--warn); }
 .pend .b2 { background: var(--warn); color: #fff; }
+.pend .b1.ic { width: 40px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+.pend .b1.ic svg { width: 18px; height: 18px; }
 
 /* ── Settimana ── */
 .week { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
@@ -209,3 +211,25 @@
 .add-perm { display: flex; align-items: center; justify-content: center; gap: 8px; height: 52px; border-radius: 16px; border: none; background: var(--tint); color: var(--blue); font: 700 15px var(--font-sans); cursor: pointer; }
 .add-perm svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; }
 .empty-note { text-align: center; padding: 18px; color: var(--muted); font-size: 14px; }
+
+/* ── Dove devo essere ── */
+.where { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.where-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.where-city {
+  display: flex; align-items: center; gap: 6px; padding: 0; border: none; background: none; text-align: left; cursor: pointer;
+  font: 700 21px var(--font-serif); color: var(--ink);
+}
+.where-city svg { width: 20px; height: 20px; color: var(--muted); }
+.where-line { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
+.where-line svg { width: 18px; height: 18px; flex-shrink: 0; }
+.where-btns { display: flex; gap: 8px; }
+.where-btn {
+  flex: 1 1 0; display: flex; align-items: center; justify-content: center; gap: 6px; height: 44px; border-radius: 12px; border: none;
+  background: #eef2f7; color: var(--blue); font: 700 14px var(--font-sans); cursor: pointer;
+}
+.where-btn svg { width: 18px; height: 18px; }
+
+/* ── Prossimi 7 giorni ── */
+.evs { overflow: hidden; }
+.evs-h { display: flex; align-items: center; justify-content: space-between; padding: 10px 10px 8px 14px; }
+.pill { height: 36px; padding: 0 12px; border-radius: 18px; border: none; background: var(--tint); color: var(--blue); font: 700 13px var(--font-sans); cursor: pointer; }
