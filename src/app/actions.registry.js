@@ -1,20 +1,21 @@
 import { closeM } from '../components/modal.js';
-import { goTab } from '../components/navigation.js';
+import { goTab, openSyncSettings } from '../components/navigation.js';
+import { tpConfirm } from '../components/time-picker.js';
 import { changeVaultPassword, chkPIN, closePasM, copyCred, delCred, editCred, lockCreds, newCred, saveCr, togSP } from '../features/credentials/credentials.js';
 import { delEv, openED, openEvM, saveEv, updEF } from '../features/home/events.js';
 import { callContact, delFerieOggi, openActiveTr, openMap } from '../features/home/where.js';
-import { showStraDetail } from '../features/hours/calc.js';
-import { chDay, copyPrevDay, enableEditMode, goToday, saveAllOre, savePausa, saveTE2 } from '../features/hours/day.js';
+import { addOut, clearDay, dePause, fillStandard, openDayEditor, rmOut, saveDay } from '../features/hours/day-editor.js';
+import { oreMonth, oreToggleAll } from '../features/hours/month.js';
 import { delNote, openNoteEditor, saveNote } from '../features/hours/notes.js';
-import { emailReport } from '../features/hours/report.js';
+import { openPermitPlanner, ppKind, savePermit } from '../features/hours/permit-planner.js';
 import { chCM, openTrFromPreview, showDD, showTrPreview } from '../features/profile/calendar.js';
-import { delCurrentDayHours, delDayHours, delFerieFromProfile, editDayHours, showMonthDetail } from '../features/profile/month-detail.js';
+import { delDayHours, delFerieFromProfile, editDayHours, showMonthDetail } from '../features/profile/month-detail.js';
 import { swPTab } from '../features/profile/profile.js';
 import { exportBackup, importBackup } from '../features/settings/backup.js';
-import { exportPDF } from '../features/settings/pdf-export.js';
 import { editPhone, enNotif, savePh, togN } from '../features/settings/settings.js';
 import { copyRestoreLink } from '../features/sync/restore-link.js';
 import { gistPull, gistSync, saveGistId, saveGistToken } from '../features/sync/sync.js';
+import { comeBackAt, comeBackNow, confirmStandard, editEntry, editFromRecap, editOut, goOut, pickEntry, registerExit, setEntry, setPause, showExitRecap } from '../features/today/today.js';
 import { addCLItem, togCL, togCLSec } from '../features/trips/checklist.js';
 import { archiviaT, closeTD, eliminaT, emailTr, openTrDet, ripristinaT, shareWA } from '../features/trips/detail.js';
 import { delSpesa, openAddSpesaFromPopup, openSpesePopup, quickAddSpesa, saveSpesa } from '../features/trips/expenses.js';
@@ -28,22 +29,23 @@ import { callTel, openMapsQuery } from '../lib/links.js';
 
 export const actions = {
   closeM,
-  goTab,
+  goTab, openSyncSettings,
+  tpConfirm,
   changeVaultPassword, chkPIN, closePasM, copyCred, delCred, editCred, lockCreds, newCred, saveCr, togSP,
   delEv, openED, openEvM, saveEv, updEF,
   callContact, delFerieOggi, openActiveTr, openMap,
-  showStraDetail,
-  chDay, copyPrevDay, enableEditMode, goToday, saveAllOre, savePausa, saveTE2,
+  addOut, clearDay, dePause, fillStandard, openDayEditor, rmOut, saveDay,
+  oreMonth, oreToggleAll,
   delNote, openNoteEditor, saveNote,
-  emailReport,
+  openPermitPlanner, ppKind, savePermit,
   chCM, openTrFromPreview, showDD, showTrPreview,
-  delCurrentDayHours, delDayHours, delFerieFromProfile, editDayHours, showMonthDetail,
+  delDayHours, delFerieFromProfile, editDayHours, showMonthDetail,
   swPTab,
   exportBackup, importBackup,
-  exportPDF,
   editPhone, enNotif, savePh, togN,
   copyRestoreLink,
   gistPull, gistSync, saveGistId, saveGistToken,
+  comeBackAt, comeBackNow, confirmStandard, editEntry, editFromRecap, editOut, goOut, pickEntry, registerExit, setEntry, setPause, showExitRecap,
   addCLItem, togCL, togCLSec,
   archiviaT, closeTD, eliminaT, emailTr, openTrDet, ripristinaT, shareWA,
   delSpesa, openAddSpesaFromPopup, openSpesePopup, quickAddSpesa, saveSpesa,
