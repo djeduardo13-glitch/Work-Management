@@ -7,14 +7,10 @@ export const APP_CONFIG = {
     email: 'e.roedel@stem.it',
   },
   // Località per il meteo in Home (Medesano, PR)
-  homeLocation: { lat: 44.754, lon: 10.141, timezone: 'Europe/Rome' },
-  workday: {
-    defaultIn: '07:30',
-    defaultOut: '16:30',
-    breakStart: '12:00',
-    breakEnd: '13:00',
-    standardMinutes: 480, // 8h
-  },
+  homeLocation: { lat: 44.754, lon: 10.141, timezone: 'Europe/Rome', label: 'Medesano (PR)' },
+  // Le regole di calcolo ore (07:30–16:30, mezz'ore, sabato/festivi) sono in
+  // src/features/hours/engine.js, con i test in tests/engine.test.js.
+  reminderExitAt: '17:00', // promemoria se non hai registrato l'uscita
   weatherRefreshMs: 30 * 60 * 1000,
   syncPullIntervalMs: 5 * 60 * 1000,
 };
