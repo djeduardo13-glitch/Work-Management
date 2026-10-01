@@ -65,7 +65,7 @@ export function renderTrBody(t){
       <div class="step-s">${h([whenLabel(step.when),step.sub].filter(Boolean).join(' · '))}</div>
       ${step.nav?`<button type="button" class="where-btn" style="margin-top:6px;flex:none" data-action="openMapsQuery" data-args="${attr(step.nav)}">${icon('nav')}Naviga</button>`:''}
     </section>`:'';
-  const row=(k,val,action,args)=>`<div class="trow"><span>${k}</span>${action?`<button type="button" class="trow-v lk" data-action="${action}" data-args="${attr(args)}">${escapeHtml(val)}</button>`:`<b>${escapeHtml(val)}</b>`}</div>`;
+  const row=(k,val,action,args)=>`<div class="trow"><span>${k}</span>${action?`<button type="button" class="trow-v lk" ${action==='callTel'?'data-action="callTel"':'data-action="openMapsQuery"'} data-args="${attr(args)}">${escapeHtml(val)}</button>`:`<b>${escapeHtml(val)}</b>`}</div>`;
   const sec=(id,title,summary,inner,open)=>`<details class="ucard tsec" data-sec="${id}"${isOpen(id,open)?' open':''}><summary><span class="tsec-t">${title}</span><span class="tsec-s">${summary}</span></summary><div class="tsec-b">${inner}</div></details>`;
   const flights=t.va1||t.van||t.vr1?`
       ${t.va1?`<div style="margin-bottom:10px"><div style="font-size:10px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">✈ ANDATA</div><div class="drow"><span class="dk">Tratta</span><span class="dv">${h(t.va1)} → ${h(t.va2)}</span></div><div class="drow"><span class="dk">Orario</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(t.va3)} → ${h(t.va4)}</span></div><div class="drow"><span class="dk">N° Volo</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(t.van)}</span></div>${(t.scaleA||[]).map((s,i)=>`<div style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--bor)"><div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;margin-bottom:4px">Scalo ${i+1}</div><div class="drow"><span class="dk">Tratta</span><span class="dv">${h(s.a1)} → ${h(s.a2)}</span></div><div class="drow"><span class="dk">Orario</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(s.a3)} → ${h(s.a4)}</span></div><div class="drow"><span class="dk">N° Volo</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(s.an)}</span></div></div>`).join('')}</div>`:''}
@@ -83,7 +83,7 @@ export function renderTrBody(t){
   const spese=(t.spese||[]).length;
   body.dataset.tid=t.id;
   body.innerHTML=`<div class="stack" style="padding-top:8px">
-    <div class="thead"><div class="thead-t">${h(cap(t.ci))}, ${h(cap(t.pa))}</div><div class="thead-s">${fds(t.d1)} – ${fds(t.d2)} ${status}</div></div>
+    ${(()=>{const fl=FLAGS[String(t.pa||'').toLowerCase()]; const inner=`<div class="thead-t">${h(cap(t.ci))}, ${h(cap(t.pa))}</div><div class="thead-s">${fds(t.d1)} – ${fds(t.d2)} ${status}</div>`; return fl?`<div class="thead flag ${fl}"><div class="thead-box">${inner}</div></div>`:`<div class="thead">${inner}</div>`;})()}
     ${stepHtml}
     ${sec('addr','Indirizzi',[t.cl&&'Cliente',t.ho&&'hotel'].filter(Boolean).join(' e ')||'—',addr,true)}
     ${flights?sec('fly','Voli',[t.va1&&(up(t.va1)+' → '+up(t.va2)),t.vr1&&(up(t.vr1)+' → '+up(t.vr2))].filter(Boolean).join(' · '),flights,true):''}
@@ -127,3 +127,6 @@ const up=(s)=>String(s||'').toUpperCase();
 
 /** Pulsante fisso "+ Spesa" nella trasferta aperta. */
 export function addSpesaCur(){ if(S.curTid) openAddSpesa(S.curTid); }
+
+/** Bandiere disponibili (per ora Francia e Spagna). */
+const FLAGS={francia:'flag-fr',spagna:'flag-es'};

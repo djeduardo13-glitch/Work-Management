@@ -15,6 +15,7 @@ import { initPermitPlanner } from './features/hours/permit-planner.js';
 import { applyRestoreLink } from './features/sync/restore-link.js';
 import { autoSyncPull, initSyncIndicator } from './features/sync/sync.js';
 import { handleShortcut, startTodayTicker } from './features/today/today.js';
+import { initWork } from './features/work/work.js';
 import { initActions, registerActions } from './lib/actions.js';
 import { fd } from './lib/dates.js';
 
@@ -27,6 +28,7 @@ async function boot() {
   initCredentials();
   initDayEditor();
   initPermitPlanner();
+  initWork();
   applyUserConfig();
 
   load();

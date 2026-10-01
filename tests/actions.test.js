@@ -22,5 +22,8 @@ test('tutte le azioni del markup sono registrate', () => {
   const block = reg.slice(reg.indexOf('export const actions'));
   const registered = new Set(block.match(/\b[A-Za-z_]\w*\b/g));
   const missing = [...used].filter((n) => !registered.has(n)).sort();
+  // nomi d'azione costruiti a runtime non sono verificabili: vietati
+  const dynamic = sources.filter((f) => /data-(?:action|change)="\$\{/.test(readFileSync(f, 'utf8')));
+  assert.deepEqual(dynamic, [], 'Azioni con nome dinamico in: ' + dynamic.join(', '));
   assert.deepEqual(missing, [], 'Azioni non registrate: ' + missing.join(', '));
 });

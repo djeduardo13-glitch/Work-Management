@@ -82,7 +82,7 @@
       <button type="button" class="prof-ph" id="phBtn" data-action="editPhone"><span id="phTxt">Aggiungi numero</span></button>
     </div>
   </div>
-  <div class="seg ptabs2"><button type="button" class="on" id="pt0" data-action="swPTab" data-args="0">Calendario ore</button><button type="button" id="pt1" data-action="swPTab" data-args="1">Credenziali</button></div>
+  <div class="seg ptabs2"><button type="button" class="on" id="pt0" data-action="swPTab" data-args="0">Lavoro</button><button type="button" id="pt3" data-action="swPTab" data-args="3">Documenti</button><button type="button" id="pt1" data-action="swPTab" data-args="1">Credenziali</button></div>
   <div class="sc" id="pContent"></div>
 </div>
 
@@ -182,6 +182,54 @@
     <div id="urTimeWrap" style="margin-bottom:14px"><label class="fl" for="urTime">Uscita alle</label><input id="urTime" type="time" class="tin"></div>
     <div id="urBody"></div>
     <div class="btnrow" id="urBtns"></div>
+  </div>
+</div>
+
+<!-- LAVORO: CARTELLA -->
+<div class="overlay" id="wfm" data-backdrop="wfm">
+  <div class="modal sheet"><div class="mh"></div>
+    <h2 id="wfTitle">Nuova cartella</h2>
+    <label class="fl" for="wfName">Nome</label><input type="text" class="fi" id="wfName" maxlength="60" placeholder="es. Validazioni">
+    <div class="btnrow"><button type="button" class="b-danger" id="wfDel" data-action="delFolder">Elimina</button><button type="button" class="b-main" data-action="saveFolder">Salva</button></div>
+  </div>
+</div>
+
+<!-- LAVORO: AGGIORNAMENTO -->
+<div class="overlay" id="wem" data-backdrop="wem">
+  <div class="modal sheet"><div class="mh"></div>
+    <h2>Aggiornamento</h2>
+    <label class="fl" for="weDate">Data</label><input type="date" class="fi" id="weDate" style="margin-bottom:12px">
+    <label class="fl" for="weText">Cosa hai fatto</label><textarea class="fi" id="weText" rows="5" maxlength="4000" placeholder="es. Completati i test PAR 1–12, aperto ticket su timeout CAN" style="resize:vertical"></textarea>
+    <label class="fl" for="weTagIn" style="margin-top:12px">Tag</label>
+    <div class="wtags" id="weTags" style="margin-bottom:6px"></div>
+    <div style="display:flex;gap:8px"><input type="text" class="fi" id="weTagIn" maxlength="30" placeholder="es. R-3L XP" style="flex:1"><button type="button" class="pill" style="height:44px" data-action="weAddFromInput">Aggiungi</button></div>
+    <div class="wtags" id="weSugg" style="margin-top:8px"></div>
+    <div class="btnrow"><button type="button" class="b-danger" id="weDel" data-action="delEntry">Elimina</button><button type="button" class="b-main" data-action="saveEntry">Salva</button></div>
+  </div>
+</div>
+
+<!-- DOCUMENTO -->
+<div class="overlay" id="docm" data-backdrop="docm">
+  <div class="modal sheet"><div class="mh"></div>
+    <h2>Documento</h2>
+    <label class="fl" for="dcT">Tipo</label><select class="fs" id="dcT" style="width:100%;margin-bottom:12px"><option>Passaporto</option><option>Carta d’identità</option><option>Patente</option><option>Tessera sanitaria</option><option>Visto</option><option>Permesso di soggiorno</option><option>Altro</option></select>
+    <label class="fl" for="dcN">Nome (facoltativo)</label><input type="text" class="fi" id="dcN" maxlength="80" placeholder="es. Passaporto italiano" style="margin-bottom:12px">
+    <label class="fl" for="dcNum">Numero</label><div style="display:flex;gap:8px;margin-bottom:12px"><input type="text" class="fi" id="dcNum" maxlength="60" autocomplete="off" style="flex:1"><button type="button" class="pill" id="dcCopy" style="height:44px" data-action="copyDocNum">Copia</button></div>
+    <div class="sgrid"><div><label class="fl" for="dcS">Scadenza</label><input type="date" class="fi" id="dcS"></div><div><label class="fl" for="dcE">Rilasciato da</label><input type="text" class="fi" id="dcE" maxlength="80" placeholder="es. Questura PR"></div></div>
+    <label class="fl" for="dcNote" style="margin-top:12px">Note</label><textarea class="fi" id="dcNote" rows="2" maxlength="1000" style="resize:vertical"></textarea>
+    <div class="btnrow"><button type="button" class="b-danger" id="dcDel" data-action="delDoc">Elimina</button><button type="button" class="b-main" data-action="saveDoc">Salva</button></div>
+  </div>
+</div>
+
+<!-- VISTA GIORNATA -->
+<div class="overlay" id="dvm" data-backdrop="dvm">
+  <div class="modal sheet"><div class="mh"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px">
+      <h2 id="dvTitle" style="margin:0">Giorno</h2>
+      <button type="button" class="iconbtn" data-action="dvEdit" aria-label="Modifica"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></button>
+    </div>
+    <div id="dvBody"></div>
+    <div class="btnrow"><button type="button" class="b-ghost" data-action="closeM" data-args="dvm">Chiudi</button></div>
   </div>
 </div>
 

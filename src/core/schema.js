@@ -52,6 +52,15 @@ export function sanitizeData(d) {
   if (isObj(d.notif)) out.notif = { en: !!d.notif.en, usc: !!d.notif.usc, chk: !!d.notif.chk, ent: !!d.notif.ent };
   if (d.vault !== undefined) out.vault = cleanVault(d.vault);
   if (Array.isArray(d.creds)) out.creds = cleanStrings(d.creds).filter((c) => isObj(c) && typeof c.id === 'string');
+  if (isObj(d.work)) {
+    const w = cleanStrings(d.work);
+    out.work = {
+      folders: (Array.isArray(w.folders) ? w.folders : []).filter((f) => isObj(f) && typeof f.id === 'string' && typeof f.name === 'string'),
+      entries: (Array.isArray(w.entries) ? w.entries : [])
+        .filter((e) => isObj(e) && typeof e.id === 'string' && typeof e.folderId === 'string')
+        .map((e) => ({ ...e, tags: Array.isArray(e.tags) ? e.tags.filter((x) => typeof x === 'string').slice(0, 20) : [] })),
+    };
+  }
   if (typeof d.lastSync === 'string') out.lastSync = str(d.lastSync, 40);
   return out;
 }

@@ -27,15 +27,14 @@ export function chkWhere(){
   const dates=d1.getMonth()===d2.getMonth()?`${d1.getDate()}–${d2.getDate()} ${MSH[d2.getMonth()]}`:`${d1.getDate()} ${MSH[d1.getMonth()]} – ${d2.getDate()} ${MSH[d2.getMonth()]}`;
   const ret=a.vr1&&a.vr2?`<div class="where-line">${icon('plane')}<span>Ritorno ${h(a.vr1.toUpperCase())} → ${h(a.vr2.toUpperCase())} · ${dshort(a.d2)}${a.vr3?', '+h(a.vr3):''}</span></div>`:'';
   const contact=a.cn||a.ct?`<div class="where-line">${icon('user')}<span>${h(a.cn||'')}${a.cn&&a.ct?' · ':''}${h(a.ct||'')}</span></div>`:'';
-  const btn=(action,args,label,ic)=>`<button type="button" class="where-btn" data-action="${action}"${args?` data-args="${args}"`:''}>${icon(ic)}${label}</button>`;
   w.innerHTML=`
     <div class="where-h"><span class="lbl">Dove devo essere</span><span class="chip" style="background:var(--tint);color:var(--blue)">${dates}</span></div>
     <button type="button" class="where-city" data-action="openActiveTr">${h(cap(a.ci))}, ${h(cap(a.pa))}${icon('right')}</button>
     ${ret}${contact}
     <div class="where-btns">
-      ${a.cl?btn('openMap','c','Cliente','nav'):''}
-      ${a.ho?btn('openMap','h','Hotel','nav'):''}
-      ${a.ct?btn('callContact','','Chiama','phone'):''}
+      ${a.cl?`<button type="button" class="where-btn" data-action="openMap" data-args="c">${icon('nav')}Cliente</button>`:''}
+      ${a.ho?`<button type="button" class="where-btn" data-action="openMap" data-args="h">${icon('nav')}Hotel</button>`:''}
+      ${a.ct?`<button type="button" class="where-btn" data-action="callContact">${icon('phone')}Chiama</button>`:''}
     </div>
     <button type="button" class="cta" style="height:48px;font-size:13px" data-action="quickAddSpesa">${icon('plus')}Aggiungi spesa</button>`;
   w.style.display='';

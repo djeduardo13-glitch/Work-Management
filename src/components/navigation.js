@@ -1,5 +1,5 @@
+import { S } from '../core/state.js';
 import { renderMonth } from '../features/hours/month.js';
-import { renderPOre } from '../features/profile/calendar.js';
 import { swPTab } from '../features/profile/profile.js';
 import { renderTr } from '../features/trips/list.js';
 import { h } from '../lib/html.js';
@@ -13,7 +13,7 @@ export function goTab(tab){
   document.getElementById(nm[tab]).classList.add('on');
   if(tab==='ore') renderMonth();
   if(tab==='trasferte') renderTr();
-  if(tab==='profilo') renderPOre();
+  if(tab==='profilo') swPTab(S.pTab||0);
   if(tab!=='home') history.pushState({type:'tab',tab},'');
 }
 

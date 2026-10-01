@@ -21,11 +21,13 @@ export function onAutoLock(cb) {
   onLockCb = cb;
 }
 
+const cleanDocs = (list) => list.map(({ id, tipo, nome, num, scad, ente, note }) => ({ id, tipo, nome: nome || '', num: num || '', scad: scad || '', ente: ente || '', note: note || '' }));
 const clean = (list) => list.map(({ id, n, cat, u, p, url, note }) => ({ id, n, cat, u, p, url: url || '', note: note || '' }));
 
 async function persist() {
   if (!key) throw new Error('Cassaforte bloccata');
-  const { iv, ct } = await encryptJSON(key, clean(S.creds));
+  // contenuto cifrato: credenziali + documenti
+  const { iv, ct } = await encryptJSON(key, { creds: clean(S.creds), docs: cleanDocs(S.docs || []) });
   S.vault = { ...S.vault, iv, ct };
 }
 
@@ -35,6 +37,7 @@ export async function createVault(password) {
   key = await deriveKey(password, salt);
   S.vault = { v: 1, salt: toB64(salt), iter: KDF_ITERATIONS };
   S.creds = clean(S.legacyCreds || []);
+  S.docs = [];
   S.legacyCreds = [];
   await persist();
   touch();
@@ -45,7 +48,10 @@ export async function unlock(password) {
   if (wait > 0) throw new LockoutError(wait);
   const k = await deriveKey(password, fromB64(S.vault.salt), S.vault.iter || KDF_ITERATIONS);
   try {
-    S.creds = await decryptJSON(k, S.vault);
+    const data = await decryptJSON(k, S.vault);
+    // vecchio formato: solo l'elenco delle credenziali
+    S.creds = Array.isArray(data) ? data : data.creds || [];
+    S.docs = Array.isArray(data) ? [] : data.docs || [];
   } catch {
     registerFailure();
     throw new Error('Password errata');
@@ -72,6 +78,7 @@ export async function saveVault() {
 export function lock() {
   key = null;
   S.creds = [];
+  S.docs = [];
   clearTimeout(idleTimer);
 }
 

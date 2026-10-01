@@ -5,6 +5,7 @@ import { save } from '../../core/storage.js';
 import { renderEvs } from '../home/events.js';
 import { chkWhere } from '../home/where.js';
 import { openDayEditor } from '../hours/day-editor.js';
+import { openDayView } from '../hours/day-view.js';
 import { fmtH, isTime, monthSummary, roundDown, roundUp, toMin, toTime } from '../hours/engine.js';
 import { renderPOre } from './calendar.js';
 import { refreshHours } from '../today/today.js';
@@ -12,7 +13,8 @@ import { h } from '../../lib/html.js';
 
 /** Elenco dei giorni del mese per la casella toccata (stessi calcoli della pagina Ore). */
 export function showMonthDetail(tipo){
-  const y=S.calM.getFullYear(),m=S.calM.getMonth();
+  const cm=S.oreMonth||new Date();
+  const y=cm.getFullYear(),m=cm.getMonth();
   const M=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
   const DOW=['DOM','LUN','MAR','MER','GIO','VEN','SAB'];
   const conf={
@@ -29,7 +31,7 @@ export function showMonthDetail(tipo){
   document.getElementById('mdContent').innerHTML=days.length?`<div class="res" style="margin-bottom:10px"><span>Totale</span><b>${h(total)}</b></div><div class="ucard dlist">${days.map(r=>{
     const d=new Date(r.key+'T00:00:00'); const day=S.dd[r.key]||{};
     const det=r.ferie?'Ferie':isTime(day.e)&&isTime(day.u)?`${toTime(roundUp(toMin(day.e)))}–${toTime(roundDown(toMin(day.u)))}`:'—';
-    return `<button type="button" class="drow2" data-action="editDayHours" data-args="${r.key}"><div class="dn"><small>${DOW[d.getDay()]}</small><b>${d.getDate()}</b></div><div class="det">${det}</div><span class="badge ${cls}">${h(val(r))}</span></button>`;
+    return `<button type="button" class="drow2" data-action="dayFromList" data-args="${r.key}"><div class="dn"><small>${DOW[d.getDay()]}</small><b>${d.getDate()}</b></div><div class="det">${det}</div><span class="badge ${cls}">${h(val(r))}</span></button>`;
   }).join('')}</div>`:`<div class="empty-note">Nessun giorno in ${M[m].toLowerCase()}</div>`;
   openM('mdm');
 }
@@ -61,3 +63,5 @@ export function delDayHours(k){
   }
   save(); refreshHours(); renderPOre(); toast('Ore cancellate');
 }
+
+export function dayFromList(k){ closeM('mdm'); openDayView(k); }

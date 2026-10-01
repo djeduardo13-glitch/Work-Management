@@ -1,65 +1,17 @@
 import { closeM, openM } from '../../components/modal.js';
-import { MONTHS } from '../../config/constants.js';
 import { S } from '../../core/state.js';
-import { openDayEditor } from '../hours/day-editor.js';
-import { computeDay, dateKey, fmtH, monthSummary } from '../hours/engine.js';
-import { delDayHours, delFerieFromProfile, editDayHours, showMonthDetail } from './month-detail.js';
+import { renderMonth } from '../hours/month.js';
+import { delDayHours, delFerieFromProfile, editDayHours } from './month-detail.js';
 import { openTrDet } from '../trips/detail.js';
 import { fds, fh, fn, t2m } from '../../lib/dates.js';
-import { cap, v } from '../../lib/format.js';
+import { cap } from '../../lib/format.js';
 import { getHoliday } from '../../lib/holidays.js';
 import { attr, h } from '../../lib/html.js';
-import { icon } from '../../lib/icons.js';
 
 /** Calendario mensile: ore, straordinari, permessi, ferie e trasferte giorno per giorno. */
-export function renderPOre(){
-  if(S.pTab!==0)return;
-  const y=S.calM.getFullYear(),m=S.calM.getMonth();
-  const ms=monthSummary(y,m,S.dd,S.evs);
-  const byKey={}; ms.days.forEach(r=>{byKey[r.key]=r;});
-  const todayK=dateKey(new Date());
-  const last=new Date(y,m+1,0).getDate();
-  let start=new Date(y,m,1).getDay()-1; if(start<0)start=6;
-  const inTrip=(k)=>S.trs.some(tr=>tr.d1<=k&&tr.d2>=k);
-  let cells='';
-  for(let i=0;i<start;i++) cells+='<div class="cal2-c empty"></div>';
-  for(let n=1;n<=last;n++){
-    const k=`${y}-${String(m+1).padStart(2,'0')}-${String(n).padStart(2,'0')}`;
-    const r=byKey[k]||computeDay(k,S.dd[k],S.evs);
-    const hol=getHoliday(k);
-    let cls='cal2-c';
-    let val='';
-    if(r.ferie){cls+=' ferie'; val='F';}
-    else if(r.status==='todo'){cls+=' todo'; val='?';}
-    else if(r.worked){val=fmtH(r.worked).replace('h',''); if(r.extra) cls+=' extra'; else if(r.permesso) cls+=' perm'; else cls+=' std';}
-    if(!r.working) cls+=' we';
-    if(hol) cls+=' hol';
-    if(k===todayK) cls+=' today';
-    if(inTrip(k)) cls+=' trip';
-    const note=S.dd[k]?.notes?.length?'<i class="cal2-note"></i>':'';
-    cells+=`<button type="button" class="${cls}" data-action="openDayEditor" data-args="${k}" title="${attr(hol||'')}"><span class="cal2-n">${n}</span><span class="cal2-v">${val}</span>${note}</button>`;
-  }
-  const box=(tipo,label,value,cls)=>`<button type="button" class="msum2 ${cls}" data-action="showMonthDetail" data-args="${tipo}"><b>${value}</b><span>${label}</span></button>`;
-  document.getElementById('pContent').innerHTML=`<div class="stack" style="padding-top:8px">
-    <div class="mnav">
-      <button type="button" class="iconbtn" data-action="chCM" data-args="-1" aria-label="Mese precedente">${icon('left')}</button>
-      <span>${MONTHS[m]} ${y}</span>
-      <button type="button" class="iconbtn" data-action="chCM" data-args="1" aria-label="Mese successivo">${icon('right')}</button>
-    </div>
-    <section class="ucard cal2" aria-label="Calendario">
-      <div class="cal2-h">${['Lu','Ma','Me','Gi','Ve','Sa','Do'].map(d=>`<span>${d}</span>`).join('')}</div>
-      <div class="cal2-g">${cells}</div>
-      <div class="cal2-l"><span><i class="std"></i>Ore</span><span><i class="extra"></i>Straordinari</span><span><i class="perm"></i>Permesso</span><span><i class="ferie"></i>Ferie</span><span><i class="trip"></i>Trasferta</span></div>
-    </section>
-    <div class="msum2-g">
-      ${box('ore','Lavorate',fmtH(ms.worked),'')}
-      ${box('straordinari','Straordinari',fmtH(ms.extra,true),'ok')}
-      ${box('permessi','Permessi',fmtH(ms.permesso),'warn')}
-      ${box('ferie','Ferie',ms.ferie+' g','blue')}
-    </div>
-    <div style="height:24px"></div>
-  </div>`;
-}
+/** Il calendario ora sta nella pagina Ore. */
+export function renderPOre(){ renderMonth(); }
+
 
 export function showDD(k){
   const dd=S.dd[k],d=new Date(k+'T00:00:00');

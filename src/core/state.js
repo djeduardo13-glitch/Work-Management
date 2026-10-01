@@ -11,9 +11,12 @@ export const S = {
   gistToken: '',
   gistId: '',
   lastSync: '',
+  work: { folders: [], entries: [] }, // tracciamento lavoro: cartelle e aggiornamenti
 
   // ── Stato UI (non persistito) ──
   creds: [],       // credenziali decifrate, SOLO in RAM e solo a cassaforte sbloccata
+  docs: [],        // documenti decifrati, SOLO in RAM
+  workView: { folder: null, tag: null },
   cd: new Date(), ent: '08:00', usc: '17:00', ps: '12:00', pe: '13:00',
   calM: new Date(),
   teType: null, curTid: null, selEv: null, pTab: 0, tTab: 'p', editCredId: null,

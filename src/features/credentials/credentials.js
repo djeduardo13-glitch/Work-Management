@@ -2,6 +2,7 @@ import { closeM, openM } from '../../components/modal.js';
 import { toast } from '../../components/toast.js';
 import { S } from '../../core/state.js';
 import { save } from '../../core/storage.js';
+import { renderDocs } from './documents.js';
 import { MIN_PASSWORD_LENGTH, changePassword, createVault, hasLegacyCreds, hasVault, isUnlocked, lock, onAutoLock, saveVault, unlock } from './vault.js';
 import { swPTab } from '../profile/profile.js';
 import { v } from '../../lib/format.js';
@@ -14,7 +15,7 @@ export function initCredentials() {
   onAutoLock(() => {
     closeM('crm');
     closeM('pasm');
-    if (S.pTab === 1) swPTab(0);
+    if (S.pTab === 1 || S.pTab === 3) swPTab(0);
   });
   document.getElementById('pinInput').addEventListener('keydown', (e) => e.key === 'Enter' && chkPIN());
   document.getElementById('pinInput2').addEventListener('keydown', (e) => e.key === 'Enter' && chkPIN());
@@ -41,7 +42,7 @@ function setupModal(m) {
 
 export function chkCred() {
   if (isUnlocked()) {
-    renderCreds();
+    renderVaultTab();
     return;
   }
   setupModal(hasVault() ? 'unlock' : 'setup');
@@ -85,7 +86,7 @@ export async function chkPIN() {
       toast('Password aggiornata');
     }
     closeM('pasm');
-    renderCreds();
+    renderVaultTab();
   } catch (e) {
     showErr(e.message || 'Errore');
   } finally {
@@ -227,4 +228,10 @@ async function commit(msg) {
   } catch (e) {
     toast('Errore cifratura: ' + e.message, true);
   }
+}
+
+/** Dopo lo sblocco: mostra credenziali o documenti secondo la scheda aperta. */
+export function renderVaultTab() {
+  if (S.pTab === 3) renderDocs();
+  else renderCreds();
 }
