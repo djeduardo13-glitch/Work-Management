@@ -1,4 +1,5 @@
-export function cap(s){return s?s.charAt(0).toUpperCase()+s.slice(1):'';}
+/** Iniziali maiuscole per ogni parola: "la spezia" → "La Spezia", "saint-étienne" → "Saint-Étienne". */
+export function cap(s){return s?String(s).replace(/(^|[\s\-'’])(\p{L})/gu,(m,a,b)=>a+b.toUpperCase()):'';}
 
 
 export function v(id){const el=document.getElementById(id); return el?el.value:'';}

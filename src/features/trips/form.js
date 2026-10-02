@@ -1,12 +1,13 @@
 import { toast } from '../../components/toast.js';
 import { S } from '../../core/state.js';
 import { save } from '../../core/storage.js';
+import { applyClientsToTrip, setClientBlocks } from '../clients/clients.js';
 import { renderEvs } from '../home/events.js';
 import { chkWhere } from '../home/where.js';
 import { defCL } from './checklist.js';
 import { closeTD } from './detail.js';
 import { renderTr } from './list.js';
-import { v } from '../../lib/format.js';
+import { cap, v } from '../../lib/format.js';
 import { attr } from '../../lib/html.js';
 
 export function editTr(){
@@ -24,7 +25,7 @@ export function editTr(){
     document.getElementById('altroInput').style.display='block';
   }
   document.getElementById('nt-ci').value=t.ci;
-  document.getElementById('nt-cn').value=t.cn||''; document.getElementById('nt-ct').value=t.ct||''; document.getElementById('nt-cl').value=t.cl; document.getElementById('nt-vcon').value=t.vcon||'';
+  setClientBlocks(t); document.getElementById('nt-vcon').value=t.vcon||'';
   document.getElementById('nt-ho').value=t.ho;
   document.getElementById('nt-hci').value=t.hci||''; document.getElementById('nt-aur').value=t.aur||''; document.getElementById('nt-app').value=t.app||'';
   document.getElementById('nt-a1').value=t.va1;
@@ -77,7 +78,7 @@ export function showNT(){
   document.getElementById('nt-d2').value='';
   document.getElementById('nt-pa').value='';
   document.getElementById('nt-ci').value='';
-  document.getElementById('nt-cn').value=''; document.getElementById('nt-ct').value=''; document.getElementById('nt-cl').value=''; document.getElementById('nt-vcon').value='';
+  setClientBlocks(null); document.getElementById('nt-vcon').value='';
   document.getElementById('nt-ho').value='';
   ['nt-hci','nt-aur','nt-app'].forEach(id=>{document.getElementById(id).value='';});
   document.getElementById('nt-a1').value='';
@@ -187,7 +188,7 @@ export function setScaleLegs(dir,legs){
 
 export function saveNT(){
   let pa=v('nt-pa');
-  const ci=v('nt-ci').toLowerCase(),d1=v('nt-d1'),d2=v('nt-d2');
+  const ci=cap(v('nt-ci').trim()),d1=v('nt-d1'),d2=v('nt-d2');
   if(pa==='altro'){
     pa=v('nt-pa-altro').trim().toLowerCase();
     if(!pa){toast('Inserisci il nome del paese');return;}
@@ -204,11 +205,13 @@ export function saveNT(){
       t.au=v('nt-au');t.ac=v('nt-ac');t.ap=v('nt-ap');
       t.scaleA=scaleA; t.scaleR=scaleR;
       t.hci=v('nt-hci'); t.aur=v('nt-aur'); t.app=v('nt-app');
+      applyClientsToTrip(t);
       save(); closeNT(); renderTr(); renderEvs(); chkWhere();
       toast('Trasferta aggiornata!'); S.curTid=null; return;
     }
   }
   S.trs.push({id:'t'+Date.now(),hci:v('nt-hci'),aur:v('nt-aur'),app:v('nt-app'),d1,d2,pa,ci,cn:v('nt-cn'),ct:v('nt-ct'),cl:v('nt-cl'),ho:v('nt-ho'),vcon:v('nt-vcon'),va1:v('nt-a1'),va2:v('nt-a2'),va3:v('nt-a3'),va4:v('nt-a4'),van:v('nt-an'),vr1:v('nt-r1'),vr2:v('nt-r2'),vr3:v('nt-r3'),vr4:v('nt-r4'),vrn:v('nt-rn'),au:v('nt-au'),ac:v('nt-ac'),ap:v('nt-ap'),arc:0,spese:[],cl2:defCL(),scaleA,scaleR});
+  applyClientsToTrip(S.trs[S.trs.length-1]);
   save(); closeNT(); renderTr(); renderEvs(); chkWhere(); toast('Trasferta creata!');
 }
 

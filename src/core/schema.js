@@ -61,6 +61,12 @@ export function sanitizeData(d) {
         .map((e) => ({ ...e, tags: Array.isArray(e.tags) ? e.tags.filter((x) => typeof x === 'string').slice(0, 20) : [] })),
     };
   }
+  if (Array.isArray(d.clients)) {
+    out.clients = cleanStrings(d.clients)
+      .filter((c) => isObj(c) && typeof c.id === 'string')
+      .map((c) => ({ ...c, contacts: Array.isArray(c.contacts) ? c.contacts.filter(isObj) : [] }));
+  }
+  if (typeof d.clientsMigrated === 'boolean') out.clientsMigrated = d.clientsMigrated;
   if (typeof d.lastSync === 'string') out.lastSync = str(d.lastSync, 40);
   return out;
 }

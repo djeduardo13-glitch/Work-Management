@@ -3,6 +3,7 @@ import { S } from '../../core/state.js';
 import { openDayEditor, openTripFromDay } from './day-editor.js';
 import { computeDay, fmtH, isTime, keyToDate, pauseOf, planFor, roundDown, roundUp, toMin, toTime } from './engine.js';
 import { confirmStandard } from '../today/today.js';
+import { cap } from '../../lib/format.js';
 import { h } from '../../lib/html.js';
 
 // Vista di un giorno (sola lettura). La matita apre la modifica.
@@ -42,7 +43,7 @@ export function openDayView(k) {
 
   const extra = [
     plan.permit && !r.ferie ? `<div class="dv-tag">Permesso previsto ${toTime(plan.permit.a)}–${toTime(plan.permit.b)}${plan.permit.tit ? ' · ' + h(plan.permit.tit) : ''}</div>` : '',
-    ...trips.map((t) => `<button type="button" class="dv-tag lk" data-action="openTripFromDay" data-args="${h(t.id)}">✈ ${h(t.ci)}, ${h(t.pa)}</button>`),
+    ...trips.map((t) => `<button type="button" class="dv-tag lk" data-action="openTripFromDay" data-args="${h(t.id)}">✈ ${h(cap(t.ci))}, ${h(cap(t.pa))}</button>`),
     r.holiday ? `<div class="dv-tag">${h(r.holiday)}</div>` : '',
   ].join('');
   const notes = (day.notes || []).map((n) => `<div class="dv-note">${h(n.txt)}</div>`).join('');

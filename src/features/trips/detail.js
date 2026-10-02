@@ -2,6 +2,7 @@ import { toast } from '../../components/toast.js';
 import { EMB, EMERGENCY } from '../../config/constants.js';
 import { S } from '../../core/state.js';
 import { save } from '../../core/storage.js';
+import { tripClients } from '../clients/clients.js';
 import { renderEvs } from '../home/events.js';
 import { chkWhere } from '../home/where.js';
 import { addCLItem, togCL } from './checklist.js';
@@ -57,6 +58,7 @@ export function renderTrBody(t){
   const cats={documenti:'📄 Documenti',elettronica:'💻 Elettronica',abbigliamento:'👔 Abbigliamento',altro:'🎒 Altro'};
   let cl='';
   Object.keys(cats).forEach(cat=>{const items=t.cl2[cat]||[],done=items.filter(i=>i.c).length; cl+=`<div class="clcat"><div class="clch"><span class="clct">${h(cats[cat])}</span><span class="clcc" data-clcount="${h(t.id)}-${cat}">${done}/${h(items.length)}</span></div>${items.map((x,i)=>`<div class="clitem"><div class="clbox ${x.c?'ck':''}" data-cl="${h(t.id)}-${cat}-${i}" data-action="togCL" data-args="${attr(t.id)}|${attr(cat)}|${attr(i)}">${x.c?'<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><span class="cll ${x.c?'dn':''}" data-action="togCL" data-args="${attr(t.id)}|${attr(cat)}|${attr(i)}">${h(x.t)}</span></div>`).join('')}<button class="av2" data-action="addCLItem" data-args="${attr(t.id)}|${attr(cat)}"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Aggiungi voce</button></div>`;});
+  const cls=tripClients(t);
   const clAll=Object.values(t.cl2||{}).flat(); const clDone=clAll.filter(i=>i.c).length;
   const step=nextStep(t,now);
   const stepHtml=step?`<section class="step" aria-label="Prossimo passo">
@@ -71,12 +73,11 @@ export function renderTrBody(t){
       ${t.va1?`<div style="margin-bottom:10px"><div style="font-size:10px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">✈ ANDATA</div><div class="drow"><span class="dk">Tratta</span><span class="dv">${h(t.va1)} → ${h(t.va2)}</span></div><div class="drow"><span class="dk">Orario</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(t.va3)} → ${h(t.va4)}</span></div><div class="drow"><span class="dk">N° Volo</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(t.van)}</span></div>${(t.scaleA||[]).map((s,i)=>`<div style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--bor)"><div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;margin-bottom:4px">Scalo ${i+1}</div><div class="drow"><span class="dk">Tratta</span><span class="dv">${h(s.a1)} → ${h(s.a2)}</span></div><div class="drow"><span class="dk">Orario</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(s.a3)} → ${h(s.a4)}</span></div><div class="drow"><span class="dk">N° Volo</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(s.an)}</span></div></div>`).join('')}</div>`:''}
       ${t.vr1?`<div><div style="font-size:10px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">✈ RITORNO</div><div class="drow"><span class="dk">Tratta</span><span class="dv">${h(t.vr1)} → ${h(t.vr2)}</span></div><div class="drow"><span class="dk">Orario</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(t.vr3)} → ${h(t.vr4)}</span></div><div class="drow"><span class="dk">N° Volo</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(t.vrn)}</span></div>${(t.scaleR||[]).map((s,i)=>`<div style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--bor)"><div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;margin-bottom:4px">Scalo ${i+1}</div><div class="drow"><span class="dk">Tratta</span><span class="dv">${h(s.a1)} → ${h(s.a2)}</span></div><div class="drow"><span class="dk">Orario</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(s.a3)} → ${h(s.a4)}</span></div><div class="drow"><span class="dk">N° Volo</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(s.an)}</span></div></div>`).join('')}</div>`:''}`:'';
   const addr=[
-    t.cl?row('Cliente',t.cl,'openMapsQuery',t.cl):'',
+    ...cls.map((c,i)=>`${i?'<div class="trow-sep"></div>':''}<div class="trow-h">${h(c.name||('Cliente'+(cls.length>1?' '+(i+1):'')))}</div>`+(c.addr?row('Indirizzo',c.addr,'openMapsQuery',c.addr):'')+(c.cn?row('Contatto',c.cn):'')+(c.ct?row('Telefono',c.ct,'callTel',c.ct):'')),
+    t.ho?'<div class="trow-sep"></div>':'',
     t.ho?row('Hotel',t.ho,'openMapsQuery',t.ho):'',
     t.hci?row('Check-in',whenLabel(new Date(t.hci+':00'))):'',
     t.app?row('Appuntamento',whenLabel(new Date(t.app+':00'))):'',
-    t.cn?row('Contatto',t.cn):'',
-    t.ct?row('Telefono',t.ct,'callTel',t.ct):'',
     t.vcon?row('Viaggio con',t.vcon):'',
   ].join('')||'<div class="empty-note">Nessun indirizzo</div>';
   const car=t.au==='si'?row('Compagnia',t.ac||'—')+row('Prenotazione',t.ap||'—')+(t.aur?row('Ritiro',whenLabel(new Date(t.aur+':00'))):''):'';
@@ -85,7 +86,7 @@ export function renderTrBody(t){
   body.innerHTML=`<div class="stack" style="padding-top:8px">
     ${(()=>{const fl=FLAGS[String(t.pa||'').toLowerCase()]; const inner=`<div class="thead-t">${h(cap(t.ci))}, ${h(cap(t.pa))}</div><div class="thead-s">${fds(t.d1)} – ${fds(t.d2)} ${status}</div>`; return fl?`<div class="thead flag ${fl}"><div class="thead-box">${inner}</div></div>`:`<div class="thead">${inner}</div>`;})()}
     ${stepHtml}
-    ${sec('addr','Indirizzi',[t.cl&&'Cliente',t.ho&&'hotel'].filter(Boolean).join(' e ')||'—',addr,true)}
+    ${sec('addr','Indirizzi',[cls.length>1?cls.length+' clienti':cls.length?'Cliente':'',t.ho&&'hotel'].filter(Boolean).join(' e ')||'—',addr,true)}
     ${flights?sec('fly','Voli',[t.va1&&(up(t.va1)+' → '+up(t.va2)),t.vr1&&(up(t.vr1)+' → '+up(t.vr2))].filter(Boolean).join(' · '),flights,true):''}
     ${car?sec('car','Auto a noleggio',h(t.ac||''),car,false):''}
     ${sec('cl','Checklist',`${clDone} di ${clAll.length} completati`,cl,false)}
@@ -128,5 +129,5 @@ const up=(s)=>String(s||'').toUpperCase();
 /** Pulsante fisso "+ Spesa" nella trasferta aperta. */
 export function addSpesaCur(){ if(S.curTid) openAddSpesa(S.curTid); }
 
-/** Bandiere disponibili (per ora Francia e Spagna). */
-const FLAGS={francia:'flag-fr',spagna:'flag-es'};
+/** Bandiere dei paesi impostati (chiave = paese salvato, in minuscolo). */
+const FLAGS={francia:'flag-fr',spagna:'flag-es',belgio:'flag-be',germania:'flag-de',italia:'flag-it',portogallo:'flag-pt','repubblica ceca':'flag-cz',ungheria:'flag-hu',inghilterra:'flag-en','regno unito':'flag-en',svizzera:'flag-ch'};

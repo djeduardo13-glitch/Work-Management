@@ -6,7 +6,7 @@ export const STORAGE_KEY = 'wm3';
 
 /** Applica dati (già validati) allo stato. Le credenziali in chiaro finiscono in legacyCreds. */
 export function applyData(d) {
-  for (const k of ['evs', 'trs', 'dd', 'phone', 'notif', 'lastSync', 'work']) if (d[k] !== undefined) S[k] = d[k];
+  for (const k of ['evs', 'trs', 'dd', 'phone', 'notif', 'lastSync', 'work', 'clients', 'clientsMigrated']) if (d[k] !== undefined) S[k] = d[k];
   if (d.vault) S.vault = d.vault;
   if (!S.vault && d.creds && d.creds.length) S.legacyCreds = d.creds;
 }
@@ -26,6 +26,7 @@ export function load() {
 export function exportableData() {
   return {
     evs: S.evs, trs: S.trs, dd: S.dd, phone: S.phone, notif: S.notif, work: S.work,
+    clients: S.clients, clientsMigrated: S.clientsMigrated,
     vault: S.vault,
   };
 }

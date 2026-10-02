@@ -82,7 +82,7 @@
       <button type="button" class="prof-ph" id="phBtn" data-action="editPhone"><span id="phTxt">Aggiungi numero</span></button>
     </div>
   </div>
-  <div class="seg ptabs2"><button type="button" class="on" id="pt0" data-action="swPTab" data-args="0">Lavoro</button><button type="button" id="pt3" data-action="swPTab" data-args="3">Documenti</button><button type="button" id="pt1" data-action="swPTab" data-args="1">Credenziali</button></div>
+  <div class="seg ptabs2"><button type="button" class="on" id="pt0" data-action="swPTab" data-args="0">Lavoro</button><button type="button" id="pt4" data-action="swPTab" data-args="4">Clienti</button><button type="button" id="pt3" data-action="swPTab" data-args="3">Documenti</button><button type="button" id="pt1" data-action="swPTab" data-args="1">Credenziali</button></div>
   <div class="sc" id="pContent"></div>
 </div>
 
@@ -125,15 +125,15 @@
       </div>
       <div class="fg" id="altroInput" style="display:none;margin-bottom:12px">
         <label class="fl">Specifica paese</label>
-        <input type="text" class="fi" id="nt-pa-altro" placeholder="Inserisci il paese">
+        <input type="text" class="fi" id="nt-pa-altro" autocapitalize="words" placeholder="Inserisci il paese">
       </div>
       <div class="fg" style="margin-bottom:0">
         <label class="fl">Città</label>
-        <input type="text" class="fi" id="nt-ci" placeholder="es. Barcellona">
+        <input type="text" class="fi" id="nt-ci" autocapitalize="words" placeholder="es. Barcellona">
       </div>
     </div>
     <div class="fss">Cliente</div>
-    <div class="fcard"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="fg"><label class="fl">Nome contatto</label><input type="text" class="fi" id="nt-cn" placeholder="Mario Rossi"></div><div class="fg"><label class="fl">Telefono contatto</label><input type="tel" class="fi" id="nt-ct" placeholder="+34 600 000 000"></div></div><div class="fg"><label class="fl">Indirizzo Cliente</label><input type="text" class="fi" id="nt-cl" placeholder="Via e numero civico"></div><div class="fg"><label class="fl" for="nt-app">Appuntamento cliente (opzionale)</label><input type="datetime-local" class="fi" id="nt-app"></div><div class="fg"><label class="fl">Indirizzo Hotel</label><input type="text" class="fi" id="nt-ho" placeholder="Nome e indirizzo hotel"></div><div class="fg" style="margin-bottom:0"><label class="fl" for="nt-hci">Check-in hotel (opzionale)</label><input type="datetime-local" class="fi" id="nt-hci"></div></div>
+    <div class="fcard"><div id="ntClients"></div><datalist id="dl-clients"></datalist><button type="button" class="addlink" data-action="addClientBlock" style="margin-bottom:12px">+ Aggiungi cliente</button><div class="fg"><label class="fl" for="nt-app">Appuntamento cliente (opzionale)</label><input type="datetime-local" class="fi" id="nt-app"></div><div style="border-top:1px solid var(--line);margin:4px -14px 14px"></div><div class="fg"><label class="fl">Indirizzo Hotel</label><input type="text" class="fi" id="nt-ho" placeholder="Nome e indirizzo hotel"></div><div class="fg" style="margin-bottom:0"><label class="fl" for="nt-hci">Check-in hotel (opzionale)</label><input type="datetime-local" class="fi" id="nt-hci"></div></div>
     <datalist id="dl-aero"></datalist>
     <datalist id="dl-rent"></datalist>
     <div class="fss">Volo Andata</div>
@@ -218,6 +218,20 @@
     <div class="sgrid"><div><label class="fl" for="dcS">Scadenza</label><input type="date" class="fi" id="dcS"></div><div><label class="fl" for="dcE">Rilasciato da</label><input type="text" class="fi" id="dcE" maxlength="80" placeholder="es. Questura PR"></div></div>
     <label class="fl" for="dcNote" style="margin-top:12px">Note</label><textarea class="fi" id="dcNote" rows="2" maxlength="1000" style="resize:vertical"></textarea>
     <div class="btnrow"><button type="button" class="b-danger" id="dcDel" data-action="delDoc">Elimina</button><button type="button" class="b-main" data-action="saveDoc">Salva</button></div>
+  </div>
+</div>
+
+<!-- CLIENTE -->
+<div class="overlay" id="clm" data-backdrop="clm">
+  <div class="modal sheet" style="max-height:88vh;overflow-y:auto"><div class="mh"></div>
+    <h2>Cliente</h2>
+    <label class="fl" for="clName">Azienda</label><input type="text" class="fi" id="clName" maxlength="100" autocapitalize="words" placeholder="es. Ospedale di Lille" style="margin-bottom:12px">
+    <label class="fl" for="clAddr">Indirizzo</label><input type="text" class="fi" id="clAddr" maxlength="200" style="margin-bottom:12px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><span class="fl" style="margin:0">Contatti</span><button type="button" class="pill" data-action="addClientContact">+ Contatto</button></div>
+    <div id="clContacts" style="display:flex;flex-direction:column;gap:10px"></div>
+    <label class="fl" for="clNote" style="margin-top:12px">Note</label><textarea class="fi" id="clNote" rows="2" maxlength="1000" style="resize:vertical"></textarea>
+    <span class="fl" style="display:block;margin-top:12px">Trasferte</span><div class="dv-tags" id="clTrips" style="margin-top:6px"></div>
+    <div class="btnrow"><button type="button" class="b-danger" id="clDel" data-action="delClient">Elimina</button><button type="button" class="b-main" data-action="saveClient">Salva</button></div>
   </div>
 </div>
 

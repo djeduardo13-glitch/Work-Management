@@ -5,6 +5,7 @@ import { actions } from './app/actions.registry.js';
 import { APP_CONFIG } from './config/app.config.js';
 import { S } from './core/state.js';
 import { load, save } from './core/storage.js';
+import { initClientForm, migrateClients } from './features/clients/clients.js';
 import { initCredentials } from './features/credentials/credentials.js';
 import { startClock } from './features/home/clock.js';
 import { renderEvs } from './features/home/events.js';
@@ -29,9 +30,11 @@ async function boot() {
   initDayEditor();
   initPermitPlanner();
   initWork();
+  initClientForm();
   applyUserConfig();
 
   load();
+  migrateClients(); // crea i clienti dagli indirizzi delle trasferte già salvate (una volta)
   await applyRestoreLink();
   save({ sync: false });
   initSyncIndicator();

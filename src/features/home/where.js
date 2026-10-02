@@ -1,13 +1,14 @@
 import { toast } from '../../components/toast.js';
 import { S } from '../../core/state.js';
 import { save } from '../../core/storage.js';
+import { tripClients } from '../clients/clients.js';
 import { renderEvs } from './events.js';
 import { refreshHours } from '../today/today.js';
 import { openTrDet } from '../trips/detail.js';
 import { quickAddSpesa } from '../trips/expenses.js';
 import { fd } from '../../lib/dates.js';
 import { cap } from '../../lib/format.js';
-import { h } from '../../lib/html.js';
+import { attr, h } from '../../lib/html.js';
 import { icon } from '../../lib/icons.js';
 import { callTel, openMapsQuery } from '../../lib/links.js';
 
@@ -32,7 +33,7 @@ export function chkWhere(){
     <button type="button" class="where-city" data-action="openActiveTr">${h(cap(a.ci))}, ${h(cap(a.pa))}${icon('right')}</button>
     ${ret}${contact}
     <div class="where-btns">
-      ${a.cl?`<button type="button" class="where-btn" data-action="openMap" data-args="c">${icon('nav')}Cliente</button>`:''}
+      ${tripClients(a).filter(c=>c.addr).map((c,i,arr)=>`<button type="button" class="where-btn" data-action="openMapsQuery" data-args="${attr(c.addr)}">${icon('nav')}${h(c.name||(arr.length>1?'Cliente '+(i+1):'Cliente'))}</button>`).join('')}
       ${a.ho?`<button type="button" class="where-btn" data-action="openMap" data-args="h">${icon('nav')}Hotel</button>`:''}
       ${a.ct?`<button type="button" class="where-btn" data-action="callContact">${icon('phone')}Chiama</button>`:''}
     </div>
