@@ -418,14 +418,12 @@
     #d52b1e;
 }
 
-/* ── Orario di partenza consigliato ── */
-.dep { padding: 12px 0; border-top: 1px solid #efe9dc; }
-.dep:first-child { border-top: none; padding-top: 4px; }
-.dep-h { font-size: 11px; font-weight: 700; letter-spacing: .06em; color: var(--muted); text-transform: uppercase; }
-.dep-r { display: flex; align-items: baseline; gap: 10px; margin: 4px 0 8px; flex-wrap: wrap; }
-.dep-t { font: 600 22px var(--mono); color: var(--blue); }
-.dep-s { font-size: 12px; color: var(--muted); }
-.dep .row { flex-wrap: wrap; }
-.dep .row > * { flex: 0 0 auto; }
-.dep-hint { min-height: 0; margin: -4px 0 10px; font-size: 13px; font-weight: 700; color: var(--blue); }
+/* ── Orario di partenza consigliato (righe compatte nella tabella voli) ── */
+.dep-row { border-bottom: none; padding-bottom: 2px; }
+.dep-row .dv { color: var(--blue); font-size: 12px; font-weight: 700; }
+.dep-mini { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 0 0 8px; margin-bottom: 12px; border-bottom: 1px solid var(--bor); font-size: 10px; color: var(--muted); }
+.dep-lnk { padding: 2px 0; border: none; background: none; color: var(--blue); font: 700 10px var(--font-sans); cursor: pointer; text-decoration: underline; }
+.dep-from { height: 22px; padding: 0 8px; border-radius: 11px; border: 1px solid #c7d5e8; background: var(--tint); color: var(--blue); font: 600 10px var(--font-sans); cursor: pointer; }
+.dep-from.on { background: var(--blue); border-color: var(--blue); color: #fff; }
+.dep-hint { margin: -4px 0 10px; font-size: 12px; font-weight: 700; color: var(--blue); }
 .dep-hint:empty { display: none; }

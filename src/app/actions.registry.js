@@ -1,6 +1,3 @@
-// Registro di tutte le azioni richiamabili da data-action / data-change nel markup.
-// Se aggiungi un bottone nuovo, esporta la funzione e aggiungila qui.
-
 import { closeM } from '../components/modal.js';
 import { goTab, openSyncSettings } from '../components/navigation.js';
 import { tpConfirm } from '../components/time-picker.js';
@@ -30,6 +27,10 @@ import { addScaleLeg, closeNT, editTr, removeScaleLeg, saveNT, showNT, togAF, to
 import { swTTab } from '../features/trips/list.js';
 import { delEntry, delFolder, editWorkEntry, editWorkFolder, newEntry, newFolder, openFolder, saveEntry, saveFolder, weAddFromInput, weAddTag, weRmTag, workBack, workTag } from '../features/work/work.js';
 import { callTel, openMapsQuery } from '../lib/links.js';
+
+// Registro di tutte le azioni richiamabili da data-action / data-change nel markup.
+// Se aggiungi un bottone nuovo, esporta la funzione e aggiungila qui.
+
 
 export const actions = {
   closeM,

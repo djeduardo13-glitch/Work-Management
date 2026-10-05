@@ -13,35 +13,42 @@ const busy = new Set(); // trasferte con calcolo in corso
 const $ = (id) => document.getElementById(id);
 const trip = (id) => S.trs.find((x) => x.id === id);
 
-export function depHtml(t) {
-  const parts = [];
+
+/** Riga "Orario di partenza consigliato" sotto i dati del volo di andata. */
+export function depOutHtml(t) {
   const ob = outboundLeave(t);
-  if (ob) {
-    parts.push(`<div class="dep"><div class="dep-h">Orario di partenza consigliato · andata</div>
-      <div class="dep-r"><span class="dep-t">${ob.time}</span><span class="dep-s">verso ${h(ob.airport)} · guida ~${fmtDrive(ob.drive)}</span></div>
-      <button type="button" class="pill" data-action="openTripRoute" data-args="${attr(t.id)}|out">Percorso in Maps</button></div>`);
-  }
+  if (!ob) return '';
+  return `<div class="drow dep-row"><span class="dk">Orario di partenza consigliato</span><span class="dv mono">${ob.time}</span></div>
+    <div class="dep-mini">verso ${h(ob.airport)} · guida ~${fmtDrive(ob.drive)} · <button type="button" class="dep-lnk" data-action="openTripRoute" data-args="${attr(t.id)}|out">Maps</button></div>`;
+}
+
+/** Riga "Orario di partenza consigliato" sotto i dati del volo di ritorno. */
+export function depRetHtml(t) {
   const cls = tripClients(t);
   const rl = returnLeave(t, cls);
-  if (rl) {
-    const origins = returnOrigins(t, cls);
-    const chips = origins.length > 1
-      ? `<div class="wtags" style="margin:6px 0">${origins.map((o) => `<button type="button" class="wtag${rl.origin && o.id === rl.origin.id ? ' on' : ''}" data-action="setRetFrom" data-args="${attr(t.id)}|${o.id}">${h(o.label)}</button>`).join('')}</div>`
-      : '';
-    let body;
-    if (rl.time) {
-      body = `<div class="dep-r"><span class="dep-t">${rl.time}</span><span class="dep-s">${rl.origin ? 'da ' + h(rl.origin.label) + ' ' : ''}verso ${h(rl.airport)} · guida ~${fmtDrive(rl.drive)}${rl.manual ? ' (inserita a mano)' : rl.approx ? ' (indirizzo approssimato)' : ''}</span></div>`;
-    } else if (busy.has(t.id)) {
-      body = '<div class="dep-s">Calcolo del percorso…</div>';
-    } else if (!rl.origin) {
-      body = '<div class="dep-s">Aggiungi l’indirizzo dell’hotel o del cliente, oppure inserisci i minuti di viaggio</div>';
-    } else {
-      body = '<div class="dep-s">Percorso non calcolato: inserisci i minuti di viaggio</div>';
-    }
-    parts.push(`<div class="dep"><div class="dep-h">Orario di partenza consigliato · ritorno</div>${chips}${body}
-      <div class="row" style="margin-top:8px">${rl.origin ? `<button type="button" class="pill" data-action="openTripRoute" data-args="${attr(t.id)}|ret">Percorso in Maps</button>` : ''}<button type="button" class="pill" data-action="setRetManual" data-args="${attr(t.id)}">Minuti a mano</button>${rl.origin && !rl.manual ? `<button type="button" class="pill" data-action="recalcRet" data-args="${attr(t.id)}">Ricalcola</button>` : ''}</div></div>`);
+  if (!rl) return '';
+  const origins = returnOrigins(t, cls);
+  const id = attr(t.id);
+  let val = '—';
+  let info = '';
+  if (rl.time) {
+    val = rl.time;
+    info = `guida ~${fmtDrive(rl.drive)}${rl.manual ? ' (a mano)' : rl.approx ? ' (circa)' : ''}`;
+  } else if (busy.has(t.id)) {
+    info = 'calcolo…';
+  } else {
+    info = rl.origin ? 'percorso non calcolato' : 'manca l’indirizzo';
   }
-  return parts.join('');
+  const from = origins.length > 1
+    ? `da ${origins.map((o) => `<button type="button" class="dep-from${rl.origin && o.id === rl.origin.id ? ' on' : ''}" data-action="setRetFrom" data-args="${id}|${o.id}">${h(o.label)}</button>`).join('')}`
+    : rl.origin ? `da ${h(rl.origin.label)}` : '';
+  const links = [
+    rl.origin ? `<button type="button" class="dep-lnk" data-action="openTripRoute" data-args="${id}|ret">Maps</button>` : '',
+    `<button type="button" class="dep-lnk" data-action="setRetManual" data-args="${id}">Minuti</button>`,
+    rl.origin && !rl.manual ? `<button type="button" class="dep-lnk" data-action="recalcRet" data-args="${id}">Ricalcola</button>` : '',
+  ].filter(Boolean).join(' · ');
+  return `<div class="drow dep-row"><span class="dk">Orario di partenza consigliato</span><span class="dv mono">${val}</span></div>
+    <div class="dep-mini">${from}${from ? ' · ' : ''}${info} · ${links}</div>`;
 }
 
 function repaint(t) {
