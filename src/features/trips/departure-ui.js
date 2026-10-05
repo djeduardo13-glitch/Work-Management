@@ -1,7 +1,7 @@
 import { S } from '../../core/state.js';
 import { save } from '../../core/storage.js';
 import { tripClients } from '../clients/clients.js';
-import { TRAFFIC_FACTOR, airportCoords, fmtDrive, outboundLeave, pickOrigin, returnLeave, returnOrigins, routeKey } from './departure.js';
+import { TRAFFIC_FACTOR, airportCoords, airportTarget, fmtDrive, outboundLeave, pickOrigin, returnLeave, returnOrigins, routeKey } from './departure.js';
 import { renderTrBody } from './detail.js';
 import { v } from '../../lib/format.js';
 import { attr, h } from '../../lib/html.js';
@@ -119,7 +119,7 @@ export function openTripRoute(tid, which) {
   if (!t) return;
   let url;
   if (which === 'out') {
-    const c = airportCoords(t.va1);
+    const c = airportTarget(t.va1, t.van).coords;
     url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(c ? c.join(',') : t.va1 + ' airport')}&travelmode=driving`;
   } else {
     const origin = pickOrigin(t, returnOrigins(t, tripClients(t)));

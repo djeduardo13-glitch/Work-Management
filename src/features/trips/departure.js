@@ -1,4 +1,5 @@
-import { AIRPORTS, HOME_DRIVE_MIN } from '../../config/airports.js';
+import { AIRPORTS, HOME_DRIVE_MIN, TERMINALS } from '../../config/airports.js';
+import { fn } from '../../lib/dates.js';
 
 // "Orario di partenza consigliato": arrivare in aeroporto 2 ore prima del volo.
 // Andata: tempi medi fissi verso gli aeroporti abituali. Ritorno: tempo di guida
@@ -26,13 +27,34 @@ export function leaveAt(date, flightTime, driveMin) {
 export const hhmm = (d) => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
 export const fmtDrive = (m) => (m >= 60 ? `${Math.floor(m / 60)}h${m % 60 ? pad(m % 60) : ''}` : `${m} min`);
 
+/** Terminal di partenza dedotto dal numero di volo (es. easyJet a MXP → T2). */
+export function departureTerminal(code, flightNo) {
+  const ap = up(code);
+  const fn = up(flightNo).replace(/\s+/g, '');
+  const terms = TERMINALS[ap];
+  if (!terms || !fn) return null;
+  for (const [name, t] of Object.entries(terms)) {
+    if (t.airlines.some((a) => fn.startsWith(a) && /^\d/.test(fn.slice(a.length)))) return { name, ...t };
+  }
+  return null;
+}
+
+/** Coordinate e nome da mostrare (con terminal, se serve). */
+export function airportTarget(code, flightNo) {
+  const ap = up(code);
+  const term = departureTerminal(ap, flightNo);
+  return { label: term ? `${ap} ${term.name}` : ap, coords: term ? term.coords : AIRPORTS[ap] || null, extraMin: term ? term.extraMin : 0 };
+}
+
 /** Andata: solo se l'aeroporto di partenza è tra quelli abituali. */
 export function outboundLeave(t) {
   const ap = up(t.va1);
-  const drive = HOME_DRIVE_MIN[ap];
-  if (!drive) return null;
+  const base = HOME_DRIVE_MIN[ap];
+  if (!base) return null;
+  const target = airportTarget(ap, t.van);
+  const drive = base + target.extraMin;
   const when = leaveAt(t.d1, t.va3, drive);
-  return when ? { when, time: hhmm(when), drive, airport: ap } : null;
+  return when ? { when, time: hhmm(when), drive, airport: target.label } : null;
 }
 
 /** Punti di partenza possibili per il ritorno: hotel e clienti con indirizzo. */

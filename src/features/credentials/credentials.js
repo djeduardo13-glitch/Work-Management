@@ -15,7 +15,7 @@ export function initCredentials() {
   onAutoLock(() => {
     closeM('crm');
     closeM('pasm');
-    if (S.pTab === 1 || S.pTab === 3) swPTab(0);
+    if (S.pTab === 1) swPTab(0);
   });
   document.getElementById('pinInput').addEventListener('keydown', (e) => e.key === 'Enter' && chkPIN());
   document.getElementById('pinInput2').addEventListener('keydown', (e) => e.key === 'Enter' && chkPIN());
@@ -113,8 +113,8 @@ function credList() {
 }
 
 export function renderCreds() {
-  if (S.pTab !== 1 || !isUnlocked()) return;
-  document.getElementById('pContent').innerHTML = `
+  if (S.pTab !== 1 || S.vaultSub === 'doc' || !isUnlocked()) return;
+  document.getElementById('pContent').innerHTML = `${vaultSubHtml()}
   <div class="cr-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input type="search" id="crQ" placeholder="Cerca credenziale" aria-label="Cerca credenziale" value="${attr(query)}" autocomplete="off"></div>
   <div id="crList">${credList()}</div>
   <div class="exprow"><button class="xbtn btn-pdf" data-action="newCred"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nuova</button><button class="xbtn btn-em" data-action="lockCreds"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Blocca</button></div>
@@ -232,6 +232,17 @@ async function commit(msg) {
 
 /** Dopo lo sblocco: mostra credenziali o documenti secondo la scheda aperta. */
 export function renderVaultTab() {
-  if (S.pTab === 3) renderDocs();
+  if (S.vaultSub === 'doc') renderDocs();
   else renderCreds();
+}
+
+/** Selettore interno: Credenziali | Documenti (stessa cassaforte, stessa password). */
+export function vaultSubHtml() {
+  const doc = S.vaultSub === 'doc';
+  return `<div class="seg" style="margin:12px 16px 0"><button type="button" class="${doc ? '' : 'on'}" data-action="vaultSub" data-args="cred">Credenziali</button><button type="button" class="${doc ? 'on' : ''}" data-action="vaultSub" data-args="doc">Documenti</button></div>`;
+}
+
+export function vaultSub(sub) {
+  S.vaultSub = sub === 'doc' ? 'doc' : 'cred';
+  renderVaultTab();
 }

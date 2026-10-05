@@ -31,3 +31,10 @@ test('ritorno: minuti salvati o inseriti a mano', () => {
   // indirizzo cambiato: il tempo salvato non vale più
   assert.equal(returnLeave({ ...t, ho: 'Altro hotel', ret: { from: 'hotel', key: routeKey(o, 'CDG'), min: 45 } }, clients).time, null);
 });
+
+test('MXP con easyJet → T2 (5 minuti in più)', () => {
+  const ob = outboundLeave({ va1: 'mxp', va3: '08:05', van: 'EJU4542', d1: '2026-10-06' });
+  assert.equal(ob.airport, 'MXP T2');
+  assert.equal(ob.time, '03:45'); // 08:05 − 2h − 2h05 − 15 min
+  assert.equal(outboundLeave({ va1: 'mxp', va3: '08:05', van: 'AZ123', d1: '2026-10-06' }).airport, 'MXP');
+});

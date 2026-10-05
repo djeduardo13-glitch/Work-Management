@@ -2,7 +2,7 @@
 // Serve per calcolare il tragitto dall'hotel/cliente all'aeroporto del volo di ritorno.
 export const AIRPORTS = {
   // Italia
-  MXP: [45.630, 8.723], LIN: [45.445, 9.277], BGY: [45.669, 9.704], BLQ: [44.535, 11.289], PSA: [43.684, 10.393],
+  MXP: [45.627, 8.711], LIN: [45.445, 9.277], BGY: [45.669, 9.704], BLQ: [44.535, 11.289], PSA: [43.684, 10.393],
   VRN: [45.396, 10.889], PMF: [44.822, 10.296], FCO: [41.800, 12.239], CIA: [41.799, 12.595], NAP: [40.886, 14.291],
   VCE: [45.505, 12.352], TSF: [45.648, 12.194], TRN: [45.200, 7.650], GOA: [44.413, 8.838], FLR: [43.810, 11.205],
   BRI: [41.139, 16.761], CTA: [37.467, 15.066], PMO: [38.176, 13.091], CAG: [39.251, 9.054], OLB: [40.899, 9.518],
@@ -56,6 +56,11 @@ export const AIRPORTS = {
   // Mediterraneo
   ATH: [37.936, 23.947], SKG: [40.520, 22.971], HER: [35.340, 25.180], RHO: [36.405, 28.086], CFU: [39.602, 19.912],
   IST: [41.262, 28.742], SAW: [40.899, 29.309], LCA: [34.875, 33.625], PFO: [34.718, 32.486], MLA: [35.857, 14.477],
+};
+
+// Terminal separati: easyJet a Malpensa parte dal T2 (indirizzo e parcheggi diversi).
+export const TERMINALS = {
+  MXP: { T2: { coords: [45.650, 8.725], extraMin: 5, airlines: ['EJU', 'EZY', 'EZS', 'U2', 'DS'] } },
 };
 
 // Tempo medio di guida verso gli aeroporti di partenza abituali (minuti).

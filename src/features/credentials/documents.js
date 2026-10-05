@@ -2,7 +2,7 @@ import { closeM, openM } from '../../components/modal.js';
 import { toast } from '../../components/toast.js';
 import { S } from '../../core/state.js';
 import { save } from '../../core/storage.js';
-import { lockCreds } from './credentials.js';
+import { lockCreds, vaultSubHtml } from './credentials.js';
 import { isUnlocked, saveVault } from './vault.js';
 import { attr, h } from '../../lib/html.js';
 
@@ -25,7 +25,7 @@ function expiry(scad) {
 }
 
 export function renderDocs() {
-  if (S.pTab !== 3 || !isUnlocked()) return;
+  if (S.pTab !== 1 || S.vaultSub !== 'doc' || !isUnlocked()) return;
   const list = [...(S.docs || [])].sort((a, b) => expiry(a.scad).days - expiry(b.scad).days);
   const rows = list.map((d) => {
     const ex = expiry(d.scad);
@@ -35,7 +35,7 @@ export function renderDocs() {
       <span class="badge ${ex.cls}">${h(ex.txt)}</span>
     </button>`;
   }).join('');
-  $('pContent').innerHTML = `<div class="stack" style="padding-top:8px">
+  $('pContent').innerHTML = `${vaultSubHtml()}<div class="stack" style="padding-top:12px">
     ${rows || '<div class="empty-note">Nessun documento</div>'}
     <button type="button" class="add-perm" data-action="newDoc">＋ Documento</button>
     <div class="row"><button type="button" class="b-ghost" data-action="lockCreds">🔒 Blocca</button></div>

@@ -1,8 +1,11 @@
+// Registro di tutte le azioni richiamabili da data-action / data-change nel markup.
+// Se aggiungi un bottone nuovo, esporta la funzione e aggiungila qui.
+
 import { closeM } from '../components/modal.js';
 import { goTab, openSyncSettings } from '../components/navigation.js';
 import { tpConfirm } from '../components/time-picker.js';
 import { addClientBlock, addClientContact, delClient, newClient, openClient, openTripFromClient, rmClientBlock, rmClientContact, saveClient } from '../features/clients/clients.js';
-import { changeVaultPassword, chkPIN, closePasM, copyCred, delCred, editCred, lockCreds, newCred, openCredUrl, saveCr, togSP } from '../features/credentials/credentials.js';
+import { changeVaultPassword, chkPIN, closePasM, copyCred, delCred, editCred, lockCreds, newCred, openCredUrl, saveCr, togSP, vaultSub } from '../features/credentials/credentials.js';
 import { copyDocNum, delDoc, editDoc, newDoc, saveDoc } from '../features/credentials/documents.js';
 import { delEv, openED, openEvM, saveEv } from '../features/home/events.js';
 import { callContact, delFerieOggi, openActiveTr, openMap } from '../features/home/where.js';
@@ -28,16 +31,12 @@ import { swTTab } from '../features/trips/list.js';
 import { delEntry, delFolder, editWorkEntry, editWorkFolder, newEntry, newFolder, openFolder, saveEntry, saveFolder, weAddFromInput, weAddTag, weRmTag, workBack, workTag } from '../features/work/work.js';
 import { callTel, openMapsQuery } from '../lib/links.js';
 
-// Registro di tutte le azioni richiamabili da data-action / data-change nel markup.
-// Se aggiungi un bottone nuovo, esporta la funzione e aggiungila qui.
-
-
 export const actions = {
   closeM,
   goTab, openSyncSettings,
   tpConfirm,
   addClientBlock, addClientContact, delClient, newClient, openClient, openTripFromClient, rmClientBlock, rmClientContact, saveClient,
-  changeVaultPassword, chkPIN, closePasM, copyCred, delCred, editCred, lockCreds, newCred, openCredUrl, saveCr, togSP,
+  changeVaultPassword, chkPIN, closePasM, copyCred, delCred, editCred, lockCreds, newCred, openCredUrl, saveCr, togSP, vaultSub,
   copyDocNum, delDoc, editDoc, newDoc, saveDoc,
   delEv, openED, openEvM, saveEv,
   callContact, delFerieOggi, openActiveTr, openMap,

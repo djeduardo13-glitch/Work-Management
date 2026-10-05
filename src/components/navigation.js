@@ -13,7 +13,7 @@ export function goTab(tab){
   document.getElementById(nm[tab]).classList.add('on');
   if(tab==='ore') renderMonth();
   if(tab==='trasferte') renderTr();
-  if(tab==='profilo') swPTab(S.pTab||0);
+  if(tab==='profilo'){ S.workView={folder:null,tag:null}; swPTab(0); document.querySelector('#pscr .sc')?.scrollTo(0,0); }
   if(tab!=='home') history.pushState({type:'tab',tab},'');
 }
 

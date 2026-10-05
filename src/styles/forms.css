@@ -78,3 +78,6 @@ input[type="date"].fi, input[type="datetime-local"].fi, input[type="time"].fi { 
 .cr-search input { width: 100%; height: 44px; box-sizing: border-box; padding: 0 12px 0 40px; border-radius: 10px; border: 1px solid #d9d3c4; background: #fff; font: 14px var(--font-sans); color: var(--ink); }
 .cr-note { font-size: 11px; color: var(--muted); white-space: pre-wrap; margin-top: 8px; }
 .cr-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; height: 32px; padding: 0 12px; border-radius: 16px; border: none; background: var(--tint); color: var(--blue); font: 700 11px var(--font-sans); cursor: pointer; }
+
+/* etichette lunghe nelle schede del Profilo */
+.ptabs2 button { white-space: normal; line-height: 1.15; padding: 0 6px; }
