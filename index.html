@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://gist.githubusercontent.com https://api.open-meteo.com https://geocoding-api.open-meteo.com https://api.bigdatacloud.net; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://gist.githubusercontent.com https://api.open-meteo.com https://geocoding-api.open-meteo.com https://api.bigdatacloud.net https://nominatim.openstreetmap.org https://router.project-osrm.org; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'">
 <meta name="referrer" content="no-referrer">
 <title>Work Manager – STEM</title>
 <meta name="theme-color" content="#1e3a5f" id="themeColor">
@@ -141,9 +141,10 @@
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div class="fg"><label class="fl">Aeroporto Part.</label><input type="text" class="fi" id="nt-a1" placeholder="MXP" list="dl-aero" autocomplete="off"></div>
         <div class="fg"><label class="fl">Aeroporto Arr.</label><input type="text" class="fi" id="nt-a2" placeholder="BCN"></div>
-        <div class="fg"><label class="fl">Ora Partenza</label><input type="time" step="1800" class="fi" id="nt-a3"></div>
-        <div class="fg"><label class="fl">Ora Arrivo</label><input type="time" step="1800" class="fi" id="nt-a4"></div>
+        <div class="fg"><label class="fl">Ora Partenza</label><input type="time" class="fi" id="nt-a3"></div>
+        <div class="fg"><label class="fl">Ora Arrivo</label><input type="time" class="fi" id="nt-a4"></div>
       </div>
+      <div class="dep-hint" id="ntDepHint" aria-live="polite"></div>
       <div class="fg" style="margin-bottom:8px"><label class="fl">N° Volo</label><input type="text" class="fi" id="nt-an" placeholder="FR1234"></div>
       <div style="display:flex;align-items:center;gap:8px;padding:4px 0 8px">
         <input type="checkbox" id="nt-ascale" data-change="togScale" data-args="a" style="width:18px;height:18px;cursor:pointer">
@@ -156,8 +157,8 @@
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div class="fg"><label class="fl">Aeroporto Part.</label><input type="text" class="fi" id="nt-r1" placeholder="BCN"></div>
         <div class="fg"><label class="fl">Aeroporto Arr.</label><input type="text" class="fi" id="nt-r2" placeholder="MXP"></div>
-        <div class="fg"><label class="fl">Ora Partenza</label><input type="time" step="1800" class="fi" id="nt-r3"></div>
-        <div class="fg"><label class="fl">Ora Arrivo</label><input type="time" step="1800" class="fi" id="nt-r4"></div>
+        <div class="fg"><label class="fl">Ora Partenza</label><input type="time" class="fi" id="nt-r3"></div>
+        <div class="fg"><label class="fl">Ora Arrivo</label><input type="time" class="fi" id="nt-r4"></div>
       </div>
       <div class="fg" style="margin-bottom:8px"><label class="fl">N° Volo</label><input type="text" class="fi" id="nt-rn" placeholder="FR5678"></div>
       <div style="display:flex;align-items:center;gap:8px;padding:4px 0 8px">

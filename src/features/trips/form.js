@@ -52,6 +52,7 @@ export function editTr(){
   if(t.scaleR&&t.scaleR.length) setScaleLegs('r',t.scaleR);
   closeTD();
   document.getElementById('ntPg').classList.add('on');
+  document.dispatchEvent(new Event('wm:trip-form-open'));
 }
 
 export function getAutocompleteValues(field){
@@ -105,6 +106,7 @@ export function showNT(){
   document.getElementById('nt-rscaleBox').style.display='none';
   togAF();
   document.getElementById('ntPg').classList.add('on');
+  document.dispatchEvent(new Event('wm:trip-form-open'));
 }
 
 export function toggleAltroInput(){

@@ -1,7 +1,9 @@
+import { fmtDrive, outboundLeave, returnLeave } from './departure.js';
 import { h } from '../../lib/html.js';
 
 // "Prossimo passo" di una trasferta: voli, ritiro auto, check-in hotel, appuntamento cliente.
 // Funzioni pure: la data/ora "adesso" si può passare per i test.
+
 
 const T = /^\d{2}:\d{2}$/;
 const DT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
@@ -15,8 +17,13 @@ const fromDT = (s) => (DT.test(s || '') ? new Date(s + ':00') : null);
 const hasTime = (d) => !(d.getHours() === 23 && d.getMinutes() === 59);
 
 /** Tutti i passi della trasferta, in ordine di orario. */
-export function tripSteps(t) {
+export function tripSteps(t, clients) {
+  const cls = clients || (t.cl ? [{ name: '', addr: t.cl }] : []);
   const steps = [];
+  const ob = outboundLeave(t);
+  if (ob) steps.push({ kind: 'leave', route: 'out', when: ob.when, title: 'Orario di partenza consigliato', sub: `verso ${ob.airport} · guida ~${fmtDrive(ob.drive)}` });
+  const rl = returnLeave(t, cls);
+  if (rl && rl.when) steps.push({ kind: 'leave', route: 'ret', when: rl.when, title: 'Orario di partenza consigliato', sub: `${rl.origin ? 'da ' + rl.origin.label + ' ' : ''}verso ${rl.airport} · guida ~${fmtDrive(rl.drive)}` });
   if (t.va1 || t.van) {
     steps.push({
       kind: 'flight', when: at(t.d1, t.va3),
@@ -44,8 +51,8 @@ export function tripSteps(t) {
 }
 
 /** Primo passo non ancora passato. */
-export function nextStep(t, now = new Date()) {
-  return tripSteps(t).find((s) => s.when > now) || null;
+export function nextStep(t, now = new Date(), clients) {
+  return tripSteps(t, clients).find((s) => s.when > now) || null;
 }
 
 /** "tra 40 min", "tra 5 h", "domani", "tra 3 giorni". */

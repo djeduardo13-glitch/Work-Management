@@ -8,8 +8,9 @@ const trip = {
   vr1: 'mad', vr2: 'blq', vr3: '18:00', vr4: '20:00', vrn: 'ib2',
 };
 
-test('passi in ordine: volo, auto, hotel, cliente, ritorno', () => {
-  assert.deepEqual(tripSteps(trip).map((s) => s.kind), ['flight', 'car', 'hotel', 'client', 'flight']);
+test('passi in ordine: partenza consigliata, volo, auto, hotel, cliente, ritorno', () => {
+  assert.deepEqual(tripSteps(trip).map((s) => s.kind), ['leave', 'flight', 'car', 'hotel', 'client', 'flight']);
+  assert.equal(tripSteps(trip)[0].when.getHours(), 4); // 08:00 da BLQ → 04:50
 });
 test('prossimo passo in base all’ora', () => {
   assert.equal(nextStep(trip, new Date(2026, 8, 28, 7, 0)).title, 'Volo di andata BLQ → MAD');

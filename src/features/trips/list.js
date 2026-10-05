@@ -1,4 +1,5 @@
 import { S } from '../../core/state.js';
+import { tripClients } from '../clients/clients.js';
 import { openTrDet } from './detail.js';
 import { countdown, nextStep } from './timeline.js';
 import { fds } from '../../lib/dates.js';
@@ -14,7 +15,7 @@ function trCard(t,now,old){
   const dp=new Date(t.d1+'T00:00:00'),diff=Math.round((dp-now)/864e5);
   const live=dp<=now&&new Date(t.d2+'T23:59:59')>=now;
   const chip=old?'':live?'<span class="chip"><i></i>In corso</span>':diff===0?'<span class="chip">Oggi</span>':diff===1?'<span class="chip" style="background:var(--tint);color:var(--blue)">domani</span>':diff>1?`<span class="chip" style="background:var(--tint);color:var(--blue)">tra ${diff} gg</span>`:'';
-  const step=live?nextStep(t):null;
+  const step=live?nextStep(t,new Date(),tripClients(t)):null;
   return `<button type="button" class="trc${live?' live':''}${old?' old':''}" data-action="openTrDet" data-args="${attr(t.id)}">
     <div class="trc-ic">${PLANE}</div>
     <div class="trc-b"><div class="trc-t">${h(cap(t.ci))}, ${h(cap(t.pa))}</div><div class="trc-s">${fds(t.d1)} – ${fds(t.d2)}</div>${step?`<div class="trc-n">${h(step.title)} · ${h(countdown(step.when))}</div>`:''}</div>

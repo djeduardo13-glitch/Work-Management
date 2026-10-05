@@ -6,6 +6,7 @@ import { tripClients } from '../clients/clients.js';
 import { renderEvs } from '../home/events.js';
 import { chkWhere } from '../home/where.js';
 import { addCLItem, togCL } from './checklist.js';
+import { depHtml, ensureReturnRoute, openTripRoute } from './departure-ui.js';
 import { openAddSpesa, openSpesePopup, renderSpese } from './expenses.js';
 import { renderTr } from './list.js';
 import { countdown, nextStep, whenLabel } from './timeline.js';
@@ -60,16 +61,16 @@ export function renderTrBody(t){
   Object.keys(cats).forEach(cat=>{const items=t.cl2[cat]||[],done=items.filter(i=>i.c).length; cl+=`<div class="clcat"><div class="clch"><span class="clct">${h(cats[cat])}</span><span class="clcc" data-clcount="${h(t.id)}-${cat}">${done}/${h(items.length)}</span></div>${items.map((x,i)=>`<div class="clitem"><div class="clbox ${x.c?'ck':''}" data-cl="${h(t.id)}-${cat}-${i}" data-action="togCL" data-args="${attr(t.id)}|${attr(cat)}|${attr(i)}">${x.c?'<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><span class="cll ${x.c?'dn':''}" data-action="togCL" data-args="${attr(t.id)}|${attr(cat)}|${attr(i)}">${h(x.t)}</span></div>`).join('')}<button class="av2" data-action="addCLItem" data-args="${attr(t.id)}|${attr(cat)}"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Aggiungi voce</button></div>`;});
   const cls=tripClients(t);
   const clAll=Object.values(t.cl2||{}).flat(); const clDone=clAll.filter(i=>i.c).length;
-  const step=nextStep(t,now);
+  const step=nextStep(t,now,cls);
   const stepHtml=step?`<section class="step" aria-label="Prossimo passo">
       <div class="step-h"><span class="lbl" style="color:var(--blue)">Prossimo passo</span><span class="chip" style="background:#fff;color:var(--blue)">${h(countdown(step.when,now))}</span></div>
       <div class="step-t">${h(step.title)}</div>
       <div class="step-s">${h([whenLabel(step.when),step.sub].filter(Boolean).join(' · '))}</div>
-      ${step.nav?`<button type="button" class="where-btn" style="margin-top:6px;flex:none" data-action="openMapsQuery" data-args="${attr(step.nav)}">${icon('nav')}Naviga</button>`:''}
+      ${step.route?`<button type="button" class="where-btn" style="margin-top:6px;flex:none" data-action="openTripRoute" data-args="${attr(t.id)}|${step.route}">${icon('nav')}Percorso in Maps</button>`:step.nav?`<button type="button" class="where-btn" style="margin-top:6px;flex:none" data-action="openMapsQuery" data-args="${attr(step.nav)}">${icon('nav')}Naviga</button>`:''}
     </section>`:'';
   const row=(k,val,action,args)=>`<div class="trow"><span>${k}</span>${action?`<button type="button" class="trow-v lk" ${action==='callTel'?'data-action="callTel"':'data-action="openMapsQuery"'} data-args="${attr(args)}">${escapeHtml(val)}</button>`:`<b>${escapeHtml(val)}</b>`}</div>`;
   const sec=(id,title,summary,inner,open)=>`<details class="ucard tsec" data-sec="${id}"${isOpen(id,open)?' open':''}><summary><span class="tsec-t">${title}</span><span class="tsec-s">${summary}</span></summary><div class="tsec-b">${inner}</div></details>`;
-  const flights=t.va1||t.van||t.vr1?`
+  const flights=t.va1||t.van||t.vr1?`<div id="depBox">${depHtml(t)}</div>
       ${t.va1?`<div style="margin-bottom:10px"><div style="font-size:10px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">✈ ANDATA</div><div class="drow"><span class="dk">Tratta</span><span class="dv">${h(t.va1)} → ${h(t.va2)}</span></div><div class="drow"><span class="dk">Orario</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(t.va3)} → ${h(t.va4)}</span></div><div class="drow"><span class="dk">N° Volo</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(t.van)}</span></div>${(t.scaleA||[]).map((s,i)=>`<div style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--bor)"><div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;margin-bottom:4px">Scalo ${i+1}</div><div class="drow"><span class="dk">Tratta</span><span class="dv">${h(s.a1)} → ${h(s.a2)}</span></div><div class="drow"><span class="dk">Orario</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(s.a3)} → ${h(s.a4)}</span></div><div class="drow"><span class="dk">N° Volo</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(s.an)}</span></div></div>`).join('')}</div>`:''}
       ${t.vr1?`<div><div style="font-size:10px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">✈ RITORNO</div><div class="drow"><span class="dk">Tratta</span><span class="dv">${h(t.vr1)} → ${h(t.vr2)}</span></div><div class="drow"><span class="dk">Orario</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(t.vr3)} → ${h(t.vr4)}</span></div><div class="drow"><span class="dk">N° Volo</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(t.vrn)}</span></div>${(t.scaleR||[]).map((s,i)=>`<div style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--bor)"><div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;margin-bottom:4px">Scalo ${i+1}</div><div class="drow"><span class="dk">Tratta</span><span class="dv">${h(s.a1)} → ${h(s.a2)}</span></div><div class="drow"><span class="dk">Orario</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(s.a3)} → ${h(s.a4)}</span></div><div class="drow"><span class="dk">N° Volo</span><span class="dv" style="font-family:'JetBrains Mono',monospace">${h(s.an)}</span></div></div>`).join('')}</div>`:''}`:'';
   const addr=[
@@ -103,6 +104,7 @@ export function renderTrBody(t){
   if(wx.open){ wx.dataset.loaded='1'; loadTrWeather(t); }
   renderTrActionBtns(t);
   renderSpese(t);
+  ensureReturnRoute(t);
 }
 
 export function renderTrActionBtns(t){
