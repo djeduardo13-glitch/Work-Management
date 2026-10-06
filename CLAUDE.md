@@ -67,9 +67,9 @@ Deploy: GitHub Actions (`.github/workflows/deploy.yml`) → GitHub Pages. Settin
 
 ## Home in trasferta
 - `features/trips/trip-mode.js` (puro, testato): fase della trasferta adesso. `out` = prima del volo di andata (solo aeroporto di partenza), `there` = clienti e hotel (+ ritiro auto il primo giorno), `return` = giorno di rientro (aeroporto di ritorno + clienti e hotel) fino al decollo, `home` = volo di ritorno. Fuori dalla trasferta la Home è normale.
-- `features/home/where.js`: banner blu (`#tripHero`), card "adesso" (`#tripNow`), "Dove andare" (`#wwid`), pulsante Spesa (`#tripFab`); ordine fisso: banner, ore di oggi (`#todayCard`, sempre subito sotto il banner), card "adesso", dove andare, meteo. Si aggiorna ogni minuto.
+- `features/home/where.js`: banner blu (`#tripHero`), card "adesso" (`#tripNow`), "Dove andare" (`#wwid`), pulsante Spesa (`#tripFab`); ordine fisso: banner, ore di oggi (`#todayCard`, sempre subito sotto il banner), card "adesso", dove andare, pulsante carta d'imbarco (`#tripBp`: prima del volo di andata quella d'andata, poi quella di ritorno se caricata), meteo. Orologio: un solo orario se il fuso è uguale all'Italia. Si aggiorna ogni minuto.
 - Fusi orari: `lib/tz.js`. Il fuso della destinazione arriva dal geocoding Open-Meteo e si salva in `t.tz`. Andata in ora italiana, arrivo e ritorno nell'ora del posto; dove serve si mostra anche l'ora italiana.
-- Carte d'imbarco: `features/trips/boarding.js`, file (foto o PDF) solo su questo dispositivo in IndexedDB, riferimento in `t.bp = {a, r}`. Input file unico `#bpFile` in `index.html`.
+- Carte d'imbarco: `features/trips/boarding.js`, file (foto o PDF) solo su questo dispositivo in IndexedDB, riferimento in `t.bp = {a, r}`. Si carica solo dalla pagina trasferta (sezione Voli); in Home si visualizza soltanto. Input file unico `#bpFile` in `index.html`.
 - Promemoria check-in: `features/trips/checkin.js`, a 12 ore dal volo se manca la carta d'imbarco (toggle "Promemoria check-in volo"). Funziona solo con l'app aperta o in background: niente server push.
 
 ## Aperti / idee

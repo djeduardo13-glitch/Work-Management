@@ -4,7 +4,6 @@ import { save } from '../../core/storage.js';
 import { tripClients } from '../clients/clients.js';
 import { renderEvs } from './events.js';
 import { refreshHours } from '../today/today.js';
-import { bpHtml } from '../trips/boarding.js';
 import { airportTarget, fmtDrive, outboundLeave, returnLeave } from '../trips/departure.js';
 import { ensureReturnRoute } from '../trips/departure-ui.js';
 import { FLAGS, openTrDet } from '../trips/detail.js';
@@ -65,13 +64,11 @@ function heroHtml(t, m, now) {
   else if (m.phase === 'home') sub = `Volo di ritorno${m.arrRet ? ` · atterraggio ${hhmmIn(m.arrRet, IT_TZ)}` : ''}${t.vr2 ? ' a ' + h(up(t.vr2)) : ''}`;
   else if (m.phase === 'return') sub = m.depRet ? `Oggi si rientra · volo alle ${h(dualTime(m.depRet, m.tz))}` : 'Oggi si rientra';
   else if (m.inFlight) sub = `In volo · arrivo ${h(dualTime(m.arrOut, m.tz))}`;
-  else if (m.day === 1) sub = `Sei arrivato · ${ret}`;
   else sub = m.day === m.days - 1 ? `Rientro domani · ${dlabel(t.d2)}` : `Rientro ${dlabel(t.d2)}`;
   // orologio sempre nella stessa riga; prima della partenza l'ora "di casa" è quella italiana
   const city = h(cap(t.ci));
   let clock = '';
-  if (t.tz === undefined) clock = `<b>${hhmmIn(now, IT_TZ)}</b> ora italiana`;
-  else if (sameAsItaly(m.tz, now)) clock = `<b>${hhmmIn(now, m.tz)}</b> · stessa ora dell'Italia`;
+  if (t.tz === undefined || sameAsItaly(m.tz, now)) clock = `<b>${hhmmIn(now, m.tz)}</b>`;
   else if (m.phase === 'out') clock = `<b>${hhmmIn(now, IT_TZ)}</b> in Italia · ${hhmmIn(now, m.tz)} a ${city}`;
   else clock = `<b>${hhmmIn(now, m.tz)}</b> ora locale · ${hhmmIn(now, IT_TZ)} in Italia`;
   return `<div class="th-row">${fl ? `<span class="th-flag ${fl}"></span>` : ''}<span class="th-lbl">In trasferta · giorno ${m.day} di ${m.days}</span></div>
@@ -88,7 +85,7 @@ function chip(text) { return `<span class="tnow-chip">${h(text)}</span>`; }
 
 function checkinWarn(t, leg, now) {
   const l = checkinLegs(t, now, t.tz).find((x) => x.leg === leg);
-  return l && l.missing && l.hoursLeft > 0 && l.hoursLeft <= 24 ? '<div class="tnow-warn">Check-in online da fare</div>' : '';
+  return l && l.missing && l.hoursLeft > 0 && l.hoursLeft <= 24 ? '<div class="tnow-warn">Check-in online da fare · carica la carta d’imbarco nella trasferta</div>' : '';
 }
 
 function outboundHtml(t, m, now) {
@@ -102,7 +99,7 @@ function outboundHtml(t, m, now) {
     <div class="tnow-t">Aeroporto ${h(label)}</div>
     ${ob ? `<div class="tnow-s">Parti entro le <b>${h(ob.time)}</b> · guida ~${h(fmtDrive(ob.drive))}</div>` : ''}
     ${flightLine(t.van, t.va1, t.va2, t.va3, arr)}
-    ${checkinWarn(t, 'a', now)}${bpHtml(t, 'a', true)}
+    ${checkinWarn(t, 'a', now)}
     <button type="button" class="tnow-go" data-action="openTripRoute" data-args="${attr(t.id)}|out">${icon('nav')}Vai all'aeroporto</button>
   </section>`;
 }
@@ -130,7 +127,7 @@ function returnHtml(t, m, rl, now) {
     <div class="tnow-s">${leave}</div>
     ${flightLine(t.vrn, t.vr1, t.vr2, dep, arr)}${diff}
     ${t.au === 'si' ? `<div class="tnow-s">Riconsegna auto${t.ac ? ' ' + h(t.ac) : ''}</div>` : ''}
-    ${checkinWarn(t, 'r', now)}${bpHtml(t, 'r', true)}
+    ${checkinWarn(t, 'r', now)}
     <button type="button" class="tnow-go" data-action="openTripRoute" data-args="${attr(t.id)}|ret">${icon('nav')}Vai all'aeroporto</button>
   </section>`;
 }
@@ -159,17 +156,30 @@ function laterHtml(t) {
   return `<div class="pl-h"><span class="lbl">Oggi dopo l'arrivo</span></div><div class="pl-later">${h(items.join(' · '))}<div class="pl-s">Gli indirizzi compaiono qui dopo il decollo.</div></div>`;
 }
 
+/**
+ * Pulsante "Carta d'imbarco" sotto Dove andare: prima del volo di andata solo l'andata,
+ * dopo il decollo solo il ritorno (se caricata), fino al volo di ritorno. Si carica dalla trasferta.
+ */
+function bpButtonHtml(t, m, now) {
+  let leg = null;
+  if (m.depOut && now < m.depOut) leg = 'a';
+  else if (m.depRet && now < m.depRet) leg = 'r';
+  if (!leg || !(t.bp && t.bp[leg])) return '';
+  const no = up(leg === 'a' ? t.van : t.vrn);
+  return `<button type="button" class="bp-open bp-home" data-action="bpOpen" data-args="${attr(t.id)}|${leg}"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M15 6v12" stroke-dasharray="2 2"/></svg>Carta d'imbarco ${leg === 'a' ? 'andata' : 'ritorno'}${no ? ' · ' + h(no) : ''}</button>`;
+}
+
 /** Ridisegna la Home in trasferta (o la nasconde). */
 export function chkWhere() {
   if (!timer) timer = setInterval(chkWhere, 60000); // cambi di fase (decollo, giorno di rientro) e orologio
   const scr = $('hscr');
-  const hero = $('tripHero'), now$ = $('tripNow'), w = $('wwid'), fab = $('tripFab');
+  const hero = $('tripHero'), now$ = $('tripNow'), w = $('wwid'), fab = $('tripFab'), bp = $('tripBp');
   if (!scr || !w) return;
   const now = new Date();
   const a = activeTrip(now);
   if (!a) {
     scr.classList.remove('trip-on');
-    [hero, now$, w, fab].forEach((el) => { if (el) { el.innerHTML = ''; el.style.display = 'none'; } });
+    [hero, now$, w, fab, bp].forEach((el) => { if (el) { el.innerHTML = ''; el.style.display = 'none'; } });
     return;
   }
   const { t, m, rl } = a;
@@ -193,6 +203,10 @@ export function chkWhere() {
   const places = m.places ? placesHtml(t, m) : m.phase === 'out' ? laterHtml(t) : '';
   w.innerHTML = places;
   w.style.display = places ? '' : 'none';
+
+  const bpBtn = m.phase === 'home' ? '' : bpButtonHtml(t, m, now);
+  bp.innerHTML = bpBtn;
+  bp.style.display = bpBtn ? '' : 'none';
 
   fab.innerHTML = m.phase === 'out' ? '' : `<button type="button" class="fab home-fab" data-action="quickAddSpesa">${icon('plus')}Spesa</button>`;
   fab.style.display = '';

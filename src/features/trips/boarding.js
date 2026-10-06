@@ -20,14 +20,14 @@ async function repaint() {
   if (t && document.getElementById('tdPg')?.classList.contains('on')) det.renderTrBody(t);
 }
 
-/** Pulsanti carta d'imbarco per un volo. `big` = versione per la Home. */
-export function bpHtml(t, leg, big = false) {
+/** Carta d'imbarco di un volo nella pagina trasferta: si carica, si apre, si cambia, si toglie. */
+export function bpHtml(t, leg) {
   const has = t.bp && t.bp[leg];
   const args = `${attr(t.id)}|${leg}`;
   if (has) {
-    return `<div class="bp-row${big ? ' bp-home' : ''}"><button type="button" class="bp-open" data-action="bpOpen" data-args="${args}"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M15 6v12" stroke-dasharray="2 2"/></svg>Carta d'imbarco</button><button type="button" class="bp-mini" data-action="bpPick" data-args="${args}">Cambia</button><button type="button" class="bp-mini" data-action="bpRemove" data-args="${args}" aria-label="Rimuovi carta d'imbarco">✕</button></div>`;
+    return `<div class="bp-row"><button type="button" class="bp-open" data-action="bpOpen" data-args="${args}"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M15 6v12" stroke-dasharray="2 2"/></svg>Carta d'imbarco</button><button type="button" class="bp-mini" data-action="bpPick" data-args="${args}">Cambia</button><button type="button" class="bp-mini" data-action="bpRemove" data-args="${args}" aria-label="Rimuovi carta d'imbarco">✕</button></div>`;
   }
-  return `<div class="bp-row missing${big ? ' bp-home' : ''}"><span class="bp-warn">Carta d'imbarco non caricata</span><button type="button" class="bp-add" data-action="bpPick" data-args="${args}">Carica</button></div>`;
+  return `<div class="bp-row missing"><span class="bp-warn">Carta d'imbarco non caricata</span><button type="button" class="bp-add" data-action="bpPick" data-args="${args}">Carica</button></div>`;
 }
 
 /** Apre la scelta del file (input unico in index.html, così un ridisegno della Home non lo perde). */

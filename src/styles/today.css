@@ -450,10 +450,10 @@
 .th-clock svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; flex-shrink: 0; }
 .th-clock b { color: #fff; font-family: var(--mono); font-weight: 600; }
 
-/* ordine fisso in trasferta: banner → ore di oggi (sempre qui) → adesso → dove andare → meteo */
+/* ordine fisso in trasferta: banner → ore di oggi (sempre qui) → adesso → dove andare → carta d'imbarco → meteo */
 #hscr.trip-on #todayCard { order: -3; }
 #hscr.trip-on #tripNow { order: -2; }
-#hscr.trip-on #wwid { order: -1; }
+#hscr.trip-on #wwid, #hscr.trip-on #tripBp { order: -1; }
 .trip-now { display: flex; flex-direction: column; gap: 10px; }
 .tnow { border: 2px solid var(--acc); border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
 .tnow-row { flex-direction: row; align-items: center; gap: 12px; padding: 12px 14px; }
@@ -477,13 +477,13 @@
 
 /* carta d'imbarco (Home e dettaglio trasferta) */
 .bp-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
-.bp-row.bp-home { margin-top: 0; }
 .bp-open {
   flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px; border: 1px solid var(--line); border-radius: 12px;
   background: #fff; color: var(--blue); font: 700 13px var(--font-sans); cursor: pointer;
 }
 .bp-open svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
-.bp-mini { height: 44px; min-width: 44px; padding: 0 12px; border: none; border-radius: 12px; background: #eef2f7; color: var(--blue); font: 700 12px var(--font-sans); cursor: pointer; }
+.bp-mini { height: 32px; min-width: 32px; padding: 0 10px; border: none; border-radius: 8px; background: #eef2f7; color: var(--blue); font: 700 11px var(--font-sans); cursor: pointer; }
+.bp-open.bp-home { width: 100%; height: 48px; flex: none; }
 .bp-row.missing { padding: 6px 6px 6px 12px; border-radius: 12px; background: var(--rl); }
 .bp-warn { flex: 1; font-size: 12px; font-weight: 700; color: var(--re); }
 .bp-add { height: 40px; padding: 0 16px; border: none; border-radius: 10px; background: var(--re); color: #fff; font: 700 13px var(--font-sans); cursor: pointer; }
