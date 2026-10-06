@@ -140,3 +140,41 @@ export async function renderWeather() {
     el.innerHTML = '<div class="wx-d" style="padding:6px 2px">Meteo non disponibile</div>';
   }
 }
+
+/**
+ * Meteo compatto della destinazione nella pagina trasferta (stesso stile della Home):
+ * a trasferta in corso il meteo attuale, altrimenti il giorno di partenza; poi i giorni seguenti della trasferta.
+ */
+export async function renderTripWeather(el, t) {
+  if (!el) return;
+  const msg = (s) => { el.innerHTML = `<div class="wx-d" style="padding:6px 2px">${h(s)}</div>`; };
+  try {
+    const today = dateKey(new Date());
+    if (t.d2 < today) { el.remove(); return; } // trasferta finita: il meteo non serve
+    const ahead = Math.round((new Date(t.d1 + 'T00:00:00') - new Date(today + 'T00:00:00')) / 864e5);
+    if (ahead > 15) { msg('Previsioni disponibili da 15 giorni prima della partenza'); return; }
+    const geo = await geocodeCity(t.ci, t.pa || '');
+    if (!geo) { msg('Destinazione non trovata'); return; }
+    const d = await forecast(geo.lat, geo.lon, 16);
+    const times = d.daily?.time || [];
+    const start = t.d1 > today ? t.d1 : today;
+    const i0 = times.indexOf(start);
+    if (i0 < 0) { msg('Previsioni non disponibili'); return; }
+    const live = start === today;
+    const c = d.current;
+    const code = live ? c.weather_code : d.daily.weather_code[i0];
+    const temp = live ? `${Math.round(c.temperature_2m)}°` : `${Math.round(d.daily.temperature_2m_max[i0])}°`;
+    const s0 = new Date(start + 'T00:00:00');
+    const sub = live
+      ? `${wmoDesc(code)} · percepita ${Math.round(c.apparent_temperature)}°`
+      : `${DOW[s0.getDay()].toLowerCase()} ${s0.getDate()} · ${wmoDesc(code).toLowerCase()} · min ${Math.round(d.daily.temperature_2m_min[i0])}°`;
+    const days = times.slice(i0 + 1, i0 + 4).filter((iso) => iso <= t.d2).map((iso, j) => {
+      const i = i0 + 1 + j;
+      const day = new Date(iso + 'T00:00:00');
+      return `<div class="wx-day"><span>${DOW[day.getDay()]}</span>${wxIcon(d.daily.weather_code[i])}<span>${Math.round(d.daily.temperature_2m_max[i])}°</span></div>`;
+    }).join('');
+    el.innerHTML = `<div class="wx-row">${wxIcon(code, 'wx-ic')}<div class="wx-main"><div><span class="wx-t">${temp}</span><span class="wx-city">${h(geo.name)}</span></div><div class="wx-d">${h(sub)}</div></div>${days ? `<div class="wx-days">${days}</div>` : ''}</div>`;
+  } catch {
+    msg('Meteo non disponibile');
+  }
+}

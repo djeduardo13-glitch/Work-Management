@@ -1,7 +1,7 @@
 import { fmtDrive, outboundLeave, returnLeave } from './departure.js';
 import { h } from '../../lib/html.js';
 
-// "Prossimo passo" di una trasferta: voli, ritiro auto, check-in hotel, appuntamento cliente.
+// "Prossimo passo" di una trasferta: voli, ritiro auto, hotel, appuntamento cliente.
 // Funzioni pure: la data/ora "adesso" si può passare per i test.
 
 
@@ -36,7 +36,7 @@ export function tripSteps(t, clients) {
     steps.push({ kind: 'car', when, title: `Ritiro auto${t.ac ? ' ' + t.ac : ''}`, sub: t.ap ? `Prenotazione ${t.ap}` : '' });
   }
   if (t.ho) {
-    steps.push({ kind: 'hotel', when: fromDT(t.hci) || at(t.d1, ''), title: 'Check-in hotel', sub: t.ho, nav: t.ho });
+    steps.push({ kind: 'hotel', when: at(t.d1, ''), title: 'Hotel', sub: t.ho, nav: t.ho });
   }
   const app = fromDT(t.app);
   if (app) steps.push({ kind: 'client', when: app, title: 'Appuntamento dal cliente', sub: t.cl || '', nav: t.cl });

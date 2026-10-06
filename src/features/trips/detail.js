@@ -8,7 +8,6 @@ import { chkWhere } from '../home/where.js';
 import { addCLItem, togCL } from './checklist.js';
 import { depOutHtml, depRetHtml, ensureReturnRoute, openTripRoute } from './departure-ui.js';
 import { openAddSpesa, openSpesePopup, renderSpese } from './expenses.js';
-import { tripHoursSummary } from './hours-export.js';
 import { renderTr } from './list.js';
 import { countdown, nextStep, whenLabel } from './timeline.js';
 import { fds, fn } from '../../lib/dates.js';
@@ -16,36 +15,9 @@ import { cap, v } from '../../lib/format.js';
 import { attr, escapeHtml, h } from '../../lib/html.js';
 import { icon } from '../../lib/icons.js';
 import { callTel, openMapsQuery } from '../../lib/links.js';
-import { fetchWCity, geocodeCity, wmoDesc, wmoIcon } from '../../services/weather.js';
+import { renderTripWeather } from '../home/weather-card.js';
 
 export function openTrDet(id){const t=S.trs.find(x=>x.id===id); if(!t)return; S.curTid=id; document.getElementById('tdTit').textContent='Trasferta'; renderTrBody(t); document.getElementById('tdPg').classList.add('on'); history.pushState({type:'poppage',id:'tdPg'},'');}
-
-export async function loadTrWeather(t){
-  const el=document.getElementById('trWeather');
-  if(!el) return;
-  el.innerHTML='<div style="color:var(--t3);font-size:11px;padding:8px 0">Caricamento meteo...</div>';
-  const geo=await geocodeCity(t.ci,t.pa);
-  if(!geo){el.innerHTML='<div style="color:var(--t3);font-size:11px;padding:8px 0">Destinazione non trovata</div>'; return;}
-  const data=await fetchWCity(geo.lat,geo.lon);
-  if(!data){el.innerHTML='<div style="color:var(--t3);font-size:11px;padding:8px 0">Meteo non disponibile</div>'; return;}
-  const times=data.hourly.time;
-  const temps=data.hourly.temperature_2m;
-  const codes=data.hourly.weather_code;
-  const slots=[];
-  const startDate=new Date(t.d1+'T00:00:00');
-  const now=new Date();
-  const refDate=startDate>now?startDate:now;
-  const refStr=refDate.toISOString().slice(0,10);
-  [9,12,15,18].forEach(h=>{
-    const target=refStr+'T'+String(h).padStart(2,'0')+':00';
-    const idx=times.indexOf(target);
-    if(idx>=0) slots.push({time:h+'h',temp:Math.round(temps[idx]),code:codes[idx]});
-  });
-  if(!slots.length){el.innerHTML='<div style="color:var(--t3);font-size:11px;padding:8px 0">Previsioni non disponibili per queste date</div>'; return;}
-  el.style.display='grid';
-  el.style.gridTemplateColumns=`repeat(${h(slots.length)},1fr)`;
-  el.innerHTML=slots.map(s=>`<div class="wfi"><div style="font-size:10px;color:var(--t2);font-weight:500;margin-bottom:4px">${h(geo.name)} ${h(s.time)}</div><div style="font-size:19px;margin-bottom:2px">${wmoIcon(s.code)}</div><div style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700">${h(s.temp)}°</div><div style="font-size:10px;color:var(--t2);margin-top:2px">${wmoDesc(s.code)}</div></div>`).join('');
-}
 
 export function closeTD(){document.getElementById('tdPg').classList.remove('on'); renderTr(); renderEvs(); chkWhere();}
 
@@ -80,7 +52,6 @@ export function renderTrBody(t){
     ...cls.map((c,i)=>`${i?'<div class="trow-sep"></div>':''}<div class="trow-h">${h(c.name||('Cliente'+(cls.length>1?' '+(i+1):'')))}</div>`+(c.addr?row('Indirizzo',c.addr,'openMapsQuery',c.addr):'')+(c.cn?row('Contatto',c.cn):'')+(c.ct?row('Telefono',c.ct,'callTel',c.ct):'')),
     t.ho?'<div class="trow-sep"></div>':'',
     t.ho?row('Hotel',t.ho,'openMapsQuery',t.ho):'',
-    t.hci?row('Check-in',whenLabel(new Date(t.hci+':00'))):'',
     t.app?row('Appuntamento',whenLabel(new Date(t.app+':00'))):'',
     t.vcon?row('Viaggio con',t.vcon):'',
   ].join('')||'<div class="empty-note">Nessun indirizzo</div>';
@@ -89,23 +60,20 @@ export function renderTrBody(t){
   body.dataset.tid=t.id;
   body.innerHTML=`<div class="stack" style="padding-top:8px">
     ${(()=>{const fl=FLAGS[String(t.pa||'').toLowerCase()]; const inner=`<div class="thead-t">${h(cap(t.ci))}, ${h(cap(t.pa))}</div><div class="thead-s">${fds(t.d1)} – ${fds(t.d2)} ${status}</div>`; return fl?`<div class="thead flag ${fl}"><div class="thead-box">${inner}</div></div>`:`<div class="thead">${inner}</div>`;})()}
+    <section class="ucard wx" id="trWeather" aria-label="Meteo destinazione"><div class="wx-d" style="padding:6px 2px">Caricamento meteo…</div></section>
     ${stepHtml}
     ${sec('addr','Indirizzi',[cls.length>1?cls.length+' clienti':cls.length?'Cliente':'',t.ho&&'hotel'].filter(Boolean).join(' e ')||'—',addr,true)}
     ${flights?sec('fly','Voli',[t.va1&&(up(t.va1)+' → '+up(t.va2)),t.vr1&&(up(t.vr1)+' → '+up(t.vr2))].filter(Boolean).join(' · '),flights,true):''}
     ${car?sec('car','Auto a noleggio',h(t.ac||''),car,false):''}
     ${sec('cl','Checklist',`${clDone} di ${clAll.length} completati`,cl,false)}
     <button type="button" class="ucard tsec-link" data-action="openSpesePopup" data-args="${attr(t.id)}"><span class="tsec-t">Note spese</span><span class="tsec-s" id="speseTot-${h(t.id)}">${spese?spese+' spese':'Nessuna spesa'}</span>${icon('right')}</button>
-    <button type="button" class="ucard tsec-link" data-action="exportTripHours" data-args="${attr(t.id)}"><span class="tsec-t">Ore trasferta</span><span class="tsec-s">${h(tripHoursSummary(t))} · PDF</span>${icon('down')}</button>
-    ${sec('wx','Meteo destinazione','',`<div id="trWeather" class="wfc"></div>`,false)}
     ${sec('sos','Numeri utili','Emergenze e ambasciata',`${(()=>{const em=EMERGENCY[t.pa.toLowerCase()]||{}; const rows=[['🚔 Polizia',em.polizia||'112'],['🚑 Ambulanza',em.ambulanza||'112'],['🚒 Vigili del fuoco',em.vigili||'112'],['🆘 Emergenze EU','112']]; if(EMB[t.pa.toLowerCase()]) rows.push(['🏛 Ambasciata IT',EMB[t.pa.toLowerCase()]]); return rows.map(([l,v])=>`<div class="urow"><span class="ul">${l}</span><span class="uv lk" data-action="callTel" data-args="${attr(v)}">${v}</span></div>`).join('');})()}`,false)}
     <button type="button" class="btn-wa" style="margin:0" data-action="shareWA">💬 Condividi su WhatsApp</button>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px" id="trActBtns"></div>
     <div style="height:90px"></div>
   </div>
   <button type="button" class="fab" data-action="addSpesaCur">${icon('plus')}Spesa</button>`;
-  const wx=body.querySelector('details[data-sec="wx"]');
-  wx.addEventListener('toggle',()=>{ if(wx.open&&!wx.dataset.loaded){ wx.dataset.loaded='1'; loadTrWeather(t); } });
-  if(wx.open){ wx.dataset.loaded='1'; loadTrWeather(t); }
+  renderTripWeather(document.getElementById('trWeather'),t);
   renderTrActionBtns(t);
   renderSpese(t);
   ensureReturnRoute(t);
@@ -117,7 +85,7 @@ export function renderTrActionBtns(t){
   const archBtn=t.arc
     ?'<button class="ab b-ar" data-action="ripristinaT"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.85"/></svg>Ripristina</button>'
     :'<button class="ab b-ar" data-action="archiviaT"><svg viewBox="0 0 24 24"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/></svg>Archivia</button>';
-  el.innerHTML='<button class="xbtn btn-em" data-action="emailTr"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 8.5 6L19 7"/></svg>Email</button>'+archBtn+'<button class="ab b-dl" data-action="eliminaT"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Elimina</button>';
+  el.innerHTML='<button class="xbtn btn-em" data-action="exportTripHours"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 12v6"/><path d="m9 15 3 3 3-3"/></svg>Export Ore</button>'+archBtn+'<button class="ab b-dl" data-action="eliminaT"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Elimina</button>';
 }
 
 export function archiviaT(){const t=S.trs.find(x=>x.id===S.curTid); if(!t)return; t.arc=1; save(); closeTD(); toast('Trasferta archiviata');}
@@ -126,9 +94,8 @@ export function ripristinaT(){const t=S.trs.find(x=>x.id===S.curTid); if(!t)retu
 
 export function eliminaT(){if(!confirm('Eliminare questa trasferta?'))return; S.trs=S.trs.filter(x=>x.id!==S.curTid); save(); closeTD(); toast('Trasferta eliminata');}
 
-export function shareWA(){const t=S.trs.find(x=>x.id===S.curTid); if(!t)return; const msg=`✈️ *TRASFERTA ${fn(t.d1)}–${fn(t.d2)}*\n📍 *${cap(t.ci)}, ${cap(t.pa)}*\n\n🏢 ${t.cl}\n🏨 ${t.ho}\n\n✈️ Andata: ${t.va1}→${t.va2} ${t.va3}–${t.va4} (${t.van})\n✈️ Ritorno: ${t.vr1}→${t.vr2} ${t.vr3}–${t.vr4} (${t.vrn})${t.au==='si'?'\n🚗 '+t.ac+' / '+t.ap:''}`; window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');}
+export function shareWA(){const t=S.trs.find(x=>x.id===S.curTid); if(!t)return; const cls=tripClients(t); const clTxt=cls.map((c,i)=>[`🏢 *${c.name||('Cliente'+(cls.length>1?' '+(i+1):''))}*`,c.addr&&`📍 ${c.addr}`,(c.cn||c.ct)&&`👤 ${[c.cn,c.ct].filter(Boolean).join(' · ')}`].filter(Boolean).join('\n')).join('\n\n'); const msg=`✈️ *TRASFERTA ${fn(t.d1)}–${fn(t.d2)}*\n📍 *${cap(t.ci)}, ${cap(t.pa)}*\n\n${clTxt||'🏢 '+(t.cl||'')}\n\n🏨 ${t.ho}\n\n✈️ Andata: ${t.va1}→${t.va2} ${t.va3}–${t.va4} (${t.van})\n✈️ Ritorno: ${t.vr1}→${t.vr2} ${t.vr3}–${t.vr4} (${t.vrn})${t.au==='si'?'\n🚗 '+t.ac+' / '+t.ap:''}`; window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');}
 
-export function emailTr(){const t=S.trs.find(x=>x.id===S.curTid); if(!t)return; const subj='Trasferta '+cap(t.ci)+' '+fds(t.d1)+(t.d2!==t.d1?'-'+fds(t.d2):''); const body=['Trasferta: '+cap(t.ci)+', '+cap(t.pa),'Date: '+fds(t.d1)+' → '+fds(t.d2),'','Indirizzi:','  Cliente: '+t.cl,'  Hotel: '+t.ho,'','Voli:','  Andata: '+t.va1+'→'+t.va2+' '+t.va3+'–'+t.va4+' ('+t.van+')',(t.scaleA||[]).map((s,i)=>'  Scalo andata '+(i+1)+': '+s.a1+'→'+s.a2+' '+s.a3+'–'+s.a4+' ('+s.an+')').join('\n'),'  Ritorno: '+t.vr1+'→'+t.vr2+' '+t.vr3+'–'+t.vr4+' ('+t.vrn+')',(t.scaleR||[]).map((s,i)=>'  Scalo ritorno '+(i+1)+': '+s.a1+'→'+s.a2+' '+s.a3+'–'+s.a4+' ('+s.an+')').join('\n'),t.au==='si'?'\nAuto noleggio:\n  Compagnia: '+t.ac+'\n  N° Prenotazione: '+t.ap:''].filter(x=>x!==undefined).join('\n'); window.open('mailto:?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body));}
 
 const up=(s)=>String(s||'').toUpperCase();
 

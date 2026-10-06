@@ -4,7 +4,7 @@ import { countdown, nextStep, tripSteps } from '../src/features/trips/timeline.j
 
 const trip = {
   d1: '2026-09-28', d2: '2026-10-02', va1: 'blq', va2: 'mad', va3: '08:00', va4: '10:00', van: 'ib1',
-  au: 'si', ac: 'Hertz', ap: 'ABC', ho: 'Hotel Sol', hci: '2026-09-28T15:00', cl: 'Calle Mayor 1', app: '2026-09-29T09:30',
+  au: 'si', ac: 'Hertz', ap: 'ABC', ho: 'Hotel Sol', cl: 'Calle Mayor 1', app: '2026-09-29T09:30',
   vr1: 'mad', vr2: 'blq', vr3: '18:00', vr4: '20:00', vrn: 'ib2',
 };
 
@@ -14,7 +14,7 @@ test('passi in ordine: partenza consigliata, volo, auto, hotel, cliente, ritorno
 });
 test('prossimo passo in base all’ora', () => {
   assert.equal(nextStep(trip, new Date(2026, 8, 28, 7, 0)).title, 'Volo di andata BLQ → MAD');
-  assert.equal(nextStep(trip, new Date(2026, 8, 28, 12, 0)).title, 'Check-in hotel');
+  assert.equal(nextStep(trip, new Date(2026, 8, 28, 12, 0)).title, 'Hotel');
   assert.equal(nextStep(trip, new Date(2026, 8, 29, 8, 0)).title, 'Appuntamento dal cliente');
   assert.equal(nextStep(trip, new Date(2026, 8, 30, 8, 0)).title, 'Volo di ritorno MAD → BLQ');
   assert.equal(nextStep(trip, new Date(2026, 9, 3, 8, 0)), null);

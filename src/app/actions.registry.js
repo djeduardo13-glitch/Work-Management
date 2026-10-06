@@ -24,7 +24,7 @@ import { gistPull, gistSync, saveGistId, saveGistToken } from '../features/sync/
 import { comeBackAt, comeBackNow, confirmExit, editEntry, editFromRecap, editOut, goOut, pickEntry, registerExit, setEntry, setPause, showExitRecap, toggleToday } from '../features/today/today.js';
 import { addCLItem, togCL } from '../features/trips/checklist.js';
 import { openTripRoute, recalcRet, setRetFrom, setRetManual } from '../features/trips/departure-ui.js';
-import { addSpesaCur, archiviaT, closeTD, eliminaT, emailTr, openTrDet, ripristinaT, shareWA } from '../features/trips/detail.js';
+import { addSpesaCur, archiviaT, closeTD, eliminaT, openTrDet, ripristinaT, shareWA } from '../features/trips/detail.js';
 import { exportTripHours } from '../features/trips/hours-export.js';
 import { delSpesa, openAddSpesaFromPopup, openSpesePopup, quickAddSpesa, saveSpesa, spPhotoPicked, spPhotoRemove, spPhotoView } from '../features/trips/expenses.js';
 import { addScaleLeg, closeNT, editTr, removeScaleLeg, saveNT, showNT, togAF, togScale, toggleAltroInput } from '../features/trips/form.js';
@@ -56,7 +56,7 @@ export const actions = {
   comeBackAt, comeBackNow, confirmExit, editEntry, editFromRecap, editOut, goOut, pickEntry, registerExit, setEntry, setPause, showExitRecap, toggleToday,
   addCLItem, togCL,
   openTripRoute, recalcRet, setRetFrom, setRetManual,
-  addSpesaCur, archiviaT, closeTD, eliminaT, emailTr, openTrDet, ripristinaT, shareWA,
+  addSpesaCur, archiviaT, closeTD, eliminaT, openTrDet, ripristinaT, shareWA,
   exportTripHours,
   delSpesa, openAddSpesaFromPopup, openSpesePopup, quickAddSpesa, saveSpesa, spPhotoPicked, spPhotoRemove, spPhotoView,
   addScaleLeg, closeNT, editTr, removeScaleLeg, saveNT, showNT, togAF, togScale, toggleAltroInput,

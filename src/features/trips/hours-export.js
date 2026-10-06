@@ -1,16 +1,14 @@
 import { toast } from '../../components/toast.js';
+import { APP_CONFIG } from '../../config/app.config.js';
 import { S } from '../../core/state.js';
 import { cap } from '../../lib/format.js';
-import { fmtNum, tripHoursRows } from './trip-hours.js';
+import { itDate, tripHoursFileName, tripHoursRows } from './trip-hours.js';
 
-/** Riepilogo per il pulsante nella trasferta: "2 giorni · 21,5h". */
-export function tripHoursSummary(t) {
-  const rows = tripHoursRows(t, S.dd, S.evs);
-  const tot = rows.reduce((s, r) => s + r.worked, 0);
-  return `${rows.length} ${rows.length === 1 ? 'giorno' : 'giorni'} · ${fmtNum(tot)}h`;
-}
-
-/** Export PDF "Allegato Nota spese – Ore" con i soli giorni della trasferta aperta. */
+/**
+ * "Export Ore": crea il PDF "Allegato Nota spese – Ore" (solo i giorni della trasferta)
+ * e lo passa alla condivisione del sistema, da cui si sceglie l'app email: il PDF arriva già allegato.
+ * Se il browser non sa condividere file: scarica il PDF e apre una mail con oggetto e testo.
+ */
 export async function exportTripHours(id) {
   const t = S.trs.find((x) => x.id === (id || S.curTid));
   if (!t) return;
@@ -23,12 +21,13 @@ export async function exportTripHours(id) {
     // jsPDF viene caricato solo quando serve
     const [{ jsPDF }, { buildTripHoursPdf }] = await Promise.all([import('jspdf'), import('./trip-hours-pdf.js')]);
     const doc = buildTripHoursPdf(jsPDF, t, rows);
-    const name = `Ore trasferta ${cap(t.ci || '')} ${t.d1.split('-').reverse().join('-')}.pdf`.replace(/\s+/g, ' ');
+    const name = tripHoursFileName(t, APP_CONFIG.user.fullName || APP_CONFIG.user.name) + '.pdf';
     const file = new File([doc.output('blob')], name, { type: 'application/pdf' });
-    // su telefono: condividi (WhatsApp, email, salva); su PC: scarica
-    const touch = window.matchMedia && matchMedia('(pointer: coarse)').matches;
-    if (touch && navigator.canShare && navigator.canShare({ files: [file] })) {
-      try { await navigator.share({ files: [file], title: name }); return; }
+    const period = t.d1 === t.d2 ? itDate(t.d1) : `${itDate(t.d1)} – ${itDate(t.d2)}`;
+    const subject = `Ore trasferta ${cap(t.ci || '')} ${period}`.replace(/\s+/g, ' ');
+    const text = `In allegato il foglio ore della trasferta a ${cap(t.ci || '')} (${period})${t.scopo ? '.\nScopo: ' + t.scopo : ''}.`;
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: subject, text }); return; }
       catch (e) { if (e && e.name === 'AbortError') return; }
     }
     const url = URL.createObjectURL(file);
@@ -36,7 +35,8 @@ export async function exportTripHours(id) {
     a.href = url; a.download = name;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 10000);
-    toast('PDF ore scaricato');
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`;
+    toast('PDF scaricato: allegalo alla mail');
   } catch (e) {
     console.warn('Export ore fallito', e);
     toast('Export non riuscito');

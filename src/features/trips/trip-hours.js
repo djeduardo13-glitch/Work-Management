@@ -72,3 +72,19 @@ export function tripHoursRows(t, dd = {}, evs = [], now = new Date()) {
 
 /** "2026-06-18" → "18/06/2026" */
 export const itDate = (k) => (k ? k.split('-').reverse().join('/') : '');
+
+const MESI = ['GENNAIO', 'FEBBRAIO', 'MARZO', 'APRILE', 'MAGGIO', 'GIUGNO', 'LUGLIO', 'AGOSTO', 'SETTEMBRE', 'OTTOBRE', 'NOVEMBRE', 'DICEMBRE'];
+
+/**
+ * Nome del PDF: "2026_GIUGNO_18-19_Eduardo_Roedel".
+ * A cavallo di due mesi: "2026_GIUGNO-LUGLIO_30-02_…"; un giorno solo: "2026_GIUGNO_18_…".
+ */
+export function tripHoursFileName(t, person) {
+  const [y1, m1, g1] = t.d1.split('-');
+  const [y2, m2, g2] = t.d2.split('-');
+  const year = y1 === y2 ? y1 : `${y1}-${y2}`;
+  const month = m1 === m2 && y1 === y2 ? MESI[m1 - 1] : `${MESI[m1 - 1]}-${MESI[m2 - 1]}`;
+  const days = t.d1 === t.d2 ? g1 : `${g1}-${g2}`;
+  const who = String(person || '').trim().split(/\s+/).slice(0, 2).join('_');
+  return [year, month, days, who].filter(Boolean).join('_');
+}

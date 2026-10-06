@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { dayPairs, fmtNum, tripDays, tripHoursRows } from '../src/features/trips/trip-hours.js';
+import { dayPairs, fmtNum, tripDays, tripHoursFileName, tripHoursRows } from '../src/features/trips/trip-hours.js';
 
 const now = new Date('2026-12-31T20:00:00');
 
@@ -41,4 +41,12 @@ test('sabato: nessuna pausa, tutto straordinario, in rosso', () => {
 test('giorno senza orari: zero', () => {
   const [r] = tripHoursRows({ d1: '2026-06-17', d2: '2026-06-17' }, {}, [], now);
   assert.deepEqual([r.pairs, r.worked, r.extra], [[], 0, 0]);
+});
+
+test('nome file: anno_MESE_giorni_Nome_Cognome', () => {
+  const who = 'Eduardo Roedel da Silva';
+  assert.equal(tripHoursFileName({ d1: '2026-06-18', d2: '2026-06-19' }, who), '2026_GIUGNO_18-19_Eduardo_Roedel');
+  assert.equal(tripHoursFileName({ d1: '2026-06-30', d2: '2026-07-02' }, who), '2026_GIUGNO-LUGLIO_30-02_Eduardo_Roedel');
+  assert.equal(tripHoursFileName({ d1: '2026-03-25', d2: '2026-03-25' }, who), '2026_MARZO_25_Eduardo_Roedel');
+  assert.equal(tripHoursFileName({ d1: '2026-12-30', d2: '2027-01-02' }, who), '2026-2027_DICEMBRE-GENNAIO_30-02_Eduardo_Roedel');
 });

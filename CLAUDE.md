@@ -29,7 +29,7 @@ Deploy: GitHub Actions (`.github/workflows/deploy.yml`) → GitHub Pages. Settin
   - `today/today.js` — card "Oggi" in Home.
   - `hours/` — `engine.js` (regole di calcolo), `month.js` (pagina Ore: calendario e riepilogo), `day-view.js`, `day-editor.js`, `permit-planner.js`, `notes.js`.
   - `trips/` — `list`, `detail` (bandiere Francia/Spagna), `form`, `checklist`, `expenses` (foto scontrino), `timeline` (prossimo passo).
-    - Export ore trasferta: `trip-hours.js` (righe, funzioni pure, testate), `trip-hours-pdf.js` (foglio aziendale "Allegato Nota spese – Ore" con jsPDF, caricato solo al bisogno), `hours-export.js` (pulsante "Ore trasferta": condividi su telefono, scarica su PC). Campo `t.scopo`. Nome e intestazione in `app.config.js` (`user.fullName`, `companySheet`).
+    - Export ore trasferta: `trip-hours.js` (righe, funzioni pure, testate), `trip-hours-pdf.js` (foglio aziendale "Allegato Nota spese – Ore" con jsPDF, caricato solo al bisogno), `hours-export.js` (pulsante "Export Ore" in fondo alla trasferta: PDF `2026_GIUGNO_18-19_Eduardo_Roedel.pdf` passato alla condivisione per allegarlo alla mail; senza condivisione file scarica il PDF e apre una mail). Campo `t.scopo`. Condivisione info trasferta solo via WhatsApp (con tutti i clienti). Meteo destinazione compatto sotto il banner (`renderTripWeather` in `home/weather-card.js`). Niente check-in hotel. Nome e intestazione in `app.config.js` (`user.fullName`, `companySheet`).
   - `work/work.js` — cartelle, aggiornamenti e tag.
   - `credentials/` — `vault.js` (cassaforte), `credentials.js`, `documents.js`.
   - `profile/`, `settings/`, `sync/` (Gist), `home/` (meteo, dove devo essere, eventi).
