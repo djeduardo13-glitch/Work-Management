@@ -65,7 +65,15 @@ Deploy: GitHub Actions (`.github/workflows/deploy.yml`) → GitHub Pages. Settin
   - Ritorno: tempo di guida da hotel o cliente calcolato con Nominatim + OSRM (`services/routing.js`), +20% di margine, salvato in `t.ret` (`{from, key, min, approx}` oppure `{manual}`).
 - Coordinate degli aeroporti europei: `config/airports.js` → `AIRPORTS`.
 
+## Home in trasferta
+- `features/trips/trip-mode.js` (puro, testato): fase della trasferta adesso. `out` = prima del volo di andata (solo aeroporto di partenza), `there` = clienti e hotel (+ ritiro auto il primo giorno), `return` = giorno di rientro (aeroporto di ritorno + clienti e hotel) fino al decollo, `home` = volo di ritorno. Fuori dalla trasferta la Home è normale.
+- `features/home/where.js`: banner blu (`#tripHero`), card "adesso" (`#tripNow`), "Dove andare" (`#wwid`), pulsante Spesa (`#tripFab`); ordine fisso: banner, ore di oggi (`#todayCard`, sempre subito sotto il banner), card "adesso", dove andare, meteo. Si aggiorna ogni minuto.
+- Fusi orari: `lib/tz.js`. Il fuso della destinazione arriva dal geocoding Open-Meteo e si salva in `t.tz`. Andata in ora italiana, arrivo e ritorno nell'ora del posto; dove serve si mostra anche l'ora italiana.
+- Carte d'imbarco: `features/trips/boarding.js`, file (foto o PDF) solo su questo dispositivo in IndexedDB, riferimento in `t.bp = {a, r}`. Input file unico `#bpFile` in `index.html`.
+- Promemoria check-in: `features/trips/checkin.js`, a 12 ore dal volo se manca la carta d'imbarco (toggle "Promemoria check-in volo"). Funziona solo con l'app aperta o in background: niente server push.
+
 ## Aperti / idee
+- Rapportino d'intervento (note, foto, firma cliente → PDF): da fare.
 - Bandiere per altri paesi (per ora solo Francia e Spagna, in `trips/detail.js` → `FLAGS` e CSS `.flag-*`).
 - La pagina Ore potrebbe ospitare altro in futuro (da decidere con Eduardo).
 - Tracciamento lavoro: Eduardo prevede altre modifiche.

@@ -15,7 +15,7 @@ export async function geocodeCity(city,country){
     const cc={spagna:'ES',francia:'FR',germania:'DE',portogallo:'PT',belgio:'BE',italia:'IT','repubblica ceca':'CZ',ungheria:'HU'};
     const code=cc[country.toLowerCase()]||'';
     const match=d.results.find(x=>x.country_code===code)||d.results[0];
-    return {lat:match.latitude,lon:match.longitude,name:match.name};
+    return {lat:match.latitude,lon:match.longitude,name:match.name,tz:match.timezone||''};
   }catch(e){return null;}
 }
 

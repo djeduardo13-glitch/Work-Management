@@ -35,10 +35,12 @@
     </div>
   </div>
   <div class="sc">
+    <div class="trip-hero" id="tripHero" style="display:none"></div>
     <div class="stack">
+      <div class="trip-now" id="tripNow" style="display:none"></div>
       <section class="ucard wx" id="wxCard" aria-label="Meteo"><div class="wx-d" style="padding:6px 2px">Caricamento meteo…</div></section>
       <div id="todayCard"></div>
-      <section class="ucard where" id="wwid" style="display:none" aria-label="Dove devo essere"></section>
+      <section class="ucard where" id="wwid" style="display:none" aria-label="Dove andare"></section>
       <section class="ucard evs" aria-label="Prossimi 7 giorni">
         <div class="evs-h"><span class="lbl">Prossimi 7 giorni</span><button type="button" class="pill" data-action="openEvM">+ Aggiungi</button></div>
         <div id="evBox"></div>
@@ -47,6 +49,7 @@
     </div>
     <div style="height:24px"></div>
   </div>
+  <div id="tripFab" style="display:none"></div>
 </div>
 
 <!-- ORE -->
@@ -174,6 +177,9 @@
     <div class="nt-save"><button class="sbtn" data-action="saveNT"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>Salva Trasferta</button></div>
   </div>
 </div>
+
+<!-- Carta d'imbarco: input unico, fuori dalle schermate -->
+<input type="file" id="bpFile" accept="image/*,application/pdf" hidden data-change="bpPicked" data-with="el">
 
 <!-- MODALS -->
 <!-- RIEPILOGO USCITA -->

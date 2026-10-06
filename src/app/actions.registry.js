@@ -8,7 +8,8 @@ import { addClientBlock, addClientContact, delClient, newClient, openClient, ope
 import { changeVaultPassword, chkPIN, closePasM, copyCred, delCred, editCred, lockCreds, newCred, openCredUrl, saveCr, togSP, vaultSub } from '../features/credentials/credentials.js';
 import { copyDocNum, delDoc, editDoc, newDoc, saveDoc } from '../features/credentials/documents.js';
 import { delEv, openED, openEvM, saveEv } from '../features/home/events.js';
-import { callContact, delFerieOggi, openActiveTr, openMap } from '../features/home/where.js';
+import { delFerieOggi, openActiveTr } from '../features/home/where.js';
+import { bpOpen, bpPick, bpPicked, bpRemove } from '../features/trips/boarding.js';
 import { addOut, clearDay, dePause, fillStandard, openDayEditor, openTripFromDay, removeFerieDay, rmOut, saveDay } from '../features/hours/day-editor.js';
 import { dvConfirm, dvEdit, openDayView } from '../features/hours/day-view.js';
 import { oreMonth } from '../features/hours/month.js';
@@ -40,7 +41,8 @@ export const actions = {
   changeVaultPassword, chkPIN, closePasM, copyCred, delCred, editCred, lockCreds, newCred, openCredUrl, saveCr, togSP, vaultSub,
   copyDocNum, delDoc, editDoc, newDoc, saveDoc,
   delEv, openED, openEvM, saveEv,
-  callContact, delFerieOggi, openActiveTr, openMap,
+  delFerieOggi, openActiveTr,
+  bpOpen, bpPick, bpPicked, bpRemove,
   addOut, clearDay, dePause, fillStandard, openDayEditor, openTripFromDay, removeFerieDay, rmOut, saveDay,
   dvConfirm, dvEdit, openDayView,
   oreMonth,

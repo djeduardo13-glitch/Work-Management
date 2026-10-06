@@ -427,3 +427,81 @@
 .dep-from.on { background: var(--blue); border-color: var(--blue); color: #fff; }
 .dep-hint { margin: -4px 0 10px; font-size: 12px; font-weight: 700; color: var(--blue); }
 .dep-hint:empty { display: none; }
+
+/* ── Home in trasferta ── */
+#hscr.trip-on .home-hdr { background: var(--blue); }
+#hscr.trip-on .home-hdr .eyebrow { color: #c9d6e8; }
+#hscr.trip-on .home-hdr .greet { display: none; }
+#hscr.trip-on .home-hdr .av { background: #fff; color: var(--blue); }
+.trip-hero {
+  background: var(--blue); color: #fff; padding: 2px 16px 18px; margin-bottom: 8px; border-radius: 0 0 24px 24px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.th-row { display: flex; align-items: center; gap: 8px; }
+.th-flag { width: 30px; height: 20px; border-radius: 4px; border: 1px solid rgba(255,255,255,.5); flex-shrink: 0; }
+.th-lbl { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #c9d6e8; }
+.th-city {
+  display: flex; align-items: center; gap: 6px; padding: 0; border: none; background: none; color: #fff; text-align: left; cursor: pointer;
+  font: 700 28px/1.1 var(--font-serif);
+}
+.th-city svg { width: 22px; height: 22px; opacity: .7; flex-shrink: 0; }
+.th-sub { font-size: 13px; color: #dbe4f0; }
+.th-clock { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #dbe4f0; }
+.th-clock svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; flex-shrink: 0; }
+.th-clock b { color: #fff; font-family: var(--mono); font-weight: 600; }
+
+/* ordine fisso in trasferta: banner → ore di oggi (sempre qui) → adesso → dove andare → meteo */
+#hscr.trip-on #todayCard { order: -3; }
+#hscr.trip-on #tripNow { order: -2; }
+#hscr.trip-on #wwid { order: -1; }
+.trip-now { display: flex; flex-direction: column; gap: 10px; }
+.tnow { border: 2px solid var(--acc); border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.tnow-row { flex-direction: row; align-items: center; gap: 12px; padding: 12px 14px; }
+.tnow-ic { width: 44px; height: 44px; border-radius: 12px; background: var(--warnbg); color: var(--warn); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.tnow-ic svg, .pl-ic svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.tnow-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.tnow-l { color: var(--warn); }
+.tnow-chip { height: 26px; padding: 0 10px; border-radius: 13px; background: var(--warnbg); color: var(--warn); font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; white-space: nowrap; }
+.tnow-t { font: 700 21px/1.15 var(--font-serif); color: var(--ink); }
+.tnow-t.sm { font-size: 18px; }
+.tnow-s { font-size: 13px; color: var(--muted); }
+.tnow-s b { color: var(--ink); }
+.tnow-f { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--tint); border-radius: 12px; font: 600 12px var(--mono); color: var(--blue); }
+.tnow-f svg { width: 18px; height: 18px; flex-shrink: 0; }
+.tnow-warn { font-size: 12px; font-weight: 700; color: var(--re); }
+.tnow-go {
+  height: 54px; border: none; border-radius: 14px; background: var(--blue); color: #fff; font: 700 16px var(--font-sans);
+  display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer;
+}
+.tnow-go svg { width: 20px; height: 20px; }
+
+/* carta d'imbarco (Home e dettaglio trasferta) */
+.bp-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.bp-row.bp-home { margin-top: 0; }
+.bp-open {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px; border: 1px solid var(--line); border-radius: 12px;
+  background: #fff; color: var(--blue); font: 700 13px var(--font-sans); cursor: pointer;
+}
+.bp-open svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+.bp-mini { height: 44px; min-width: 44px; padding: 0 12px; border: none; border-radius: 12px; background: #eef2f7; color: var(--blue); font: 700 12px var(--font-sans); cursor: pointer; }
+.bp-row.missing { padding: 6px 6px 6px 12px; border-radius: 12px; background: var(--rl); }
+.bp-warn { flex: 1; font-size: 12px; font-weight: 700; color: var(--re); }
+.bp-add { height: 40px; padding: 0 16px; border: none; border-radius: 10px; background: var(--re); color: #fff; font: 700 13px var(--font-sans); cursor: pointer; }
+
+/* dove andare */
+#hscr.trip-on #wwid { padding: 0; gap: 0; }
+.pl-h { padding: 12px 14px 6px; }
+.pl-row { display: flex; align-items: center; gap: 10px; padding: 9px 14px; border-top: 1px solid #efe9dc; }
+.pl-ic { width: 38px; height: 38px; border-radius: 10px; background: var(--tint); color: var(--blue); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.pl-ic svg { width: 20px; height: 20px; }
+.pl-b { flex: 1; min-width: 0; }
+.pl-n { font-size: 14px; font-weight: 700; color: var(--ink); }
+.pl-s { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pl-s.app { color: var(--warn); font-weight: 600; }
+.pl-call, .pl-go { height: 44px; border: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; flex-shrink: 0; }
+.pl-call { width: 44px; background: #eef2f7; color: var(--blue); }
+.pl-go { padding: 0 14px; background: var(--blue); color: #fff; font: 700 13px var(--font-sans); }
+.pl-go.sec { background: #eef2f7; color: var(--blue); }
+.pl-call svg, .pl-go svg { width: 17px; height: 17px; }
+.pl-later { padding: 4px 14px 12px; font-size: 13px; color: var(--ink); }
+.home-fab { z-index: 120; bottom: calc(var(--nh) + 16px + env(safe-area-inset-bottom)); }

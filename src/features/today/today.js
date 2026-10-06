@@ -1,4 +1,6 @@
 import { closeM, openM } from '../../components/modal.js';
+import { notify } from '../../lib/notify.js';
+import { maybeRemindCheckin } from '../trips/checkin.js';
 import { openTimePicker } from '../../components/time-picker.js';
 import { toast } from '../../components/toast.js';
 import { APP_CONFIG } from '../../config/app.config.js';
@@ -348,15 +350,6 @@ export function editFromRecap(k) {
 
 let lastKey = todayKey();
 
-function notify(text, tag) {
-  if ('Notification' in window && Notification.permission === 'granted' && navigator.serviceWorker) {
-    navigator.serviceWorker.ready
-      .then((reg) => reg.showNotification('Work Manager', { body: text, icon: './icon-192.png', tag }))
-      .catch(() => toast(text));
-  } else {
-    toast(text);
-  }
-}
 
 /** Promemoria entrata: giorno feriale, nessuna entrata registrata, nessun permesso "entro dopo". */
 function maybeRemindEntry() {
@@ -375,6 +368,7 @@ function maybeRemindEntry() {
 
 function maybeRemind() {
   maybeRemindEntry();
+  maybeRemindCheckin();
   if (!S.notif?.usc) return;
   const k = todayKey();
   const day = S.dd[k];

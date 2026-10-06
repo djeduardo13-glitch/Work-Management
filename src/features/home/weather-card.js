@@ -1,5 +1,6 @@
 import { APP_CONFIG } from '../../config/app.config.js';
 import { S } from '../../core/state.js';
+import { save } from '../../core/storage.js';
 import { dateKey } from '../hours/engine.js';
 import { h } from '../../lib/html.js';
 import { icon, wxIcon } from '../../lib/icons.js';
@@ -155,6 +156,7 @@ export async function renderTripWeather(el, t) {
     if (ahead > 15) { msg('Previsioni disponibili da 15 giorni prima della partenza'); return; }
     const geo = await geocodeCity(t.ci, t.pa || '');
     if (!geo) { msg('Destinazione non trovata'); return; }
+    if (geo.tz && t.tz === undefined) { t.tz = geo.tz; save(); } // fuso per il doppio orario
     const d = await forecast(geo.lat, geo.lon, 16);
     const times = d.daily?.time || [];
     const start = t.d1 > today ? t.d1 : today;
