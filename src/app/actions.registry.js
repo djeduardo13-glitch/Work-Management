@@ -25,6 +25,7 @@ import { comeBackAt, comeBackNow, confirmExit, editEntry, editFromRecap, editOut
 import { addCLItem, togCL } from '../features/trips/checklist.js';
 import { openTripRoute, recalcRet, setRetFrom, setRetManual } from '../features/trips/departure-ui.js';
 import { addSpesaCur, archiviaT, closeTD, eliminaT, emailTr, openTrDet, ripristinaT, shareWA } from '../features/trips/detail.js';
+import { exportTripHours } from '../features/trips/hours-export.js';
 import { delSpesa, openAddSpesaFromPopup, openSpesePopup, quickAddSpesa, saveSpesa, spPhotoPicked, spPhotoRemove, spPhotoView } from '../features/trips/expenses.js';
 import { addScaleLeg, closeNT, editTr, removeScaleLeg, saveNT, showNT, togAF, togScale, toggleAltroInput } from '../features/trips/form.js';
 import { swTTab } from '../features/trips/list.js';
@@ -56,6 +57,7 @@ export const actions = {
   addCLItem, togCL,
   openTripRoute, recalcRet, setRetFrom, setRetManual,
   addSpesaCur, archiviaT, closeTD, eliminaT, emailTr, openTrDet, ripristinaT, shareWA,
+  exportTripHours,
   delSpesa, openAddSpesaFromPopup, openSpesePopup, quickAddSpesa, saveSpesa, spPhotoPicked, spPhotoRemove, spPhotoView,
   addScaleLeg, closeNT, editTr, removeScaleLeg, saveNT, showNT, togAF, togScale, toggleAltroInput,
   swTTab,

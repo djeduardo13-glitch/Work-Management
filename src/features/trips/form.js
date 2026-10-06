@@ -15,6 +15,7 @@ export function editTr(){
   if(!t)return;
   document.getElementById('nt-d1').value=t.d1;
   document.getElementById('nt-d2').value=t.d2;
+  document.getElementById('nt-sc').value=t.scopo||'';
   const paesiPredefiniti=['belgio','francia','germania','italia','portogallo','repubblica ceca','spagna','ungheria'];
   if(paesiPredefiniti.includes(t.pa)){
     document.getElementById('nt-pa').value=t.pa;
@@ -77,6 +78,7 @@ export function showNT(){
   S.curTid=null; // Reset ID quando si crea nuova
   document.getElementById('nt-d1').value='';
   document.getElementById('nt-d2').value='';
+  document.getElementById('nt-sc').value='';
   document.getElementById('nt-pa').value='';
   document.getElementById('nt-ci').value='';
   setClientBlocks(null); document.getElementById('nt-vcon').value='';
@@ -201,7 +203,7 @@ export function saveNT(){
   if(S.curTid){
     const t=S.trs.find(x=>x.id===S.curTid);
     if(t){
-      t.d1=d1;t.d2=d2;t.pa=pa;t.ci=ci;t.cn=v('nt-cn');t.ct=v('nt-ct');t.cl=v('nt-cl');t.ho=v('nt-ho');t.vcon=v('nt-vcon');
+      t.d1=d1;t.d2=d2;t.scopo=v('nt-sc').trim();t.pa=pa;t.ci=ci;t.cn=v('nt-cn');t.ct=v('nt-ct');t.cl=v('nt-cl');t.ho=v('nt-ho');t.vcon=v('nt-vcon');
       t.va1=v('nt-a1');t.va2=v('nt-a2');t.va3=v('nt-a3');t.va4=v('nt-a4');t.van=v('nt-an');
       t.vr1=v('nt-r1');t.vr2=v('nt-r2');t.vr3=v('nt-r3');t.vr4=v('nt-r4');t.vrn=v('nt-rn');
       t.au=v('nt-au');t.ac=v('nt-ac');t.ap=v('nt-ap');
@@ -212,7 +214,7 @@ export function saveNT(){
       toast('Trasferta aggiornata!'); S.curTid=null; return;
     }
   }
-  S.trs.push({id:'t'+Date.now(),hci:v('nt-hci'),aur:v('nt-aur'),app:v('nt-app'),d1,d2,pa,ci,cn:v('nt-cn'),ct:v('nt-ct'),cl:v('nt-cl'),ho:v('nt-ho'),vcon:v('nt-vcon'),va1:v('nt-a1'),va2:v('nt-a2'),va3:v('nt-a3'),va4:v('nt-a4'),van:v('nt-an'),vr1:v('nt-r1'),vr2:v('nt-r2'),vr3:v('nt-r3'),vr4:v('nt-r4'),vrn:v('nt-rn'),au:v('nt-au'),ac:v('nt-ac'),ap:v('nt-ap'),arc:0,spese:[],cl2:defCL(),scaleA,scaleR});
+  S.trs.push({id:'t'+Date.now(),scopo:v('nt-sc').trim(),hci:v('nt-hci'),aur:v('nt-aur'),app:v('nt-app'),d1,d2,pa,ci,cn:v('nt-cn'),ct:v('nt-ct'),cl:v('nt-cl'),ho:v('nt-ho'),vcon:v('nt-vcon'),va1:v('nt-a1'),va2:v('nt-a2'),va3:v('nt-a3'),va4:v('nt-a4'),van:v('nt-an'),vr1:v('nt-r1'),vr2:v('nt-r2'),vr3:v('nt-r3'),vr4:v('nt-r4'),vrn:v('nt-rn'),au:v('nt-au'),ac:v('nt-ac'),ap:v('nt-ap'),arc:0,spese:[],cl2:defCL(),scaleA,scaleR});
   applyClientsToTrip(S.trs[S.trs.length-1]);
   save(); closeNT(); renderTr(); renderEvs(); chkWhere(); toast('Trasferta creata!');
 }

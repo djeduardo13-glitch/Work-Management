@@ -5,7 +5,10 @@ export const APP_CONFIG = {
     initials: 'ER',
     company: 'STEM',
     email: 'e.roedel@stem.it',
+    fullName: 'Eduardo Roedel da Silva', // nome sul foglio ore delle trasferte
   },
+  // Intestazione del foglio "Allegato Nota spese – Ore" (export ore trasferta)
+  companySheet: { name: 'Stem Srl Unipersonale', address: 'Strada Ghiaie 12/D, 43013 Medesano PR' },
   // Località per il meteo in Home (Medesano, PR)
   homeLocation: { lat: 44.754, lon: 10.141, timezone: 'Europe/Rome', label: 'Medesano (PR)' },
   // Le regole di calcolo ore (07:30–16:30, mezz'ore, sabato/festivi) sono in

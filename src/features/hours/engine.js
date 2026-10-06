@@ -100,7 +100,7 @@ export function workIntervals(day, endOverride = null) {
   return { intervals, absences, outNow };
 }
 
-function pauseDeduction(day, intervals, absences, working) {
+export function pauseDeduction(day, intervals, absences, working) {
   if (!working || !intervals.length) return 0;
   const lunchClosed = absences.some((o) => o.a < STD.lunchEnd && (o.b === null || o.b > STD.lunchStart));
   if (lunchClosed) return 0;

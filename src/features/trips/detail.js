@@ -8,6 +8,7 @@ import { chkWhere } from '../home/where.js';
 import { addCLItem, togCL } from './checklist.js';
 import { depOutHtml, depRetHtml, ensureReturnRoute, openTripRoute } from './departure-ui.js';
 import { openAddSpesa, openSpesePopup, renderSpese } from './expenses.js';
+import { tripHoursSummary } from './hours-export.js';
 import { renderTr } from './list.js';
 import { countdown, nextStep, whenLabel } from './timeline.js';
 import { fds, fn } from '../../lib/dates.js';
@@ -94,6 +95,7 @@ export function renderTrBody(t){
     ${car?sec('car','Auto a noleggio',h(t.ac||''),car,false):''}
     ${sec('cl','Checklist',`${clDone} di ${clAll.length} completati`,cl,false)}
     <button type="button" class="ucard tsec-link" data-action="openSpesePopup" data-args="${attr(t.id)}"><span class="tsec-t">Note spese</span><span class="tsec-s" id="speseTot-${h(t.id)}">${spese?spese+' spese':'Nessuna spesa'}</span>${icon('right')}</button>
+    <button type="button" class="ucard tsec-link" data-action="exportTripHours" data-args="${attr(t.id)}"><span class="tsec-t">Ore trasferta</span><span class="tsec-s">${h(tripHoursSummary(t))} · PDF</span>${icon('down')}</button>
     ${sec('wx','Meteo destinazione','',`<div id="trWeather" class="wfc"></div>`,false)}
     ${sec('sos','Numeri utili','Emergenze e ambasciata',`${(()=>{const em=EMERGENCY[t.pa.toLowerCase()]||{}; const rows=[['🚔 Polizia',em.polizia||'112'],['🚑 Ambulanza',em.ambulanza||'112'],['🚒 Vigili del fuoco',em.vigili||'112'],['🆘 Emergenze EU','112']]; if(EMB[t.pa.toLowerCase()]) rows.push(['🏛 Ambasciata IT',EMB[t.pa.toLowerCase()]]); return rows.map(([l,v])=>`<div class="urow"><span class="ul">${l}</span><span class="uv lk" data-action="callTel" data-args="${attr(v)}">${v}</span></div>`).join('');})()}`,false)}
     <button type="button" class="btn-wa" style="margin:0" data-action="shareWA">💬 Condividi su WhatsApp</button>
