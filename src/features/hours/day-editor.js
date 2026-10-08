@@ -142,6 +142,8 @@ export function saveDay() {
   closeM('dem');
   refreshHours();
   toast('Giornata salvata');
+  const k = key;
+  import('../trips/docs.js').then((m) => m.autoHoursDoc(k)); // PDF ore della trasferta, se era l'ultimo giorno
 }
 
 export function clearDay() {

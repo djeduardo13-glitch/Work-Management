@@ -104,6 +104,13 @@
   <div class="psc" id="tdBody"></div>
 </div>
 
+<!-- NOTA SPESE DELLA TRASFERTA -->
+<div id="nsPg" class="poppage">
+  <div class="bhdr"><div class="bbtn" data-action="closeNotePage"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><div class="bttl">Nota spese</div></div>
+  <div class="psc" id="nsBody"></div>
+  <div class="ns-bar" id="nsBar"></div>
+</div>
+
 <!-- NUOVA TRASFERTA -->
 <div id="ntPg" class="poppage">
   <div class="bhdr"><div class="bbtn" data-action="closeNT"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><div class="bttl">Nuova Trasferta</div></div>
@@ -316,48 +323,26 @@
     </div>
   </div>
 </div>
-<div class="overlay" id="spesepop" data-backdrop="spesepop">
-  <div class="modal" style="position:relative;max-height:80vh;display:flex;flex-direction:column"><div class="mh"></div>
-    <button class="mcl" data-action="closeM" data-args="spesepop"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    <div class="mt">Note spese</div>
-    <div style="font-size:11px;font-weight:600;color:var(--blue);margin-bottom:12px" id="spesepopTot"></div>
-    <div id="spesepopList" style="overflow-y:auto;flex:1;margin:0 -4px"></div>
-    <div class="mbr" style="margin-top:12px">
-      <button class="bk" data-action="openAddSpesaFromPopup"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Aggiungi spesa</button>
-    </div>
-  </div>
-</div>
 <div class="overlay" id="spesam" data-backdrop="spesam">
-  <div class="modal" style="position:relative"><div class="mh"></div>
-    <button class="mcl" data-action="closeM" data-args="spesam"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    <div class="mt" id="spesaMTitle">Nuova spesa</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="fg"><label class="fl">Data</label><input type="date" class="fi" id="sp-dat"></div>
-      <div class="fg"><label class="fl">Categoria</label><select class="fs" id="sp-cat"><option value="Volo">Volo</option><option value="Albergo">Albergo</option><option value="Pasti" selected>Pasti</option><option value="Taxi">Taxi</option><option value="Carburante">Carburante</option><option value="Noleggio auto">Noleggio auto</option><option value="Pedaggi">Pedaggi</option><option value="Parcheggio">Parcheggio</option><option value="Varie">Varie</option><option value="Materiale consumo">Materiale consumo</option></select></div>
+  <div class="modal sheet sp-sheet"><div class="mh"></div>
+    <div class="sp-top"><h2 id="spesaMTitle">Nuova spesa</h2><span class="chip" id="spAdded" hidden></span></div>
+    <div class="sp-sec"><span class="fl">Giorno</span><div class="sp-chips" id="spDays"></div><input type="date" class="fi" id="sp-dat" aria-label="Data" hidden></div>
+    <div class="sp-sec"><span class="fl">Categoria</span><div class="sp-cats" id="spCats"></div></div>
+    <div class="sp-sec"><label class="fl" for="sp-det">Dettagli</label><input type="text" class="fi" id="sp-det" maxlength="80" autocomplete="off"><div class="sp-chips" id="spSugg"></div></div>
+    <div class="sp-amt">
+      <div><label class="fl" for="sp-imp">Importo</label><div class="sp-imp"><span id="sp-cur">€</span><input type="text" id="sp-imp" inputmode="decimal" placeholder="0,00" autocomplete="off"></div></div>
+      <div><label class="fl" for="sp-val">Valuta</label><select class="fs" id="sp-val" data-change="spValChanged"><option value="EURO">EUR</option><option value="Sterline">GBP</option><option value="Dollari">USD</option><option value="Altro">Altro</option></select></div>
     </div>
-    <div class="fg"><label class="fl">Dettagli</label><input type="text" class="fi" id="sp-det" placeholder="es. Pranzo"></div>
-    <div style="display:flex;align-items:center;gap:8px;padding:4px 0 10px" id="sp-x2row" style="display:none">
-      <input type="checkbox" id="sp-x2" style="width:18px;height:18px;cursor:pointer">
-      <label for="sp-x2" style="font-size:11px;color:var(--t2);cursor:pointer">x2 (pagato per due persone)</label>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="fg"><label class="fl">Valuta</label><select class="fs" id="sp-val"><option value="EURO">Euro</option><option value="Sterline">Sterline</option><option value="Dollari">Dollari</option><option value="Altro">Altro</option></select></div>
-      <div class="fg"><label class="fl">Importo</label><input type="number" class="fi" id="sp-imp" placeholder="0.00" step="0.01"></div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="fg"><label class="fl">Tipo documento</label><select class="fs" id="sp-doc"><option value="Fattura">Fattura</option><option value="Scontrino">Scontrino</option><option value="">Nessuno</option></select></div>
-      <div class="fg" style="margin-bottom:0"><label class="fl">Pagato con</label><select class="fs" id="sp-pag"><option value="c/c aziendale" selected>c/c aziendale</option><option value="Contanti pers.">Contanti pers.</option><option value="Già pagato">Già pagato</option></select></div>
-    </div>
-    <div class="fg"><span class="fl">Foto scontrino</span>
+    <div class="sp-sec" id="sp-cambioRow" hidden><label class="fl" for="sp-cambio">Cambio (€ per 1 unità)</label><input type="text" class="fi" id="sp-cambio" inputmode="decimal" placeholder="es. 1,17"></div>
+    <button type="button" class="sp-x2" id="sp-x2row" data-action="spToggleX2" hidden><span class="sp-check"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span><span id="sp-x2lbl">Pagato anche per il collega (×2)</span></button>
+    <div class="sp-sec"><span class="fl">Documento</span><div class="seg" id="spDoc"></div></div>
+    <div class="sp-sec"><span class="fl">Pagato con</span><div class="seg" id="spPag"></div></div>
+    <div class="sp-sec">
       <div id="sp-photo" class="sp-photo"></div>
-      <label class="addlink sp-photo-btn" for="sp-file">📷 Scatta o scegli una foto</label>
+      <label class="addlink sp-photo-btn" for="sp-file">📷 Foto scontrino</label>
       <input type="file" id="sp-file" accept="image/*" capture="environment" hidden data-change="spPhotoPicked" data-with="el">
     </div>
-    <div class="mbr">
-      <button class="bc" data-action="closeM" data-args="spesam">Annulla</button>
-      <button class="bk" id="speseDelBtn" style="background:var(--re);display:none" data-action="delSpesa">Elimina</button>
-      <button class="bk" data-action="saveSpesa">Salva</button>
-    </div>
+    <div class="btnrow sp-actions" id="spActions"></div>
   </div>
 </div>
 <div class="overlay" id="evm" data-backdrop="evm">

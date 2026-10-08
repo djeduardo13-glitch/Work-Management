@@ -1,0 +1,115 @@
+/* ── Nota spese: pagina, inserimento, documenti ───────────────── */
+
+/* foglio "Nuova spesa" */
+.sp-sheet { padding-bottom: 0; }
+.sp-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.sp-top h2 { margin-bottom: 10px; }
+#spAdded[hidden] { display: none; }
+.sp-sec { margin-bottom: 14px; }
+.sp-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.sp-chips:not(:empty) + * , .fi + .sp-chips:not(:empty) { margin-top: 8px; }
+#sp-dat { margin-top: 8px; }
+.sp-chip {
+  height: 38px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--line); background: #fff; color: var(--ink);
+  font: 600 13px var(--font-sans); cursor: pointer;
+}
+.sp-chip.sm { height: 32px; padding: 0 10px; border-radius: 16px; font-size: 12px; color: var(--blue); }
+.sp-chip.sel { background: var(--blue); border-color: var(--blue); color: #fff; }
+.sp-cats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.sp-cat {
+  min-height: 44px; padding: 2px 4px; border-radius: 12px; border: 1px solid var(--line); background: #fff; color: var(--ink);
+  font: 600 12px/1.1 var(--font-sans); cursor: pointer;
+}
+.sp-cat.sel { background: var(--blue); border-color: var(--blue); color: #fff; }
+.sp-amt { display: grid; grid-template-columns: minmax(0, 1fr) 96px; gap: 8px; align-items: end; margin-bottom: 14px; }
+.sp-amt .fs { height: 56px; }
+.sp-imp {
+  display: flex; align-items: center; gap: 6px; height: 56px; padding: 0 12px; border-radius: 12px; border: 2px solid var(--blue); background: #fff;
+}
+.sp-imp span { font: 600 20px var(--mono); color: var(--muted); }
+.sp-imp input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: 600 24px var(--mono); color: var(--ink); }
+.sp-x2 {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; padding: 0 12px; margin-bottom: 14px;
+  border-radius: 12px; border: 1px solid var(--line); background: #fff; color: var(--ink); font: 600 14px var(--font-sans); text-align: left; cursor: pointer;
+}
+.sp-x2[hidden] { display: none; }
+.sp-check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--blue); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sp-check svg { width: 14px; height: 14px; fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.sp-x2.on .sp-check { background: var(--blue); }
+.sp-sheet .seg button { height: 40px; }
+.sp-actions {
+  position: sticky; bottom: 0; margin: 0 -16px; padding: 12px 16px calc(14px + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--s) 80%, rgba(255,255,255,0));
+}
+.sp-actions .b-main, .sp-actions .b-ghost, .sp-actions .b-danger { height: 50px; }
+
+/* pagina nota spese */
+.ns-tot { background: var(--blue); color: #fff; border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+.ns-tot-h { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
+.ns-tot-l { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #c9d6e6; }
+.ns-tot-v { font: 700 32px/1.1 var(--font-serif); margin-top: 2px; }
+.ns-tot-n { font-size: 12px; color: #c9d6e6; }
+.ns-boxes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.ns-box { background: rgba(255,255,255,.1); border-radius: 10px; padding: 7px 8px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ns-box span { font-size: 10px; font-weight: 700; color: #c9d6e6; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ns-box b { font: 600 13px var(--mono); }
+.ns-warn { padding: 9px 12px; border-radius: 12px; background: var(--warnbg); color: var(--warn); font-size: 12px; font-weight: 600; }
+.ns-day { display: flex; flex-direction: column; gap: 6px; }
+.ns-dh { display: flex; justify-content: space-between; align-items: baseline; padding: 6px 4px 0; font-size: 11px; font-weight: 700; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+.ns-dh span:last-child { font: 600 12px var(--mono); letter-spacing: 0; text-transform: none; }
+.ns-list { background: #fff; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+.ns-row {
+  display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 9px 12px; border: 0; border-top: 1px solid #f0ede4;
+  background: #fff; color: var(--ink); text-align: left; cursor: pointer; font-family: var(--font-sans);
+}
+.ns-row:first-child { border-top: 0; }
+.ns-ic { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ns-ic svg { width: 18px; height: 18px; }
+.g-volo { background: #e6edf6; color: #1e3a5f; }
+.g-hotel { background: #eee8f5; color: #563a78; }
+.g-pasti { background: #fdf1dc; color: #8a5a0c; }
+.g-trasp { background: #e2f1ea; color: #1d6b47; }
+.g-altro { background: #f0ede4; color: #4a463e; }
+.ns-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.ns-det { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ns-sub { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ns-sub.warn { color: var(--warn); }
+.ns-amt { font: 600 14px var(--mono); white-space: nowrap; text-align: right; display: flex; flex-direction: column; }
+.ns-fx { font-size: 11px; color: var(--muted); font-weight: 500; }
+.ns-bar {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 12px 16px calc(14px + env(safe-area-inset-bottom));
+  background: var(--bg); border-top: 1px solid var(--line);
+}
+.ns-bar .b-main, .ns-bar .b-ghost { height: 50px; font-size: 14px; }
+.ns-bar .b-ghost.warn { border-color: var(--warn); color: var(--warn); }
+.ns-bar .b-ghost:disabled { opacity: .45; cursor: default; }
+
+/* card "Documenti" nella pagina trasferta */
+.docs { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.docs-h { display: flex; justify-content: space-between; align-items: center; }
+.docs-note { font-size: 11px; color: var(--muted); }
+.doc-item { display: flex; flex-direction: column; gap: 10px; }
+.doc-row { display: flex; gap: 12px; align-items: flex-start; }
+.doc-ic {
+  width: 40px; height: 48px; border-radius: 8px; background: var(--tint); color: var(--blue); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; text-align: center; font: 700 10px/1.2 var(--font-sans);
+}
+.doc-ic.sp { background: var(--warnbg); color: var(--warn); }
+.doc-main { flex: 1; min-width: 0; }
+.doc-t { font-weight: 700; font-size: 15px; color: var(--ink); }
+.doc-name { font: 500 11px var(--mono); color: var(--muted); word-break: break-all; }
+.doc-st { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.doc-st.ok { color: var(--ok); }
+.doc-st.warn { color: var(--warn); font-weight: 600; }
+.doc-btns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.doc-b {
+  height: 42px; padding: 0; border-radius: 12px; border: 1px solid var(--line); background: #fff; color: var(--blue); font: 700 13px var(--font-sans); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.doc-b.main { background: var(--blue); border-color: var(--blue); color: #fff; }
+.doc-upd { height: 44px; border-radius: 12px; border: 0; background: var(--acc); color: var(--ink); font: 700 14px var(--font-sans); cursor: pointer; }
+.doc-upd.blue { background: var(--blue); color: #fff; }
+.doc-sep { height: 1px; background: #f0ede4; }
+.doc-all {
+  height: 46px; border-radius: 12px; border: 1.5px solid var(--blue); background: #fff; color: var(--blue); font: 700 14px var(--font-sans); cursor: pointer;
+}

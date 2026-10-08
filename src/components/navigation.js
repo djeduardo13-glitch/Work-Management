@@ -22,12 +22,14 @@ window.addEventListener('popstate',e=>{
   // Cerca modal aperto
   const openModal=document.querySelector('.overlay.on, .modal-wrap.on');
   if(openModal){openModal.classList.remove('on');return;}
-  // Cerca poppage aperta
-  const openPop=document.querySelector('.poppage.on');
+  // Cerca poppage aperta (se sono due, ad es. nota spese sopra la trasferta, chiude quella sopra)
+  const pops=document.querySelectorAll('.poppage.on');
+  const openPop=pops[pops.length-1];
   if(openPop){
     openPop.classList.remove('on');
-    // chiudendo la trasferta col tasto indietro: stesso aggiornamento del pulsante "indietro" della pagina
+    // chiudendo col tasto indietro: stesso aggiornamento del pulsante "indietro" della pagina
     if(openPop.id==='tdPg') import('../features/trips/detail.js').then(m=>m.closeTD());
+    if(openPop.id==='nsPg') import('../features/expenses/note-page.js').then(m=>m.closeNotePage());
     return;
   }
   // Torna alla home

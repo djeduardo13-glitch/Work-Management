@@ -26,8 +26,9 @@ import { comeBackAt, comeBackNow, confirmExit, editEntry, editFromRecap, editOut
 import { addCLItem, togCL } from '../features/trips/checklist.js';
 import { openTripRoute, recalcRet, setRetFrom, setRetManual } from '../features/trips/departure-ui.js';
 import { addSpesaCur, archiviaT, closeTD, eliminaT, openTrDet, ripristinaT, shareWA } from '../features/trips/detail.js';
-import { exportTripHours } from '../features/trips/hours-export.js';
-import { delSpesa, openAddSpesaFromPopup, openSpesePopup, quickAddSpesa, saveSpesa, spPhotoPicked, spPhotoRemove, spPhotoView } from '../features/trips/expenses.js';
+import { docCreate, docDownload, docOpen, docShare, docShareAll } from '../features/trips/docs.js';
+import { delSpesa, quickAddSpesa, saveSpesa, spOtherDay, spPhotoPicked, spPhotoRemove, spPhotoView, spPickCat, spPickDay, spPickDoc, spPickPag, spSaveNext, spSugg, spToggleX2, spValChanged } from '../features/trips/expenses.js';
+import { closeNotePage, nsAdd, nsAuto, nsEdit, openNotePage } from '../features/expenses/note-page.js';
 import { addScaleLeg, closeNT, editTr, removeScaleLeg, saveNT, showNT, togAF, togScale, toggleAltroInput } from '../features/trips/form.js';
 import { swTTab } from '../features/trips/list.js';
 import { delEntry, delFolder, editWorkEntry, editWorkFolder, newEntry, newFolder, openFolder, saveEntry, saveFolder, weAddFromInput, weAddTag, weRmTag, workBack, workTag } from '../features/work/work.js';
@@ -59,8 +60,9 @@ export const actions = {
   addCLItem, togCL,
   openTripRoute, recalcRet, setRetFrom, setRetManual,
   addSpesaCur, archiviaT, closeTD, eliminaT, openTrDet, ripristinaT, shareWA,
-  exportTripHours,
-  delSpesa, openAddSpesaFromPopup, openSpesePopup, quickAddSpesa, saveSpesa, spPhotoPicked, spPhotoRemove, spPhotoView,
+  docCreate, docDownload, docOpen, docShare, docShareAll,
+  delSpesa, quickAddSpesa, saveSpesa, spOtherDay, spPhotoPicked, spPhotoRemove, spPhotoView, spPickCat, spPickDay, spPickDoc, spPickPag, spSaveNext, spSugg, spToggleX2, spValChanged,
+  closeNotePage, nsAdd, nsAuto, nsEdit, openNotePage,
   addScaleLeg, closeNT, editTr, removeScaleLeg, saveNT, showNT, togAF, togScale, toggleAltroInput,
   swTTab,
   delEntry, delFolder, editWorkEntry, editWorkFolder, newEntry, newFolder, openFolder, saveEntry, saveFolder, weAddFromInput, weAddTag, weRmTag, workBack, workTag,

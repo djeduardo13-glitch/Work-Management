@@ -7,8 +7,8 @@ export const APP_CONFIG = {
     email: 'e.roedel@stem.it',
     fullName: 'Eduardo Roedel da Silva', // nome sul foglio ore delle trasferte
   },
-  // Intestazione del foglio "Allegato Nota spese – Ore" (export ore trasferta)
-  companySheet: { name: 'Stem Srl Unipersonale', address: 'Strada Ghiaie 12/D, 43013 Medesano PR' },
+  // Intestazione dei fogli aziendali (ore e nota spese); reparto e posizione vanno nella nota spese
+  companySheet: { name: 'Stem Srl Unipersonale', address: 'Strada Ghiaie 12/D, 43013 Medesano PR', department: 'After Sales', position: 'After Sales' },
   // Località per il meteo in Home (Medesano, PR)
   // navTo: destinazione del "Vai a casa" dopo il volo di ritorno (si può mettere l'indirizzo esatto)
   homeLocation: { lat: 44.754, lon: 10.141, timezone: 'Europe/Rome', label: 'Medesano (PR)', navTo: 'Medesano PR' },

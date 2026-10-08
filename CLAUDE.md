@@ -28,8 +28,8 @@ Deploy: GitHub Actions (`.github/workflows/deploy.yml`) → GitHub Pages. Settin
 - `src/features/`
   - `today/today.js` — card "Oggi" in Home.
   - `hours/` — `engine.js` (regole di calcolo), `month.js` (pagina Ore: calendario e riepilogo), `day-view.js`, `day-editor.js`, `permit-planner.js`, `notes.js`.
-  - `trips/` — `list`, `detail` (bandiere Francia/Spagna), `form`, `checklist`, `expenses` (foto scontrino), `timeline` (prossimo passo).
-    - Export ore trasferta: `trip-hours.js` (righe, funzioni pure, testate), `trip-hours-pdf.js` (foglio aziendale "Allegato Nota spese – Ore" con jsPDF, caricato solo al bisogno), `hours-export.js` (pulsante "Export Ore" in fondo alla trasferta: PDF `2026_GIUGNO_18-19_Eduardo_Roedel.pdf` passato alla condivisione per allegarlo alla mail; senza condivisione file scarica il PDF e apre una mail). Campo `t.scopo`. Condivisione info trasferta solo via WhatsApp (con tutti i clienti). Meteo destinazione compatto sotto il banner (`renderTripWeather` in `home/weather-card.js`). Niente check-in hotel. Nome e intestazione in `app.config.js` (`user.fullName`, `companySheet`).
+  - `trips/` — `list`, `detail` (bandiere Francia/Spagna), `form`, `checklist`, `expenses` (foglio "Nuova spesa" e foto scontrino), `docs` (card Documenti), `timeline` (prossimo passo).
+    - Foglio ore trasferta: `trip-hours.js` (righe, funzioni pure, testate), `trip-hours-pdf.js` (foglio aziendale "Allegato Nota spese – Ore" con jsPDF, caricato solo al bisogno), `hours-export.js` (crea il file `2026_GIUGNO_18-19_Eduardo_Roedel_Ore.pdf`). Campo `t.scopo`. Condivisione info trasferta solo via WhatsApp (con tutti i clienti). Meteo destinazione compatto sotto il banner (`renderTripWeather` in `home/weather-card.js`). Niente check-in hotel. Nome e intestazione in `app.config.js` (`user.fullName`, `companySheet`).
   - `work/work.js` — cartelle, aggiornamenti e tag.
   - `credentials/` — `vault.js` (cassaforte), `credentials.js`, `documents.js`.
   - `profile/`, `settings/`, `sync/` (Gist), `home/` (meteo, dove devo essere, eventi).
@@ -70,7 +70,16 @@ Deploy: GitHub Actions (`.github/workflows/deploy.yml`) → GitHub Pages. Settin
 - `features/home/where.js`: banner blu (`#tripHero`), card "adesso" (`#tripNow`), "Dove andare" (`#wwid`), pulsante Spesa (`#tripFab`); ordine fisso: banner, ore di oggi (`#todayCard`, sempre subito sotto il banner), card "adesso", dove andare, pulsante carta d'imbarco (`#tripBp`: prima del volo di andata quella d'andata, poi quella di ritorno se caricata), meteo. Orologio: un solo orario se il fuso è uguale all'Italia. Si aggiorna ogni minuto.
 - Fusi orari: `lib/tz.js`. Il fuso della destinazione arriva dal geocoding Open-Meteo e si salva in `t.tz`. Andata in ora italiana, arrivo e ritorno nell'ora del posto; dove serve si mostra anche l'ora italiana.
 - Carte d'imbarco: `features/trips/boarding.js`, file (foto o PDF) solo su questo dispositivo in IndexedDB, riferimento in `t.bp = {a, r}`. Si carica solo dalla pagina trasferta (sezione Voli); in Home si visualizza soltanto. Input file unico `#bpFile` in `index.html`.
-- Export Ore: possibile solo dopo l'uscita registrata dell'ultimo giorno della trasferta (`canExportHours`).
+- PDF ore: si crea da solo quando si salva l'uscita dell'ultimo giorno della trasferta (`autoHoursDoc` in `trips/docs.js`, chiamato da `confirmExit`, `confirmStandard`, `saveDay`); si aggiorna da solo se si modifica un giorno della trasferta dopo. Senza l'uscita dell'ultimo giorno non si può creare (`canExportHours`).
+
+## Nota spese e documenti
+- `features/expenses/`:
+  - `note.js` (puro, testato in `tests/note.test.js`): regole del foglio Excel aziendale "Nota spese". Categorie → riquadri (Taxi/Noleggio/Carb./Pedaggi/Parch., Volo/Treno, Hotel, Pasti, Altro = Varie + Materiale consumo). Pagamento → colonna: Contanti pers. = K, c/c aziendale = L, Già pagato = N; Totale riga = K..N. Valuta estera: importo × `cambio` (€ per 1 unità), senza cambio non conta. ×2 → "Pranzo x2" nei dettagli. `noteSignature` per capire se i file creati sono vecchi.
+  - `note-page.js`: pagina `#nsPg` (totale, riquadri, avvisi, "Auto e km" in `t.auto = {p, a, km1, km2}`, spese per giorno). **Nell'app niente totali scontrini/fatture** (Eduardo non li vuole); restano solo nei file, perché fanno parte del foglio aziendale.
+  - `note-xlsx.js` (puro, testato): riempie `nota-spese-template.xlsx` (il foglio originale senza macro, formule taxi corrette, riga 15 = stile righe, 16 = riga vuota, 17 = totali) con `fflate`; scrive anche i valori calcolati delle formule. `note-pdf.js`: stesso foglio con jsPDF (A4 orizzontale, più pagine se serve). `note-files.js`: crea i file `…_Spese.pdf` e `…_Spese.xlsx` (caricato solo al bisogno). Reparto e posizione in `app.config.js` → `companySheet`.
+- Foglio "Nuova spesa" (`trips/expenses.js`, modale `#spesam`): giorno e categoria a pulsanti, suggerimenti per i dettagli (taxi con i nomi dei clienti, dettagli usati in passato senza doppioni), tipo documento proposto dalla categoria (Fattura per Volo, Albergo, Taxi, Noleggio auto, Treno), ×2 solo per i pasti e solo se c'è "Viaggiato con". "Salva e aggiungi un'altra" tiene giorno, categoria, pagamento e valuta.
+- Documenti (`trips/docs.js`): ore, PDF ed Excel della nota spese; file solo su questo dispositivo (IndexedDB, come le foto), riferimento in `t.docs = {ore, spesePdf, speseXlsx: {id, name, type, at, sig}}`. Se il file manca (altro dispositivo) si ricrea dai dati. Se i dati cambiano: "Aggiorna". Apri / Condividi / Scarica e "Invia ore e nota spese insieme" (condivisione di sistema; senza: scarica e apre una mail).
+- Con due pagine aperte (nota spese sopra la trasferta) il tasto indietro chiude quella sopra (`navigation.js`).
 - Col tasto indietro di Android la pagina trasferta si chiude con lo stesso aggiornamento del pulsante indietro (`navigation.js`), e la Home si ridisegna quando torna visibile.
 - Promemoria check-in: `features/trips/checkin.js`, a 12 ore dal volo se manca la carta d'imbarco (toggle "Promemoria check-in volo"). Funziona solo con l'app aperta o in background: niente server push.
 
@@ -79,6 +88,7 @@ Deploy: GitHub Actions (`.github/workflows/deploy.yml`) → GitHub Pages. Settin
 - "Chiudi trasferta" (controllo ore, export, archiviazione in un unico passaggio): Eduardo ci deve pensare.
 - "Sono da questo cliente" (ore per cliente): per ora no.
 - Rapportino d'intervento (note, foto, firma cliente → PDF): da fare.
+- Tariffa chilometrica nella nota spese: da chiedere a Eduardo (per ora la cella resta vuota).
 - Bandiere per altri paesi (per ora solo Francia e Spagna, in `trips/detail.js` → `FLAGS` e CSS `.flag-*`).
 - La pagina Ore potrebbe ospitare altro in futuro (da decidere con Eduardo).
 - Tracciamento lavoro: Eduardo prevede altre modifiche.

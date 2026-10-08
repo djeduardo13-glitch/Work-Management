@@ -318,6 +318,7 @@ export function confirmExit() {
   closeM('urm');
   putDay(k, { u: t });
   toast('Uscita registrata');
+  import('../trips/docs.js').then((m) => m.autoHoursDoc(k)); // PDF ore della trasferta, se era l'ultimo giorno
 }
 
 /** Riepilogo di una giornata già chiusa (dal pulsante "Riepilogo"). */
@@ -339,6 +340,7 @@ export function confirmStandard(k) {
   save();
   refreshHours();
   toast('Giornata confermata');
+  import('../trips/docs.js').then((m) => m.autoHoursDoc(k)); // PDF ore della trasferta, se era l'ultimo giorno
 }
 
 export function editFromRecap(k) {

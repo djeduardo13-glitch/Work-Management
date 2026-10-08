@@ -7,10 +7,11 @@ import { renderEvs } from '../home/events.js';
 import { chkWhere } from '../home/where.js';
 import { addCLItem, togCL } from './checklist.js';
 import { depOutHtml, depRetHtml, ensureReturnRoute, openTripRoute } from './departure-ui.js';
-import { openAddSpesa, openSpesePopup, renderSpese } from './expenses.js';
+import { openAddSpesa } from './expenses.js';
+import { speseSummary } from '../expenses/note-page.js';
+import { docsHtml } from './docs.js';
 import { bpHtml } from './boarding.js';
 import { tripTimes } from './trip-mode.js';
-import { canExportHours } from './trip-hours.js';
 import { IT_TZ, hhmmIn, sameAsItaly } from '../../lib/tz.js';
 import { renderTr } from './list.js';
 import { countdown, nextStep, whenLabel } from './timeline.js';
@@ -60,7 +61,6 @@ export function renderTrBody(t){
     t.vcon?row('Viaggio con',t.vcon):'',
   ].join('')||'<div class="empty-note">Nessun indirizzo</div>';
   const car=t.au==='si'?row('Compagnia',t.ac||'—')+row('Prenotazione',t.ap||'—')+(t.aur?row('Ritiro',whenLabel(new Date(t.aur+':00'))):''):'';
-  const spese=(t.spese||[]).length;
   body.dataset.tid=t.id;
   body.innerHTML=`<div class="stack" style="padding-top:8px">
     ${(()=>{const fl=FLAGS[String(t.pa||'').toLowerCase()]; const inner=`<div class="thead-t">${h(cap(t.ci))}, ${h(cap(t.pa))}</div><div class="thead-s">${fds(t.d1)} – ${fds(t.d2)} ${status}</div>`; return fl?`<div class="thead flag ${fl}"><div class="thead-box">${inner}</div></div>`:`<div class="thead">${inner}</div>`;})()}
@@ -70,16 +70,16 @@ export function renderTrBody(t){
     ${flights?sec('fly','Voli',[t.va1&&(up(t.va1)+' → '+up(t.va2)),t.vr1&&(up(t.vr1)+' → '+up(t.vr2))].filter(Boolean).join(' · '),flights,true):''}
     ${car?sec('car','Auto a noleggio',h(t.ac||''),car,false):''}
     ${sec('cl','Checklist',`${clDone} di ${clAll.length} completati`,cl,false)}
-    <button type="button" class="ucard tsec-link" data-action="openSpesePopup" data-args="${attr(t.id)}"><span class="tsec-t">Note spese</span><span class="tsec-s" id="speseTot-${h(t.id)}">${spese?spese+' spese':'Nessuna spesa'}</span>${icon('right')}</button>
+    <button type="button" class="ucard tsec-link" data-action="openNotePage" data-args="${attr(t.id)}"><span class="tsec-t">Nota spese</span><span class="tsec-s">${h(speseSummary(t))}</span>${icon('right')}</button>
+    ${docsHtml(t)}
     ${sec('sos','Numeri utili','Emergenze e ambasciata',`${(()=>{const em=EMERGENCY[t.pa.toLowerCase()]||{}; const rows=[['🚔 Polizia',em.polizia||'112'],['🚑 Ambulanza',em.ambulanza||'112'],['🚒 Vigili del fuoco',em.vigili||'112'],['🆘 Emergenze EU','112']]; if(EMB[t.pa.toLowerCase()]) rows.push(['🏛 Ambasciata IT',EMB[t.pa.toLowerCase()]]); return rows.map(([l,v])=>`<div class="urow"><span class="ul">${l}</span><span class="uv lk" data-action="callTel" data-args="${attr(v)}">${v}</span></div>`).join('');})()}`,false)}
     <button type="button" class="btn-wa" style="margin:0" data-action="shareWA">💬 Condividi su WhatsApp</button>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px" id="trActBtns"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px" id="trActBtns"></div>
     <div style="height:90px"></div>
   </div>
   <button type="button" class="fab" data-action="addSpesaCur">${icon('plus')}Spesa</button>`;
   renderTripWeather(document.getElementById('trWeather'),t);
   renderTrActionBtns(t);
-  renderSpese(t);
   ensureReturnRoute(t);
 }
 
@@ -89,8 +89,7 @@ export function renderTrActionBtns(t){
   const archBtn=t.arc
     ?'<button class="ab b-ar" data-action="ripristinaT"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.85"/></svg>Ripristina</button>'
     :'<button class="ab b-ar" data-action="archiviaT"><svg viewBox="0 0 24 24"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/></svg>Archivia</button>';
-  const canExp=canExportHours(t,S.dd);
-  el.innerHTML='<button class="xbtn btn-em'+(canExp?'':' off')+'" data-action="exportTripHours"'+(canExp?'':' aria-disabled="true" title="Disponibile dopo l’uscita dell’ultimo giorno"')+'><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 12v6"/><path d="m9 15 3 3 3-3"/></svg>Export Ore</button>'+archBtn+'<button class="ab b-dl" data-action="eliminaT"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Elimina</button>';
+  el.innerHTML=archBtn+'<button class="ab b-dl" data-action="eliminaT"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Elimina</button>';
 }
 
 export function archiviaT(){const t=S.trs.find(x=>x.id===S.curTid); if(!t)return; t.arc=1; save(); closeTD(); toast('Trasferta archiviata');}
