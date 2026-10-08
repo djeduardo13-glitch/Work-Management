@@ -10,6 +10,7 @@ import { depOutHtml, depRetHtml, ensureReturnRoute, openTripRoute } from './depa
 import { openAddSpesa, openSpesePopup, renderSpese } from './expenses.js';
 import { bpHtml } from './boarding.js';
 import { tripTimes } from './trip-mode.js';
+import { canExportHours } from './trip-hours.js';
 import { IT_TZ, hhmmIn, sameAsItaly } from '../../lib/tz.js';
 import { renderTr } from './list.js';
 import { countdown, nextStep, whenLabel } from './timeline.js';
@@ -88,7 +89,8 @@ export function renderTrActionBtns(t){
   const archBtn=t.arc
     ?'<button class="ab b-ar" data-action="ripristinaT"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.85"/></svg>Ripristina</button>'
     :'<button class="ab b-ar" data-action="archiviaT"><svg viewBox="0 0 24 24"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/></svg>Archivia</button>';
-  el.innerHTML='<button class="xbtn btn-em" data-action="exportTripHours"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 12v6"/><path d="m9 15 3 3 3-3"/></svg>Export Ore</button>'+archBtn+'<button class="ab b-dl" data-action="eliminaT"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Elimina</button>';
+  const canExp=canExportHours(t,S.dd);
+  el.innerHTML='<button class="xbtn btn-em'+(canExp?'':' off')+'" data-action="exportTripHours"'+(canExp?'':' aria-disabled="true" title="Disponibile dopo l’uscita dell’ultimo giorno"')+'><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 12v6"/><path d="m9 15 3 3 3-3"/></svg>Export Ore</button>'+archBtn+'<button class="ab b-dl" data-action="eliminaT"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Elimina</button>';
 }
 
 export function archiviaT(){const t=S.trs.find(x=>x.id===S.curTid); if(!t)return; t.arc=1; save(); closeTD(); toast('Trasferta archiviata');}

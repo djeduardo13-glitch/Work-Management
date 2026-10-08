@@ -505,3 +505,5 @@
 .pl-call svg, .pl-go svg { width: 17px; height: 17px; }
 .pl-later { padding: 4px 14px 12px; font-size: 13px; color: var(--ink); }
 .home-fab { z-index: 120; bottom: calc(var(--nh) + 16px + env(safe-area-inset-bottom)); }
+/* Export Ore non ancora disponibile (manca l'uscita dell'ultimo giorno) */
+.xbtn.off { opacity: .45; }

@@ -11,6 +11,7 @@ export function goTab(tab){
   const nm={home:'n-h',ore:'n-o',trasferte:'n-t',profilo:'n-p'};
   Object.values(nm).forEach(id=>document.getElementById(id).classList.remove('on'));
   document.getElementById(nm[tab]).classList.add('on');
+  if(tab==='home') import('../features/home/where.js').then(m=>m.chkWhere());
   if(tab==='ore') renderMonth();
   if(tab==='trasferte') renderTr();
   if(tab==='profilo'){ S.workView={folder:null,tag:null}; swPTab(0); document.querySelector('#pscr .sc')?.scrollTo(0,0); }
@@ -23,7 +24,12 @@ window.addEventListener('popstate',e=>{
   if(openModal){openModal.classList.remove('on');return;}
   // Cerca poppage aperta
   const openPop=document.querySelector('.poppage.on');
-  if(openPop){openPop.classList.remove('on');return;}
+  if(openPop){
+    openPop.classList.remove('on');
+    // chiudendo la trasferta col tasto indietro: stesso aggiornamento del pulsante "indietro" della pagina
+    if(openPop.id==='tdPg') import('../features/trips/detail.js').then(m=>m.closeTD());
+    return;
+  }
   // Torna alla home
   const m={home:'hscr',ore:'oscr',trasferte:'tscr',profilo:'pscr'};
   const nm={home:'n-h',ore:'n-o',trasferte:'n-t',profilo:'n-p'};
@@ -31,6 +37,7 @@ window.addEventListener('popstate',e=>{
   Object.values(nm).forEach(id=>document.getElementById(id).classList.remove('on'));
   document.getElementById('hscr').classList.add('on');
   document.getElementById('n-h').classList.add('on');
+  import('../features/home/where.js').then(m=>m.chkWhere());
 });
 
 /** Tocco sull'icona nuvola: apre le impostazioni di sincronizzazione. */

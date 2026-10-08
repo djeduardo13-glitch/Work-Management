@@ -1,3 +1,4 @@
+import { APP_CONFIG } from '../../config/app.config.js';
 import { S } from '../../core/state.js';
 import { save } from '../../core/storage.js';
 import { tripClients } from '../clients/clients.js';
@@ -121,6 +122,13 @@ export function openTripRoute(tid, which) {
   if (which === 'out') {
     const c = airportTarget(t.va1, t.van).coords;
     url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(c ? c.join(',') : t.va1 + ' airport')}&travelmode=driving`;
+  } else if (which === 'home') {
+    const hl = APP_CONFIG.homeLocation;
+    url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(hl.navTo || `${hl.lat},${hl.lon}`)}&travelmode=driving`;
+  } else if (which === 'reth') {
+    // dalla Home: dalla posizione attuale all'aeroporto di ritorno
+    const c = airportCoords(t.vr1);
+    url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(c ? c.join(',') : t.vr1 + ' airport')}&travelmode=driving`;
   } else {
     const origin = pickOrigin(t, returnOrigins(t, tripClients(t)));
     const c = airportCoords(t.vr1);

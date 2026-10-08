@@ -5,13 +5,20 @@ import { IT_TZ, dateIn, safeTz, zoned } from '../../lib/tz.js';
 //  - prima del volo di andata: solo l'aeroporto di partenza;
 //  - dopo il decollo: ritiro auto (se c'è il noleggio) poi clienti e hotel;
 //  - giorni in mezzo: clienti e hotel;
-//  - giorno di rientro: aeroporto di ritorno + clienti e hotel, fino al decollo.
+//  - giorno di rientro: aeroporto di ritorno + clienti e hotel; nell'ultima ora prima del volo solo l'aeroporto;
+//  - da 1 ora dopo l'orario del volo di ritorno: "verso casa" fino a 3 ore dopo l'atterraggio.
 // Gli orari dei voli sono nell'ora del posto: andata in partenza dall'Italia,
 // arrivo e ritorno nel fuso della destinazione (t.tz), atterraggio finale in Italia.
 
 const T = /^\d{2}:\d{2}$/;
 const MIN = 60000;
 const DAY = 864e5;
+/** Indirizzi di clienti e hotel nascosti nell'ultima ora prima del volo di ritorno. */
+export const HIDE_PLACES_BEFORE_FLIGHT_MIN = 60;
+/** Aeroporto e carta d'imbarco del ritorno restano fino a 1 ora dopo l'orario previsto del volo (imbarco, ritardi). */
+export const KEEP_AIRPORT_AFTER_DEP_MIN = 60;
+/** Dopo l'atterraggio del ritorno la card "verso casa" resta per 3 ore. */
+export const HOME_AFTER_LANDING_MIN = 180;
 const floor5 = (d) => new Date(d.getTime() - (d.getTime() % (5 * MIN)));
 const addDays = (k, n) => { const d = new Date(k + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 const daysBetween = (a, b) => Math.round((Date.parse(b + 'T12:00:00Z') - Date.parse(a + 'T12:00:00Z')) / DAY);
@@ -43,7 +50,9 @@ export function tripMode(t, now = new Date(), { tz, retDrive = null } = {}) {
   const leaveOut = ob ? leaveFor(depOut, ob.drive) : null;
   let start = zoned(t.d1, '00:00', IT_TZ);
   if (leaveOut && leaveOut < start) start = leaveOut;
-  const end = arrRet || (depRet && new Date(depRet.getTime() + 3 * 3600e3)) || zoned(addDays(t.d2, 1), '00:00', z);
+  const end = arrRet ? new Date(arrRet.getTime() + HOME_AFTER_LANDING_MIN * MIN)
+    : depRet ? new Date(depRet.getTime() + 7 * 3600e3)
+    : zoned(addDays(t.d2, 1), '00:00', z);
   if (now < start || now >= end) return null;
 
   const today = dateIn(now, depOut && now < depOut ? IT_TZ : z);
@@ -52,7 +61,7 @@ export function tripMode(t, now = new Date(), { tz, retDrive = null } = {}) {
 
   let phase = 'there';
   if (depOut && now < depOut) phase = 'out';
-  else if (depRet && now >= depRet) phase = 'home';
+  else if (depRet && now >= new Date(depRet.getTime() + KEEP_AIRPORT_AFTER_DEP_MIN * MIN)) phase = 'home';
   else if (today >= t.d2) phase = 'return';
 
   // auto a noleggio: dal decollo fino a 1h dopo l'orario di ritiro (o 2h dopo l'atterraggio)
@@ -68,7 +77,8 @@ export function tripMode(t, now = new Date(), { tz, retDrive = null } = {}) {
     depOut, arrOut, depRet, arrRet, leaveOut,
     leaveRet: phase === 'return' && retDrive !== null ? leaveFor(depRet, retDrive) : null,
     car,
-    places: phase === 'there' || phase === 'return',
+    places: phase === 'there' || (phase === 'return' && !(depRet && now >= new Date(depRet.getTime() - HIDE_PLACES_BEFORE_FLIGHT_MIN * MIN))),
+    landed: phase === 'home' && !!(arrRet && now >= arrRet),
     inFlight: phase === 'there' && !!(arrOut && now < arrOut),
   };
 }

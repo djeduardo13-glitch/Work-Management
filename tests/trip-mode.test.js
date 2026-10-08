@@ -12,7 +12,7 @@ const mode = (d, t, extra) => tripMode(trip, at(d, t), { tz: TZ, ...extra });
 
 test('fuori dalle date: Home normale', () => {
   assert.equal(mode('2026-10-11', '20:00'), null);
-  assert.equal(mode('2026-10-14', '20:30'), null); // atterrato a BGY
+  assert.equal(mode('2026-10-14', '23:30'), null); // 3 ore dopo l'atterraggio a BGY
 });
 test('prima del volo: solo l’aeroporto di partenza, tutta la mattina', () => {
   const m = mode('2026-10-12', '04:40');
@@ -33,8 +33,19 @@ test('giorno di rientro: aeroporto di ritorno con partenza consigliata', () => {
   assert.deepEqual([m.phase, m.day, m.places], ['return', 3, true]);
   assert.equal(hhmmIn(m.leaveRet, TZ), '16:10'); // 19:00 − 2h − 35 − 15
 });
-test('dopo il decollo del ritorno: niente indirizzi', () => {
-  assert.equal(mode('2026-10-14', '19:30').phase, 'home');
+test('ultima ora prima del volo di ritorno: solo l’aeroporto', () => {
+  assert.equal(mode('2026-10-14', '17:55', { retDrive: 35 }).places, true);  // 65 min prima del volo
+  const m = mode('2026-10-14', '18:05', { retDrive: 35 });
+  assert.deepEqual([m.phase, m.places], ['return', false]);
+});
+test('volo di ritorno: aeroporto ancora 1 ora dopo l’orario previsto (imbarco, ritardi)', () => {
+  const m = mode('2026-10-14', '19:30');
+  assert.deepEqual([m.phase, m.places], ['return', false]);
+});
+test('da 1 ora dopo il volo: verso casa, anche dopo l’atterraggio', () => {
+  const m = mode('2026-10-14', '20:05');
+  assert.deepEqual([m.phase, m.places, m.landed], ['home', false, false]);
+  assert.equal(mode('2026-10-14', '20:30').landed, true);
 });
 test('trasferta in auto (senza voli): clienti e hotel tutti i giorni', () => {
   const m = tripMode({ id: 'x', d1: '2026-10-12', d2: '2026-10-12' }, at('2026-10-12', '10:00'), { tz: 'Europe/Rome' });

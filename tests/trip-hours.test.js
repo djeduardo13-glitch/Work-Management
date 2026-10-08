@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { dayPairs, fmtNum, tripDays, tripHoursFileName, tripHoursRows } from '../src/features/trips/trip-hours.js';
+import { canExportHours, dayPairs, fmtNum, tripDays, tripHoursFileName, tripHoursRows } from '../src/features/trips/trip-hours.js';
 
 const now = new Date('2026-12-31T20:00:00');
 
@@ -49,4 +49,11 @@ test('nome file: anno_MESE_giorni_Nome_Cognome', () => {
   assert.equal(tripHoursFileName({ d1: '2026-06-30', d2: '2026-07-02' }, who), '2026_GIUGNO-LUGLIO_30-02_Eduardo_Roedel');
   assert.equal(tripHoursFileName({ d1: '2026-03-25', d2: '2026-03-25' }, who), '2026_MARZO_25_Eduardo_Roedel');
   assert.equal(tripHoursFileName({ d1: '2026-12-30', d2: '2027-01-02' }, who), '2026-2027_DICEMBRE-GENNAIO_30-02_Eduardo_Roedel');
+});
+
+test('export ore solo dopo l’ultima uscita dell’ultimo giorno', () => {
+  const t = { d1: '2026-06-18', d2: '2026-06-19' };
+  assert.equal(canExportHours(t, { '2026-06-18': { e: '07:30', u: '18:00' } }), false);
+  assert.equal(canExportHours(t, { '2026-06-19': { e: '06:30' } }), false);
+  assert.equal(canExportHours(t, { '2026-06-19': { e: '06:30', u: '19:00' } }), true);
 });

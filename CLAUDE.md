@@ -66,13 +66,18 @@ Deploy: GitHub Actions (`.github/workflows/deploy.yml`) → GitHub Pages. Settin
 - Coordinate degli aeroporti europei: `config/airports.js` → `AIRPORTS`.
 
 ## Home in trasferta
-- `features/trips/trip-mode.js` (puro, testato): fase della trasferta adesso. `out` = prima del volo di andata (solo aeroporto di partenza), `there` = clienti e hotel (+ ritiro auto il primo giorno), `return` = giorno di rientro (aeroporto di ritorno + clienti e hotel) fino al decollo, `home` = volo di ritorno. Fuori dalla trasferta la Home è normale.
+- `features/trips/trip-mode.js` (puro, testato): fase della trasferta adesso. `out` = prima del volo di andata (solo aeroporto di partenza), `there` = clienti e hotel (+ ritiro auto il primo giorno), `return` = giorno di rientro (aeroporto di ritorno + clienti e hotel; nell'ultima ora prima del volo solo aeroporto e carta d'imbarco) fino a 1 ora dopo l'orario previsto del volo (imbarco e ritardi), `home` = da lì in poi: card "Verso casa" (Vai a Medesano, `homeLocation.navTo` in `app.config.js`) fino a 3 ore dopo l'atterraggio. Fuori dalla trasferta la Home è normale.
 - `features/home/where.js`: banner blu (`#tripHero`), card "adesso" (`#tripNow`), "Dove andare" (`#wwid`), pulsante Spesa (`#tripFab`); ordine fisso: banner, ore di oggi (`#todayCard`, sempre subito sotto il banner), card "adesso", dove andare, pulsante carta d'imbarco (`#tripBp`: prima del volo di andata quella d'andata, poi quella di ritorno se caricata), meteo. Orologio: un solo orario se il fuso è uguale all'Italia. Si aggiorna ogni minuto.
 - Fusi orari: `lib/tz.js`. Il fuso della destinazione arriva dal geocoding Open-Meteo e si salva in `t.tz`. Andata in ora italiana, arrivo e ritorno nell'ora del posto; dove serve si mostra anche l'ora italiana.
 - Carte d'imbarco: `features/trips/boarding.js`, file (foto o PDF) solo su questo dispositivo in IndexedDB, riferimento in `t.bp = {a, r}`. Si carica solo dalla pagina trasferta (sezione Voli); in Home si visualizza soltanto. Input file unico `#bpFile` in `index.html`.
+- Export Ore: possibile solo dopo l'uscita registrata dell'ultimo giorno della trasferta (`canExportHours`).
+- Col tasto indietro di Android la pagina trasferta si chiude con lo stesso aggiornamento del pulsante indietro (`navigation.js`), e la Home si ridisegna quando torna visibile.
 - Promemoria check-in: `features/trips/checkin.js`, a 12 ore dal volo se manca la carta d'imbarco (toggle "Promemoria check-in volo"). Funziona solo con l'app aperta o in background: niente server push.
 
 ## Aperti / idee
+- L'app gestisce solo le ore, non i guadagni: niente calcoli di compensi o tariffe.
+- "Chiudi trasferta" (controllo ore, export, archiviazione in un unico passaggio): Eduardo ci deve pensare.
+- "Sono da questo cliente" (ore per cliente): per ora no.
 - Rapportino d'intervento (note, foto, firma cliente → PDF): da fare.
 - Bandiere per altri paesi (per ora solo Francia e Spagna, in `trips/detail.js` → `FLAGS` e CSS `.flag-*`).
 - La pagina Ore potrebbe ospitare altro in futuro (da decidere con Eduardo).

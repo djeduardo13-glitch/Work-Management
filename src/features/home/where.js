@@ -4,7 +4,9 @@ import { save } from '../../core/storage.js';
 import { tripClients } from '../clients/clients.js';
 import { renderEvs } from './events.js';
 import { refreshHours } from '../today/today.js';
-import { airportTarget, fmtDrive, outboundLeave, returnLeave } from '../trips/departure.js';
+import { APP_CONFIG } from '../../config/app.config.js';
+import { HOME_DRIVE_MIN } from '../../config/airports.js';
+import { airportTarget, fmtDrive, outboundLeave, returnLeave, routeKey } from '../trips/departure.js';
 import { ensureReturnRoute } from '../trips/departure-ui.js';
 import { FLAGS, openTrDet } from '../trips/detail.js';
 import { countdown } from '../trips/timeline.js';
@@ -68,7 +70,8 @@ function heroHtml(t, m, now) {
   // orologio sempre nella stessa riga; prima della partenza l'ora "di casa" è quella italiana
   const city = h(cap(t.ci));
   let clock = '';
-  if (t.tz === undefined || sameAsItaly(m.tz, now)) clock = `<b>${hhmmIn(now, m.tz)}</b>`;
+  if (m.landed) clock = `<b>${hhmmIn(now, IT_TZ)}</b>`; // di nuovo in Italia
+  else if (t.tz === undefined || sameAsItaly(m.tz, now)) clock = `<b>${hhmmIn(now, m.tz)}</b>`;
   else if (m.phase === 'out') clock = `<b>${hhmmIn(now, IT_TZ)}</b> in Italia · ${hhmmIn(now, m.tz)} a ${city}`;
   else clock = `<b>${hhmmIn(now, m.tz)}</b> ora locale · ${hhmmIn(now, IT_TZ)} in Italia`;
   return `<div class="th-row">${fl ? `<span class="th-flag ${fl}"></span>` : ''}<span class="th-lbl">In trasferta · giorno ${m.day} di ${m.days}</span></div>
@@ -114,10 +117,13 @@ function carHtml(t) {
 function returnHtml(t, m, rl, now) {
   const target = airportTarget(t.vr1, t.vrn);
   let leave;
-  if (m.leaveRet) leave = `Parti entro le <b>${h(dualTime(m.leaveRet, m.tz))}</b>${rl.origin ? ' da ' + h(rl.origin.label) : ''} · guida ~${h(fmtDrive(rl.drive))}`;
-  else if (rl && rl.origin) leave = 'Calcolo del percorso…';
+  const from = rl && rl.origin ? ' da ' + h(rl.origin.label) : '';
+  if (m.leaveRet) leave = `Parti entro le <b>${h(dualTime(m.leaveRet, m.tz))}</b>${from} · guida ~${h(fmtDrive(rl.drive))}`;
+  else if (rl && rl.origin && t.ret && t.ret.error) leave = `Partenza${from}: tempo di guida non trovato, inseriscilo nella trasferta (Minuti)`;
+  else if (rl && rl.origin) leave = `Partenza${from} · calcolo del percorso…`;
   else leave = "Aggiungi l'indirizzo di hotel o cliente per l'orario di partenza";
-  const ch = m.leaveRet ? (now < m.leaveRet ? `parti ${countdown(m.leaveRet, now)}` : 'è ora di partire') : `volo ${countdown(m.depRet, now)}`;
+  const ch = now >= m.depRet ? 'volo in partenza'
+    : m.leaveRet ? (now < m.leaveRet ? `parti ${countdown(m.leaveRet, now)}` : 'è ora di partire') : `volo ${countdown(m.depRet, now)}`;
   const arr = m.arrRet ? hhmmIn(m.arrRet, IT_TZ) : t.vr4 || '';
   const dep = hhmmIn(m.depRet, m.tz);
   const diff = !sameAsItaly(m.tz, m.depRet) ? `<div class="tnow-s">Il volo parte alle ${dep} ora locale, ${hhmmIn(m.depRet, IT_TZ)} in Italia</div>` : '';
@@ -128,7 +134,21 @@ function returnHtml(t, m, rl, now) {
     ${flightLine(t.vrn, t.vr1, t.vr2, dep, arr)}${diff}
     ${t.au === 'si' ? `<div class="tnow-s">Riconsegna auto${t.ac ? ' ' + h(t.ac) : ''}</div>` : ''}
     ${checkinWarn(t, 'r', now)}
-    <button type="button" class="tnow-go" data-action="openTripRoute" data-args="${attr(t.id)}|ret">${icon('nav')}Vai all'aeroporto</button>
+    <button type="button" class="tnow-go" data-action="openTripRoute" data-args="${attr(t.id)}|reth">${icon('nav')}Vai all'aeroporto</button>
+  </section>`;
+}
+
+function homeHtml(t, m) {
+  const hl = APP_CONFIG.homeLocation;
+  const place = String(hl.label || 'casa').replace(/\s*\(.*\)\s*$/, '');
+  const ap = up(t.vr2);
+  const drive = HOME_DRIVE_MIN[ap];
+  const sub = [drive ? `guida ~${fmtDrive(drive)} da ${h(ap)}` : '', m.arrRet && !m.landed ? `atterraggio ${hhmmIn(m.arrRet, IT_TZ)}` : ''].filter(Boolean).join(' · ');
+  return `<section class="ucard tnow" aria-label="Verso casa">
+    <div class="tnow-h"><span class="lbl tnow-l">Verso casa</span></div>
+    <div class="tnow-t">${h(place)}</div>
+    ${sub ? `<div class="tnow-s">${sub}</div>` : ''}
+    <button type="button" class="tnow-go" data-action="openTripRoute" data-args="${attr(t.id)}|home">${icon('nav')}Vai a casa</button>
   </section>`;
 }
 
@@ -158,12 +178,12 @@ function laterHtml(t) {
 
 /**
  * Pulsante "Carta d'imbarco" sotto Dove andare: prima del volo di andata solo l'andata,
- * dopo il decollo solo il ritorno (se caricata), fino al volo di ritorno. Si carica dalla trasferta.
+ * dopo il decollo solo il ritorno (se caricata), fino a 1 ora dopo l'orario del volo di ritorno. Si carica dalla trasferta.
  */
 function bpButtonHtml(t, m, now) {
   let leg = null;
   if (m.depOut && now < m.depOut) leg = 'a';
-  else if (m.depRet && now < m.depRet) leg = 'r';
+  else if (m.depRet && m.phase !== 'home') leg = 'r';
   if (!leg || !(t.bp && t.bp[leg])) return '';
   const no = up(leg === 'a' ? t.van : t.vrn);
   return `<button type="button" class="bp-open bp-home" data-action="bpOpen" data-args="${attr(t.id)}|${leg}"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M15 6v12" stroke-dasharray="2 2"/></svg>Carta d'imbarco ${leg === 'a' ? 'andata' : 'ritorno'}${no ? ' · ' + h(no) : ''}</button>`;
@@ -184,8 +204,9 @@ export function chkWhere() {
   }
   const { t, m, rl } = a;
   ensureTz(t);
-  if (m.phase === 'return' && rl && rl.drive === null && rl.origin && !routeAsked.has(t.id)) {
-    routeAsked.add(t.id);
+  const rk = rl && rl.origin ? t.id + '|' + routeKey(rl.origin, rl.airport) : '';
+  if (m.phase === 'return' && rl && rl.drive === null && rl.origin && !routeAsked.has(rk)) {
+    routeAsked.add(rk);
     ensureReturnRoute(t).then(() => chkWhere()).catch(() => {});
   }
   w._tid = t.id;
@@ -197,6 +218,7 @@ export function chkWhere() {
   if (m.phase === 'out') cards.push(outboundHtml(t, m, now));
   if (m.car) cards.push(carHtml(t));
   if (m.phase === 'return' && m.depRet) cards.push(returnHtml(t, m, rl, now));
+  if (m.phase === 'home') cards.push(homeHtml(t, m));
   now$.innerHTML = cards.join('');
   now$.style.display = cards.length ? '' : 'none';
 

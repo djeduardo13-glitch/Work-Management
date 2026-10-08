@@ -88,3 +88,6 @@ export function tripHoursFileName(t, person) {
   const who = String(person || '').trim().split(/\s+/).slice(0, 2).join('_');
   return [year, month, days, who].filter(Boolean).join('_');
 }
+
+/** L'export ore si può fare solo dopo l'uscita registrata dell'ultimo giorno della trasferta. */
+export const canExportHours = (t, dd = {}) => !!t && isTime(dd[t.d2]?.u);

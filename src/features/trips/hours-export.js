@@ -2,7 +2,7 @@ import { toast } from '../../components/toast.js';
 import { APP_CONFIG } from '../../config/app.config.js';
 import { S } from '../../core/state.js';
 import { cap } from '../../lib/format.js';
-import { itDate, tripHoursFileName, tripHoursRows } from './trip-hours.js';
+import { canExportHours, itDate, tripHoursFileName, tripHoursRows } from './trip-hours.js';
 
 /**
  * "Export Ore": crea il PDF "Allegato Nota spese – Ore" (solo i giorni della trasferta)
@@ -12,6 +12,7 @@ import { itDate, tripHoursFileName, tripHoursRows } from './trip-hours.js';
 export async function exportTripHours(id) {
   const t = S.trs.find((x) => x.id === (id || S.curTid));
   if (!t) return;
+  if (!canExportHours(t, S.dd)) { toast(`Export disponibile dopo l'uscita dell'ultimo giorno (${itDate(t.d2)})`); return; }
   const rows = tripHoursRows(t, S.dd, S.evs);
   if (!rows.length) { toast('Date della trasferta non valide'); return; }
   const todo = rows.filter((r) => r.todo).length;
