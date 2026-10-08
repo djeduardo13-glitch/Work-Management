@@ -6,7 +6,7 @@ import { attr, h } from '../../lib/html.js';
 import { BOXES, fmtEur, groupByDay, noteTotals } from './note.js';
 
 // Pagina "Nota spese" di una trasferta: totale e riquadri come nel foglio aziendale,
-// spese divise per giorno, auto e km, pulsanti per aggiungere e per creare PDF ed Excel.
+// spese divise per giorno, auto e km, pulsanti per aggiungere e per creare l'Excel.
 
 const $ = (id) => document.getElementById(id);
 const trip = () => S.trs.find((x) => x.id === S.noteTid);
@@ -100,13 +100,13 @@ async function renderBar(t) {
   if (!bar) return;
   const { docState } = await import('../trips/docs.js');
   const n = (t.spese || []).length;
-  const st = ['spesePdf', 'speseXlsx'].map((k) => docState(t, k));
+  const st = ['speseXlsx'].map((k) => docState(t, k));
   const tid = attr(t.id);
   let second;
-  if (!n) second = '<button type="button" class="b-ghost" disabled>Crea PDF ed Excel</button>';
-  else if (st.includes('none')) second = `<button type="button" class="b-ghost" data-action="docCreate" data-args="${tid}|spese">Crea PDF ed Excel</button>`;
-  else if (st.includes('stale')) second = `<button type="button" class="b-ghost warn" data-action="docCreate" data-args="${tid}|spese">Aggiorna PDF ed Excel</button>`;
-  else second = `<button type="button" class="b-ghost" data-action="docShare" data-args="${tid}|spese">Condividi file</button>`;
+  if (!n) second = '<button type="button" class="b-ghost" disabled>Crea Excel</button>';
+  else if (st.includes('none')) second = `<button type="button" class="b-ghost" data-action="docCreate" data-args="${tid}|spese">Crea Excel</button>`;
+  else if (st.includes('stale')) second = `<button type="button" class="b-ghost warn" data-action="docCreate" data-args="${tid}|spese">Aggiorna Excel</button>`;
+  else second = `<button type="button" class="b-ghost" data-action="docShare" data-args="${tid}|spese">Condividi Excel</button>`;
   bar.innerHTML = `<button type="button" class="b-main" data-action="nsAdd">+ Aggiungi spesa</button>${second}`;
 }
 

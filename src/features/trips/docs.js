@@ -8,22 +8,21 @@ import { noteSignature } from '../expenses/note.js';
 import { hoursSignature, makeHoursFile } from './hours-export.js';
 import { canExportHours, itDate } from './trip-hours.js';
 
-// Documenti della trasferta: PDF ore, PDF e Excel della nota spese.
+// Documenti della trasferta: PDF ore ed Excel della nota spese (il PDF della nota spese non serve).
 // I file restano solo su questo dispositivo (IndexedDB, come le foto degli scontrini);
-// nella trasferta si salva il riferimento t.docs = { ore, spesePdf, speseXlsx: {id, name, type, at, sig} }.
+// nella trasferta si salva il riferimento t.docs = { ore, speseXlsx: {id, name, type, at, sig} }.
 // Su un altro dispositivo (o se il file manca) si ricreano dai dati, che sono sincronizzati.
 
 const trip = (id) => S.trs.find((x) => x.id === id);
-const KINDS = ['ore', 'spesePdf', 'speseXlsx'];
-const isNote = (k) => k === 'spesePdf' || k === 'speseXlsx';
+const KINDS = ['ore', 'speseXlsx'];
+const isNote = (k) => k === 'speseXlsx';
 const signature = (t, k) => (isNote(k) ? noteSignature(t) : hoursSignature(t));
 const MESI = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic'];
 const GG = ['dom', 'lun', 'mar', 'mer', 'gio', 'ven', 'sab'];
 
 async function makeFile(t, k) {
   if (k === 'ore') return makeHoursFile(t);
-  const m = await import('../expenses/note-files.js');
-  return k === 'spesePdf' ? m.makeNotePdf(t) : m.makeNoteXlsx(t);
+  return (await import('../expenses/note-files.js')).makeNoteXlsx(t);
 }
 
 /** 'none' | 'ok' | 'stale' */
@@ -41,6 +40,8 @@ async function createDoc(t, k) {
   await savePhoto(id, file);
   if (old?.id) deletePhoto(old.id).catch(() => {});
   t.docs = { ...(t.docs || {}), [k]: { id, name: file.name, type: file.type, at: new Date().toISOString(), sig: signature(t, k) } };
+  // PDF della nota spese creato dalla versione precedente: non serve più
+  if (isNote(k) && t.docs.spesePdf) { deletePhoto(t.docs.spesePdf.id).catch(() => {}); delete t.docs.spesePdf; }
   return file;
 }
 
@@ -92,7 +93,7 @@ async function shareFiles(t, files) {
   toast(files.length > 1 ? 'File scaricati: allegali alla mail' : 'File scaricato: allegalo alla mail');
 }
 
-const kindsOf = (group) => (group === 'ore' ? ['ore'] : ['spesePdf', 'speseXlsx']);
+const kindsOf = (group) => (group === 'ore' ? ['ore'] : ['speseXlsx']);
 
 async function guarded(fn) {
   try { await fn(); }
@@ -110,17 +111,17 @@ export function docCreate(tid, group) {
   return guarded(async () => {
     for (const k of kindsOf(group)) await createDoc(t, k);
     save();
-    toast(group === 'ore' ? 'PDF ore pronto' : 'PDF ed Excel della nota spese pronti');
+    toast(group === 'ore' ? 'PDF ore pronto' : 'Excel della nota spese pronto');
     repaint(t);
   });
 }
 
-/** Apre il PDF (ore o nota spese). */
+/** Apre il PDF ore o l'Excel della nota spese (sul telefono si apre con l'app di Excel). */
 export function docOpen(tid, group) {
   const t = trip(tid);
   if (!t) return;
   return guarded(async () => {
-    const file = await docFile(t, group === 'ore' ? 'ore' : 'spesePdf');
+    const file = await docFile(t, group === 'ore' ? 'ore' : 'speseXlsx');
     if (!file) return;
     const url = URL.createObjectURL(file);
     const a = document.createElement('a');
@@ -149,7 +150,7 @@ export function docDownload(tid, group) {
   });
 }
 
-/** Ore + nota spese (PDF ed Excel) in un'unica condivisione. */
+/** PDF ore + Excel della nota spese in un'unica condivisione. */
 export function docShareAll(tid) {
   const t = trip(tid);
   if (!t) return;
@@ -212,10 +213,10 @@ function item(t, group) {
     if (can) action = `<button type="button" class="doc-upd blue" data-action="docCreate" data-args="${a}">Crea PDF ore</button>`;
   } else {
     const n = (t.spese || []).length;
-    status = `<div class="doc-st">${n ? 'PDF ed Excel non ancora creati' : 'Nessuna spesa'}</div>`;
-    if (n) action = `<button type="button" class="doc-upd blue" data-action="docCreate" data-args="${a}">Crea PDF ed Excel</button>`;
+    status = `<div class="doc-st">${n ? 'Excel non ancora creato' : 'Nessuna spesa'}</div>`;
+    if (n) action = `<button type="button" class="doc-upd blue" data-action="docCreate" data-args="${a}">Crea Excel</button>`;
   }
-  return `<div class="doc-item"><div class="doc-row"><span class="doc-ic${isOre ? '' : ' sp'}">${isOre ? 'PDF' : 'PDF<br>XLS'}</span><div class="doc-main"><div class="doc-t">${title}</div>${names}${status}</div></div>${action}</div>`;
+  return `<div class="doc-item"><div class="doc-row"><span class="doc-ic${isOre ? '' : ' sp'}">${isOre ? 'PDF' : 'XLS'}</span><div class="doc-main"><div class="doc-t">${title}</div>${names}${status}</div></div>${action}</div>`;
 }
 
 export function docsHtml(t) {
