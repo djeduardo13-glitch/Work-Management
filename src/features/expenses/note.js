@@ -162,3 +162,28 @@ export function detailSuggestions(cat, t, trips = []) {
   for (const d of past) if (!has.has(norm(d))) { has.add(norm(d)); out.push(d); }
   return out.slice(0, 6);
 }
+
+/**
+ * L'Excel della nota spese si crea solo quando l'ultimo giorno della trasferta è arrivato
+ * e la nota spese è completa: ogni spesa con importo e tipo documento (e cambio se in valuta estera);
+ * intestazione con scopo, città, date e auto (personale o aziendale). I km sono facoltativi.
+ * today = "YYYY-MM-DD". Ritorna { ok, early, missing: [testi] }.
+ */
+export function noteReadiness(t, today) {
+  const missing = [];
+  const sp = t.spese || [];
+  const n = (k, one, many) => (k === 1 ? `1 ${one}` : `${k} ${many}`);
+  if (!sp.length) missing.push('Nessuna spesa inserita');
+  const noImp = sp.filter((s) => !(Number(s.imp) > 0)).length;
+  const noDoc = sp.filter((s) => !s.doc).length;
+  const noRate = sp.filter((s) => s.val && s.val !== 'EURO' && !(Number(s.cambio) > 0)).length;
+  if (noImp) missing.push(n(noImp, 'spesa senza importo', 'spese senza importo'));
+  if (noDoc) missing.push(n(noDoc, 'spesa senza tipo documento', 'spese senza tipo documento'));
+  if (noRate) missing.push(n(noRate, 'spesa in valuta estera senza cambio', 'spese in valuta estera senza cambio'));
+  if (!String(t.scopo || '').trim()) missing.push('Scopo della trasferta');
+  if (!String(t.ci || '').trim()) missing.push('Città');
+  if (!t.d1 || !t.d2) missing.push('Date della trasferta');
+  if (!String(t.auto?.p || '').trim() && !String(t.auto?.a || '').trim()) missing.push('Auto (personale o aziendale)');
+  const early = !!t.d2 && today < t.d2;
+  return { ok: !early && !missing.length, early, missing };
+}

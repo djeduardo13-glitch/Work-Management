@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { strFromU8, unzipSync } from 'fflate';
-import { BOXES, CATS, defaultDoc, detailSuggestions, euro, fmtEur, groupByDay, noteRows, noteSignature, noteTotals, payColumn } from '../src/features/expenses/note.js';
+import { BOXES, CATS, defaultDoc, detailSuggestions, euro, fmtEur, groupByDay, noteReadiness, noteRows, noteSignature, noteTotals, payColumn } from '../src/features/expenses/note.js';
 import { buildNoteXlsx, excelDate } from '../src/features/expenses/note-xlsx.js';
 
 const S = (dat, cat, det, imp, doc = 'Scontrino', extra = {}) => ({ dat, cat, det, x2: false, val: 'EURO', imp, doc, pag: 'c/c aziendale', ...extra });
@@ -111,4 +111,39 @@ test('Excel: modello riempito con righe, formule e totali', () => {
 test('suggerimenti senza doppioni (accenti e maiuscole)', () => {
   const trips = [{ spese: [S('2026-01-01', 'Pasti', 'Café', 1), S('2026-01-01', 'Pasti', 'cafe ', 1), S('2026-01-01', 'Pasti', 'Spuntino', 1)] }];
   assert.deepEqual(detailSuggestions('Pasti', {}, trips), ['Colazione', 'Pranzo', 'Cena', 'Caffè', 'Spuntino']);
+});
+
+test('Excel solo dall\'ultimo giorno e con la nota spese completa', () => {
+  const t = paris();
+  t.spese[5].doc = '';
+  let R = noteReadiness(t, '2026-10-06');
+  assert.equal(R.ok, false);
+  assert.equal(R.early, true);
+  assert.deepEqual(R.missing, ['1 spesa senza tipo documento', 'Auto (personale o aziendale)']);
+  t.spese[5].doc = 'Scontrino';
+  t.auto = { p: 'PEUGEOT 5008' }; // i km sono facoltativi
+  assert.equal(noteReadiness(t, '2026-10-06').ok, false); // il giorno prima della fine
+  assert.equal(noteReadiness(t, '2026-10-07').ok, true);  // ultimo giorno
+  assert.equal(noteReadiness(t, '2026-10-20').ok, true);
+  t.auto = { a: 'Ducato' };
+  assert.equal(noteReadiness(t, '2026-10-07').ok, true);
+  t.scopo = ''; t.ci = '';
+  t.spese.push(S('2026-10-07', 'Pasti', 'Cena', 10, 'Scontrino', { val: 'Sterline' }));
+  assert.deepEqual(noteReadiness(t, '2026-10-07').missing, ['1 spesa in valuta estera senza cambio', 'Scopo della trasferta', 'Città']);
+  assert.deepEqual(noteReadiness({ d1: '2026-01-01', d2: '2026-01-01', scopo: 'x', ci: 'y', auto: { p: 'z' } }, '2026-01-02').missing, ['Nessuna spesa inserita']);
+});
+
+test('Excel: tariffa con 3 decimali, km come numero', () => {
+  const files = unzipSync(new Uint8Array(readFileSync('src/features/expenses/nota-spese-template.xlsx')));
+  const sheet = strFromU8(files['xl/worksheets/sheet1.xml']);
+  const styles = strFromU8(files['xl/styles.xml']);
+  const xfs = [...styles.slice(styles.indexOf('<cellXfs'), styles.indexOf('</cellXfs>')).matchAll(/<xf [^>]*?(?:\/>|>.*?<\/xf>)/gs)].map((m) => m[0]);
+  const fmt = (ref) => {
+    const s = Number(sheet.match(new RegExp(`<c r="${ref}" s="(\\d+)"`))[1]);
+    const id = xfs[s].match(/numFmtId="(\d+)"/)[1];
+    return styles.match(new RegExp(`numFmtId="${id}" formatCode="([^"]*)"`))?.[1];
+  };
+  assert.equal(fmt('K6'), '&quot;€&quot;\\ #,##0.000&quot;/km&quot;');
+  assert.equal(fmt('K8'), '#,##0');
+  assert.equal(fmt('K9'), '#,##0');
 });

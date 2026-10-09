@@ -3,7 +3,8 @@ import { S } from '../../core/state.js';
 import { save } from '../../core/storage.js';
 import { cap } from '../../lib/format.js';
 import { attr, h } from '../../lib/html.js';
-import { BOXES, fmtEur, groupByDay, noteTotals } from './note.js';
+import { fd } from '../../lib/dates.js';
+import { BOXES, fmtEur, groupByDay, noteReadiness, noteTotals } from './note.js';
 
 // Pagina "Nota spese" di una trasferta: totale e riquadri come nel foglio aziendale,
 // spese divise per giorno, auto e km, pulsanti per aggiungere e per creare l'Excel.
@@ -72,10 +73,11 @@ export function renderNotePage() {
   const a = t.auto || {};
   const boxes = BOXES.map((b) => `<div class="ns-box"><span>${h(b.label)}</span><b>${fmtEur(T.boxes[b.k])}</b></div>`).join('')
     + `<div class="ns-box"><span>Km</span><b id="nsKm">${T.km !== null ? T.km.toLocaleString('it-IT') : '—'}</b></div>`;
-  const warns = [
-    T.noRate ? `${T.noRate} ${T.noRate === 1 ? 'spesa' : 'spese'} in valuta estera senza cambio` : '',
-    T.noDoc ? `${T.noDoc} ${T.noDoc === 1 ? 'spesa' : 'spese'} senza tipo documento` : '',
-  ].filter(Boolean).map((w) => `<div class="ns-warn">${h(w)}</div>`).join('');
+  // cosa manca per poter creare l'Excel
+  const R = noteReadiness(t, fd(new Date()));
+  const warns = R.missing.length
+    ? `<div class="ns-warn"><b>Per creare l’Excel manca:</b><ul>${R.missing.map((m) => `<li>${h(m)}</li>`).join('')}</ul></div>`
+    : '';
   const groups = groupByDay(t).map((g) => `<div class="ns-day"><div class="ns-dh"><span>${h(g.before ? 'Prima della partenza' : dayLabel(g.key.replace('after:', '')))}</span><span>€ ${fmtEur(g.tot)}</span></div><div class="ns-list">${g.rows.map((r) => rowHtml(t, r)).join('')}</div></div>`).join('');
   const field = (k, label, type, ph) => `<div class="fg"><label class="fl" for="ns-${k}">${label}</label><input class="fi" id="ns-${k}" ${type === 'num' ? 'type="text" inputmode="numeric"' : 'type="text" autocapitalize="words" maxlength="40"'} placeholder="${attr(ph)}" value="${attr(a[k] ?? '')}" data-change="nsAuto" data-args="${k}" data-with="el"></div>`;
   const autoSum = [a.p, a.a, T.km !== null ? T.km.toLocaleString('it-IT') + ' km' : ''].filter(Boolean).join(' · ') || 'Nessuna';
@@ -99,15 +101,17 @@ async function renderBar(t) {
   const bar = $('nsBar');
   if (!bar) return;
   const { docState } = await import('../trips/docs.js');
-  const n = (t.spese || []).length;
-  const st = ['speseXlsx'].map((k) => docState(t, k));
+  const st = docState(t, 'speseXlsx');
+  const R = noteReadiness(t, fd(new Date()));
   const tid = attr(t.id);
+  // niente "Condividi" qui: l'Excel si condivide dai Documenti della trasferta
   let second;
-  if (!n) second = '<button type="button" class="b-ghost" disabled>Crea Excel</button>';
-  else if (st.includes('none')) second = `<button type="button" class="b-ghost" data-action="docCreate" data-args="${tid}|spese">Crea Excel</button>`;
-  else if (st.includes('stale')) second = `<button type="button" class="b-ghost warn" data-action="docCreate" data-args="${tid}|spese">Aggiorna Excel</button>`;
-  else second = `<button type="button" class="b-ghost" data-action="docShare" data-args="${tid}|spese">Condividi Excel</button>`;
-  bar.innerHTML = `<button type="button" class="b-main" data-action="nsAdd">+ Aggiungi spesa</button>${second}`;
+  if (!R.ok) second = `<button type="button" class="b-ghost" disabled>${st === 'none' ? 'Crea Excel' : 'Aggiorna Excel'}</button>`;
+  else if (st === 'none') second = `<button type="button" class="b-ghost" data-action="docCreate" data-args="${tid}|spese">Crea Excel</button>`;
+  else if (st === 'stale') second = `<button type="button" class="b-ghost warn" data-action="docCreate" data-args="${tid}|spese">Aggiorna Excel</button>`;
+  else second = '<button type="button" class="b-ghost" disabled>Excel aggiornato ✓</button>';
+  const hint = R.early ? `<div class="ns-hint">L’Excel si crea dall’ultimo giorno della trasferta (${h(t.d2.split('-').reverse().join('/'))})</div>` : '';
+  bar.innerHTML = `${hint}<button type="button" class="b-main" data-action="nsAdd">+ Aggiungi spesa</button>${second}`;
 }
 
 export function openNotePage(tid) {

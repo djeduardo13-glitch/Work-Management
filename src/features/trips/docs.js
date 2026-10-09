@@ -4,7 +4,8 @@ import { save } from '../../core/storage.js';
 import { attr, h } from '../../lib/html.js';
 import { deletePhoto, getPhoto, newPhotoId, savePhoto } from '../../lib/photos.js';
 import { cap } from '../../lib/format.js';
-import { noteSignature } from '../expenses/note.js';
+import { fd } from '../../lib/dates.js';
+import { noteReadiness, noteSignature } from '../expenses/note.js';
 import { hoursSignature, makeHoursFile } from './hours-export.js';
 import { canExportHours, itDate } from './trip-hours.js';
 
@@ -107,7 +108,11 @@ export function docCreate(tid, group) {
   const t = trip(tid);
   if (!t) return;
   if (group === 'ore' && !canExportHours(t, S.dd)) { toast(`Il PDF ore si crea dopo l'uscita dell'ultimo giorno (${itDate(t.d2)})`); return; }
-  if (group !== 'ore' && !(t.spese || []).length) { toast('Nessuna spesa'); return; }
+  if (group !== 'ore') {
+    const R = noteReadiness(t, fd(new Date()));
+    if (R.early) { toast(`L'Excel si crea dall'ultimo giorno della trasferta (${itDate(t.d2)})`); return; }
+    if (!R.ok) { toast('Nota spese incompleta: ' + R.missing[0], true); return; }
+  }
   return guarded(async () => {
     for (const k of kindsOf(group)) await createDoc(t, k);
     save();
@@ -205,16 +210,21 @@ function item(t, group) {
     status = stale
       ? `<div class="doc-st warn">${isOre ? 'Ore cambiate' : 'Spese cambiate'} dopo la creazione</div>`
       : `<div class="doc-st ok">Creato ${h(when(t.docs[ks[0]].at))}</div>`;
-    if (stale) action = `<button type="button" class="doc-upd" data-action="docCreate" data-args="${a}">Aggiorna</button>`;
+    if (stale) {
+      const R = isOre ? { ok: true } : noteReadiness(t, fd(new Date()));
+      action = R.ok
+        ? `<button type="button" class="doc-upd" data-action="docCreate" data-args="${a}">Aggiorna</button>`
+        : '<div class="doc-st">Completa la nota spese per aggiornarlo</div>';
+    }
     action += buttons(t.id, group);
   } else if (isOre) {
     const can = canExportHours(t, S.dd);
     status = `<div class="doc-st">${can ? 'Non ancora creato' : `Si crea da solo all’uscita dell’ultimo giorno (${h(itDate(t.d2))})`}</div>`;
     if (can) action = `<button type="button" class="doc-upd blue" data-action="docCreate" data-args="${a}">Crea PDF ore</button>`;
   } else {
-    const n = (t.spese || []).length;
-    status = `<div class="doc-st">${n ? 'Excel non ancora creato' : 'Nessuna spesa'}</div>`;
-    if (n) action = `<button type="button" class="doc-upd blue" data-action="docCreate" data-args="${a}">Crea Excel</button>`;
+    const R = noteReadiness(t, fd(new Date()));
+    status = `<div class="doc-st">${R.ok ? 'Excel non ancora creato' : R.early ? `Si crea dall’ultimo giorno della trasferta (${h(itDate(t.d2))})` : 'Si crea quando la nota spese è completa'}</div>`;
+    if (R.ok) action = `<button type="button" class="doc-upd blue" data-action="docCreate" data-args="${a}">Crea Excel</button>`;
   }
   return `<div class="doc-item"><div class="doc-row"><span class="doc-ic${isOre ? '' : ' sp'}">${isOre ? 'PDF' : 'XLS'}</span><div class="doc-main"><div class="doc-t">${title}</div>${names}${status}</div></div>${action}</div>`;
 }
