@@ -1,0 +1,89 @@
+/* ── Interventi: card nella trasferta, foglio, statistiche ───────── */
+
+/* card nella pagina trasferta */
+.iv-card { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.iv-h { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.iv-tot { font-weight: 600; color: var(--muted); font-size: 13px; }
+.iv-add { height: 36px; padding: 0 14px; border-radius: 18px; border: 0; background: var(--blue); color: #fff; font: 700 13px var(--font-sans); cursor: pointer; flex-shrink: 0; }
+.iv-empty { font-size: 12px; color: var(--muted); }
+.iv-row {
+  display: flex; flex-direction: column; gap: 8px; width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--line);
+  background: #fff; color: var(--ink); text-align: left; cursor: pointer; font-family: var(--font-sans);
+}
+.iv-row.dim { border-style: dashed; border-color: #cfc8b8; }
+.iv-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.iv-main { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.iv-name { font-size: 15px; font-weight: 700; }
+.iv-sub { font-size: 12px; color: var(--muted); }
+.iv-amt { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
+.iv-amt b { font: 700 14px var(--mono); }
+.iv-amt span { font-size: 11px; color: var(--muted); }
+.iv-row.dim .iv-amt b { color: var(--muted); }
+.iv-pills { display: flex; flex-wrap: wrap; gap: 5px; }
+.iv-pill { display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 12px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.iv-pill.main { background: var(--blue); color: #fff; }
+.iv-pill.mute { background: var(--cream); color: #4a463e; }
+.iv-pill.blue { background: var(--tint); color: var(--blue); }
+.iv-pill.warn { background: var(--warnbg); color: var(--warn); }
+.iv-pill.red { background: var(--rl); color: var(--re); }
+.iv-pill.ok { background: var(--okbg); color: var(--ok); }
+.iv-split { display: flex; flex-direction: column; gap: 6px; padding-top: 2px; }
+.iv-bar { display: flex; height: 12px; border-radius: 6px; overflow: hidden; background: var(--cream); }
+.iv-bar i { display: block; height: 100%; }
+.iv-legend { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; font-size: 12px; }
+.iv-legend b { font-weight: 700; }
+.iv-note { font-size: 12px; color: var(--muted); }
+.iv-note.warn { padding: 9px 12px; border-radius: 12px; background: var(--warnbg); color: var(--warn); font-weight: 600; }
+
+/* foglio "Intervento" */
+.iv-cats { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 8px; padding-bottom: 2px; scrollbar-width: none; }
+.iv-cats::-webkit-scrollbar { display: none; }
+.iv-cat {
+  height: 32px; padding: 0 11px; border-radius: 16px; border: 1px solid var(--line); background: var(--cream); color: var(--muted);
+  font: 700 12px var(--font-sans); white-space: nowrap; flex-shrink: 0; cursor: pointer;
+}
+.iv-cat.sel { background: var(--ink); border-color: var(--ink); color: #fff; }
+.iv-ser { font: 500 11px var(--mono); opacity: .75; }
+.iv-two { display: grid; grid-template-columns: minmax(0, 1fr) 110px; gap: 8px; }
+.iv-two .fi { width: 100%; font-family: var(--mono); }
+.iv-hint { font-size: 12px; color: var(--muted); margin: -2px 0 8px; }
+.iv-sheet textarea.fi { width: 100%; resize: none; font-family: var(--font-sans); }
+.sp-chip.off { background: var(--cream); color: #9a9486; text-decoration: line-through; border-style: dashed; }
+
+/* pagina Statistiche */
+.st-card { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.st-hh { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.st-hh .seg button { height: 28px; padding: 0 10px; font-size: 11px; }
+.st-row { display: flex; flex-direction: column; gap: 5px; }
+.st-rh { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.st-n { font-size: 14px; font-weight: 700; min-width: 0; }
+.st-n small { font-size: 11px; font-weight: 500; color: var(--muted); }
+.st-rh b { font: 700 14px var(--mono); white-space: nowrap; }
+.st-track { height: 10px; border-radius: 5px; background: var(--cream); overflow: hidden; }
+.st-track i { display: block; height: 100%; border-radius: 5px; background: var(--blue); }
+.st-sub { font-size: 11px; color: var(--muted); }
+.st-cause { display: grid; grid-template-columns: 128px minmax(0, 1fr) 70px; gap: 8px; align-items: center; }
+.st-cause span { font-size: 12px; font-weight: 600; }
+.st-cause b { font: 600 12px var(--mono); text-align: right; white-space: nowrap; }
+.st-mx { display: grid; gap: 4px; align-items: center; }
+.st-mh { font-size: 10px; font-weight: 700; color: var(--muted); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.st-mp { font-size: 12px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.st-mc { height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font: 600 11px var(--mono); }
+.st-mc.z { background: var(--cream); color: #a39d8f; }
+.st-mc.h1 { background: #dbe4ef; color: var(--ink); }
+.st-mc.h2 { background: #8ea6c4; color: var(--ink); }
+.st-mc.h3 { background: var(--blue); color: #fff; }
+.st-big { font: 700 26px/1.1 var(--font-serif); color: var(--ink); }
+.st-big small { font: 600 13px var(--font-sans); color: var(--muted); }
+.st-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.st-two > div { background: var(--cream); border-radius: 10px; padding: 9px 10px; display: flex; flex-direction: column; gap: 1px; }
+.st-two small { font-size: 11px; color: var(--muted); font-weight: 600; }
+.st-two b { font: 700 15px var(--mono); }
+.st-todo { display: flex; flex-direction: column; }
+.st-trip {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 44px; padding: 0 2px; border: 0; border-top: 1px solid #f0ede4;
+  background: none; color: var(--ink); font: 500 13px var(--font-sans); text-align: left; cursor: pointer;
+}
+.st-trip:first-child { border-top: 0; }
+.st-trip small { color: var(--warn); font-weight: 600; font-size: 11px; }
+.iv-sub .nw { white-space: nowrap; }

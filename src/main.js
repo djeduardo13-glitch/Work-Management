@@ -2,6 +2,7 @@ import './styles/app.css';
 import './styles/today.css';
 import './styles/forms.css';
 import './styles/expenses.css';
+import './styles/interventions.css';
 import { actions } from './app/actions.registry.js';
 import { APP_CONFIG } from './config/app.config.js';
 import { S } from './core/state.js';

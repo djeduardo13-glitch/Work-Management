@@ -32,6 +32,9 @@ import { closeNotePage, nsAdd, nsAuto, nsEdit, openNotePage } from '../features/
 import { addScaleLeg, closeNT, editTr, removeScaleLeg, saveNT, showNT, togAF, togScale, toggleAltroInput } from '../features/trips/form.js';
 import { swTTab } from '../features/trips/list.js';
 import { delEntry, delFolder, editWorkEntry, editWorkFolder, newEntry, newFolder, openFolder, saveEntry, saveFolder, weAddFromInput, weAddTag, weRmTag, workBack, workTag } from '../features/work/work.js';
+import { delIv, ivAdd, ivEdit, ivNewProd, ivPickCat, ivPickHist, ivPickProd, ivRetPick, ivSet, ivToggleRet, saveIv } from '../features/interventions/sheet.js';
+import { closeStats, openStats, stCsv, stMode, stPeriod } from '../features/interventions/stats-page.js';
+import { openProdSettings, prodAdd, prodToggle } from '../features/interventions/products-settings.js';
 import { callTel, openMapsQuery } from '../lib/links.js';
 
 export const actions = {
@@ -66,5 +69,8 @@ export const actions = {
   addScaleLeg, closeNT, editTr, removeScaleLeg, saveNT, showNT, togAF, togScale, toggleAltroInput,
   swTTab,
   delEntry, delFolder, editWorkEntry, editWorkFolder, newEntry, newFolder, openFolder, saveEntry, saveFolder, weAddFromInput, weAddTag, weRmTag, workBack, workTag,
+  delIv, ivAdd, ivEdit, ivNewProd, ivPickCat, ivPickHist, ivPickProd, ivRetPick, ivSet, ivToggleRet, saveIv,
+  closeStats, openStats, stCsv, stMode, stPeriod,
+  openProdSettings, prodAdd, prodToggle,
   callTel, openMapsQuery,
 };
