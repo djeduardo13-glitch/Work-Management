@@ -66,8 +66,7 @@
 <div id="tscr" class="scr">
   <div class="tr-hdr">
     <h1 class="ptitle">Trasferte</h1>
-    <div class="hdr-actions"><button type="button" class="iconbtn" data-action="openStats" aria-label="Statistiche"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></button>
-    <button type="button" class="tr-new" data-action="showNT"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Nuova</button></div>
+    <button type="button" class="tr-new" data-action="showNT"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Nuova</button>
   </div>
   <div style="padding:0 16px 10px;flex-shrink:0"><div class="seg"><button type="button" class="on" id="tabP" data-action="swTTab" data-args="p">Prossime</button><button type="button" id="tabA" data-action="swTTab" data-args="a">Archivio</button></div></div>
   <div class="sc" id="trList" style="padding-top:0"></div>
@@ -97,12 +96,6 @@
   <div class="ni" id="n-t" data-action="goTab" data-args="trasferte"><svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg><span>Trasferte</span></div>
   <div class="ni" id="n-p" data-action="goTab" data-args="profilo"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profilo</span></div>
 </nav>
-</div>
-
-<!-- STATISTICHE -->
-<div id="stPg" class="poppage">
-  <div class="bhdr"><div class="bbtn" data-action="closeStats"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><div class="bttl">Statistiche</div></div>
-  <div class="psc" id="stBody"></div>
 </div>
 
 <!-- TRASFERTA DETAIL -->
@@ -350,33 +343,6 @@
       <input type="file" id="sp-file" accept="image/*" capture="environment" hidden data-change="spPhotoPicked" data-with="el">
     </div>
     <div class="btnrow sp-actions" id="spActions"></div>
-  </div>
-</div>
-<div class="overlay" id="ivm" data-backdrop="ivm">
-  <div class="modal sheet sp-sheet iv-sheet"><div class="mh"></div>
-    <div class="sp-top"><h2 id="ivTitle">Nuovo intervento</h2></div>
-    <div class="sp-sec" id="ivHistSec" hidden><span class="fl">Già visti da questo cliente</span><div class="sp-chips" id="ivHist"></div></div>
-    <div class="sp-sec"><span class="fl">Prodotto</span><div class="iv-cats" id="ivCats"></div><div class="sp-chips" id="ivProds"></div></div>
-    <div class="sp-sec iv-two"><div><label class="fl" for="iv-ser">Matricola</label><input type="text" class="fi" id="iv-ser" maxlength="40" autocomplete="off" autocapitalize="characters"></div><div><label class="fl" for="iv-yr">Anno prod.</label><input type="text" class="fi" id="iv-yr" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="es. 2024"></div></div>
-    <div class="sp-sec"><span class="fl">Ruolo nella trasferta</span><div class="seg" id="ivRole"></div></div>
-    <div class="sp-sec" id="ivTimeSec"><span class="fl">Tempo dedicato</span><div class="seg" id="ivTime"></div></div>
-    <div class="sp-sec"><span class="fl">Tipo di intervento</span><div class="sp-chips" id="ivTipo"></div></div>
-    <div class="sp-sec"><span class="fl">Causa radice</span><div class="iv-hint">Se sul posto non è chiara, scegli «Da determinare» e aggiornala dopo.</div><div class="sp-chips" id="ivCausa"></div></div>
-    <div class="sp-sec"><span class="fl">Sottosistema</span><div class="sp-chips" id="ivSotto"></div></div>
-    <div class="sp-sec"><span class="fl">Gravità</span><div class="seg" id="ivGrav"></div></div>
-    <div class="sp-sec"><span class="fl">Esito</span><div class="sp-chips" id="ivEsito"></div></div>
-    <div class="sp-sec"><span class="fl">Si poteva risolvere da remoto?</span><div class="seg" id="ivRem"></div></div>
-    <div class="sp-sec"><button type="button" class="sp-x2" id="ivRetRow" data-action="ivToggleRet" style="margin-bottom:0"><span class="sp-check"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span><span>Ritorno per un problema già visto</span></button><select class="fs" id="ivRetSel" data-change="ivRetPick" data-with="el" hidden style="margin-top:8px"></select></div>
-    <div class="sp-sec"><label class="fl" for="iv-note">Problema e soluzione (facoltativo)</label><textarea class="fi" id="iv-note" rows="3" maxlength="2000"></textarea></div>
-    <div class="btnrow sp-actions" id="ivActions"></div>
-  </div>
-</div>
-<div class="overlay" id="prodm" data-backdrop="prodm">
-  <div class="modal sheet sp-sheet"><div class="mh"></div>
-    <h2>Prodotti</h2>
-    <div class="iv-hint" style="margin-bottom:12px">Tocca un prodotto per nasconderlo o mostrarlo negli interventi. Le trasferte già salvate non cambiano.</div>
-    <div id="prodBody"></div>
-    <div class="btnrow sp-actions"><button type="button" class="b-main" data-action="closeM" data-args="prodm">Fatto</button></div>
   </div>
 </div>
 <div class="overlay" id="evm" data-backdrop="evm">

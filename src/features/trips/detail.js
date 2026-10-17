@@ -10,7 +10,6 @@ import { depOutHtml, depRetHtml, ensureReturnRoute, openTripRoute } from './depa
 import { openAddSpesa } from './expenses.js';
 import { speseSummary } from '../expenses/note-page.js';
 import { docsHtml } from './docs.js';
-import { ivCardHtml } from '../interventions/trip-card.js';
 import { bpHtml } from './boarding.js';
 import { tripTimes } from './trip-mode.js';
 import { IT_TZ, hhmmIn, sameAsItaly } from '../../lib/tz.js';
@@ -25,7 +24,7 @@ import { renderTripWeather } from '../home/weather-card.js';
 
 export function openTrDet(id){const t=S.trs.find(x=>x.id===id); if(!t)return; S.curTid=id; document.getElementById('tdTit').textContent='Trasferta'; renderTrBody(t); document.getElementById('tdPg').classList.add('on'); history.pushState({type:'poppage',id:'tdPg'},'');}
 
-export function closeTD(){document.getElementById('tdPg').classList.remove('on'); renderTr(); renderEvs(); chkWhere(); import('../interventions/stats-page.js').then(m=>m.refreshStats());}
+export function closeTD(){document.getElementById('tdPg').classList.remove('on'); renderTr(); renderEvs(); chkWhere();}
 
 export function renderTrBody(t){
   const body=document.getElementById('tdBody');
@@ -72,7 +71,6 @@ export function renderTrBody(t){
     ${car?sec('car','Auto a noleggio',h(t.ac||''),car,false):''}
     ${sec('cl','Checklist',`${clDone} di ${clAll.length} completati`,cl,false)}
     <button type="button" class="ucard tsec-link" data-action="openNotePage" data-args="${attr(t.id)}"><span class="tsec-t">Nota spese</span><span class="tsec-s">${h(speseSummary(t))}</span>${icon('right')}</button>
-    ${ivCardHtml(t)}
     ${docsHtml(t)}
     ${sec('sos','Numeri utili','Emergenze e ambasciata',`${(()=>{const em=EMERGENCY[t.pa.toLowerCase()]||{}; const rows=[['🚔 Polizia',em.polizia||'112'],['🚑 Ambulanza',em.ambulanza||'112'],['🚒 Vigili del fuoco',em.vigili||'112'],['🆘 Emergenze EU','112']]; if(EMB[t.pa.toLowerCase()]) rows.push(['🏛 Ambasciata IT',EMB[t.pa.toLowerCase()]]); return rows.map(([l,v])=>`<div class="urow"><span class="ul">${l}</span><span class="uv lk" data-action="callTel" data-args="${attr(v)}">${v}</span></div>`).join('');})()}`,false)}
     <button type="button" class="btn-wa" style="margin:0" data-action="shareWA">💬 Condividi su WhatsApp</button>

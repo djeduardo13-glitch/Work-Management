@@ -16,7 +16,6 @@ export const S = {
   work: { folders: [], entries: [] }, // tracciamento lavoro: cartelle e aggiornamenti
   clients: [],     // database clienti: { id, name, addr, contacts:[{id,name,phone,email}], note }
   clientsMigrated: false,
-  prods: { add: [], hid: [] }, // prodotti: aggiunti a mano { id, n, c } e nascosti (id)
 
   // ── Stato UI (non persistito) ──
   creds: [],       // credenziali decifrate, SOLO in RAM e solo a cassaforte sbloccata

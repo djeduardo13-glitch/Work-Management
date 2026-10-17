@@ -84,20 +84,12 @@ Deploy: GitHub Actions (`.github/workflows/deploy.yml`) → GitHub Pages. Settin
 - Col tasto indietro di Android la pagina trasferta si chiude con lo stesso aggiornamento del pulsante indietro (`navigation.js`), e la Home si ridisegna quando torna visibile.
 - Promemoria check-in: `features/trips/checkin.js`, a 12 ore dal volo se manca la carta d'imbarco (toggle "Promemoria check-in volo"). Funziona solo con l'app aperta o in background: niente server push.
 
-## Interventi e statistiche costi
-- Catalogo: `config/products.js` (modulo Prodotti R02 2025/09/08: 6 categorie, 36 prodotti) + voci degli interventi (tipo, causa radice, sottosistema, gravità, esito, remoto). Prodotti aggiunti/nascosti in `S.prods = {add:[{id,n,c}], hid:[id]}` (Impostazioni › Prodotti; un prodotto non si cancella mai).
-- `features/interventions/core.js` (puro, testato in `tests/interventions.test.js`). Interventi in `t.iv = [{id, p, pn, cat, ser, yr, role:'m'|'a', time:1|2|3, tipo, causa, sotto, grav, esito, rem, ret, note}]`.
-  - Costo trasferta = totale della nota spese (solo carta aziendale di Eduardo; se paga il collega non conta). Valuta senza cambio → costo incompleto, segnalato.
-  - Il costo si divide **solo tra i motivi** (`role:'m'`) in base al tempo: quasi tutto 3 · metà 2 · poco 1 (senza tempo 2 = parti uguali). "Aggiunto sul posto" = 0 €. Se nessuno è motivo si divide tra tutti. Le quote sommano esattamente al totale.
-  - Statistiche: costo attribuito per prodotto/categoria, "presente in" (costo pieno delle trasferte dove compare), cause, matrice prodotto × causa, costo evitabile (risolvibili da remoto + ritorni), trasferte senza interventi o con causa da determinare. CSV con `;` e virgola decimale.
-- UI: card "Interventi" nella pagina trasferta (`trip-card.js`, sotto Nota spese), foglio `#ivm` (`sheet.js`: macchine già viste dal cliente con matricola, ritorno collegato a una trasferta precedente con lo stesso prodotto), pagina `#stPg` (`stats-page.js`, pulsante grafico nell'intestazione Trasferte), `#prodm` (`products-settings.js`).
-- Il collega (Teddy) non entra nei costi. Solo spese, mai compensi.
-
 ## Aperti / idee
 - L'app gestisce solo le ore, non i guadagni: niente calcoli di compensi o tariffe.
 - "Chiudi trasferta" (controllo ore, export, archiviazione in un unico passaggio): Eduardo ci deve pensare.
 - "Sono da questo cliente" (ore per cliente): per ora no.
-- Rapportino d'intervento (note, foto, firma cliente → PDF): da fare. Base pronta: gli interventi (`t.iv`, campo `note` problema/soluzione).
+- Interventi per prodotto e statistiche costi dentro l'app: provati e tolti (ottobre 2026). L'analisi dei costi per la direzione si fa **fuori dall'app**; non rimetterla qui senza chiedere.
+- Rapportino d'intervento (note, foto, firma cliente → PDF): da fare.
 - Bandiere per altri paesi (per ora solo Francia e Spagna, in `trips/detail.js` → `FLAGS` e CSS `.flag-*`).
 - La pagina Ore potrebbe ospitare altro in futuro (da decidere con Eduardo).
 - Tracciamento lavoro: Eduardo prevede altre modifiche.

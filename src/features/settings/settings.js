@@ -7,7 +7,6 @@ import { copyRestoreLink } from '../sync/restore-link.js';
 import { gistPull, gistSync, saveGistId, saveGistToken } from '../sync/sync.js';
 import { v } from '../../lib/format.js';
 import { h } from '../../lib/html.js';
-import { prodSettingsHtml } from '../interventions/products-settings.js';
 
 export function renderPNotif(){if(S.pTab!==2)return; document.getElementById('pContent').innerHTML=`
 <div style="height:12px"></div>
@@ -67,8 +66,6 @@ export function renderPNotif(){if(S.pTab!==2)return; document.getElementById('pC
     </button>
   </div>
 </div>
-
-${prodSettingsHtml()}
 
 <div class="noticard">
   <div style="font-size:11px;color:var(--t2);margin-bottom:14px">Esporta tutti i dati in un file JSON o ripristina da un backup precedente.</div>

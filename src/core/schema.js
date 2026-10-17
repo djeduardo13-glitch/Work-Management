@@ -66,13 +66,6 @@ export function sanitizeData(d) {
       .filter((c) => isObj(c) && typeof c.id === 'string')
       .map((c) => ({ ...c, contacts: Array.isArray(c.contacts) ? c.contacts.filter(isObj) : [] }));
   }
-  if (isObj(d.prods)) {
-    const pr = cleanStrings(d.prods);
-    out.prods = {
-      add: (Array.isArray(pr.add) ? pr.add : []).filter((x) => isObj(x) && typeof x.id === 'string' && typeof x.n === 'string' && typeof x.c === 'string').slice(0, 300),
-      hid: (Array.isArray(pr.hid) ? pr.hid : []).filter((x) => typeof x === 'string').slice(0, 300),
-    };
-  }
   if (typeof d.clientsMigrated === 'boolean') out.clientsMigrated = d.clientsMigrated;
   if (typeof d.lastSync === 'string') out.lastSync = str(d.lastSync, 40);
   return out;
